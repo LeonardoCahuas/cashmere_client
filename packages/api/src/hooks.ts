@@ -3,12 +3,20 @@ import { useQuery } from 'react-query'
 import { apiUrl } from './constants'
 import { queryKeys } from './queryKeys'
 import { apiRoutes } from './routes'
-import { Message } from './types'
+import { Bookmark, Message } from './types'
 
 export const useGetMessages = (id: string) => {
   const url = `${apiUrl}/${apiRoutes.getMeesagesByChatId.split(':')[0]}${id}`
   return useQuery<Array<Message>>({
     queryKey: [queryKeys.getMessagesByChatId],
+    queryFn: () => axios.get(url).then((res) => res.data),
+  })
+}
+
+export const useGetBookmarksByUser = (id: string) => {
+  const url = `${apiUrl}/${apiRoutes.getBookmarksByUserId.split(':')[0]}${id}`
+  return useQuery<Array<Bookmark>>({
+    queryKey: [queryKeys.getBookmarksByUserId],
     queryFn: () => axios.get(url).then((res) => res.data),
   })
 }
