@@ -10,3 +10,16 @@ export interface Message {
   content: string
   meta: unknown
 }
+
+export interface Coupon {
+  id: string
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
+  start_validity: Date
+  end_validity: Date
+  code: string
+  issuer_id: string
+  type: string
+  value: number
+}
