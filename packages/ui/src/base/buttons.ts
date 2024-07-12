@@ -12,3 +12,5 @@ export const PrimaryButton = styled(BaseButton, {
   paddingHorizontal: 16,
   fontSize: Platform.OS === 'web' ? 16 : 20,
 })
+
+
