@@ -1,7 +1,7 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Tabs } from 'expo-router'
 
-export default function TabLayout() {
+function TabLayout() {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: '#1DAB61' }}>
       <Tabs.Screen
@@ -42,3 +42,5 @@ export default function TabLayout() {
     </Tabs>
   )
 }
+
+export default TabLayout
