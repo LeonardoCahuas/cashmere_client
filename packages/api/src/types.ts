@@ -11,6 +11,15 @@ export interface Message {
   meta: unknown
 }
 
+export interface Bookmark{
+  id: string
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
+  user_id: string
+  posting_id: string
+}
+
 export interface Chat {
   id: string
   created_at: Date
