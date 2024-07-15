@@ -11,6 +11,22 @@ export interface Message {
   meta: unknown
 }
 
+export interface Vehicle {
+  id: string
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
+  renter_id: string
+  brand: string
+  model: string
+  year: number
+  fuel_type: string
+  transmission_type: string
+  exterior_color: string
+  interior_color: string
+  interior_material: string
+}
+
 export interface Coupon {
   id: string
   created_at: Date
