@@ -11,7 +11,20 @@ export interface Message {
   meta: unknown
 }
 
-export interface Bookmark{
+export interface Coupon {
+  id: string
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
+  start_validity: Date
+  end_validity: Date
+  code: string
+  issuer_id: string
+  type: string
+  value: number
+}
+
+export interface Bookmark {
   id: string
   created_at: Date
   updated_at: Date
@@ -27,7 +40,7 @@ export interface Chat {
   deleted_at: Date
 }
 
-export interface Customer{
+export interface Customer {
   id: string
   user_id: string
   created_at: Date
@@ -35,7 +48,7 @@ export interface Customer{
   deleted_at: Date
 }
 
-export interface Posting{
+export interface Posting {
   id: string
   created_at: Date
   updated_at: Date
@@ -50,7 +63,7 @@ export interface Posting{
   dropoff_location: string
 }
 
-export interface Rental{
+export interface Rental {
   id: string
   created_at: Date
   updated_at: Date
@@ -68,7 +81,7 @@ export interface Rental{
   dropoff_location: string
 }
 
-export interface Renter{
+export interface Renter {
   id: string
   created_at: Date
   updated_at: Date
@@ -78,7 +91,7 @@ export interface Renter{
   website: string
 }
 
-export interface User{
+export interface User {
   id: string
   instance_id: string
   aud: string

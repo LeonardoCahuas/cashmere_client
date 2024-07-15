@@ -1,4 +1,5 @@
 export const queryKeys = {
   getMessagesByChatId: 'getMessagesByChatId',
-  getBookmarksByUserId: 'getBookmarksByUserId'
+  getBookmarksByUserId: 'getBookmarksByUserId',
+  getCouponByVehicleId: 'getCouponByVehicleId',
 }
