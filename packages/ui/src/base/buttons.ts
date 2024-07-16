@@ -10,7 +10,7 @@ export const PrimaryButton = styled(BaseButton, {
   justifyContent: 'center',
   alignItems: 'center',
   paddingHorizontal: 16,
-  fontSize: Platform.OS === 'web' ? 16 : 20,
+  fontSize: 16,
 })
 
 export const SecondaryButton = styled(BaseButton, {

@@ -11,9 +11,6 @@ export default function Screen() {
   return (
     <View>
       <YStack padding={8} gap={8}>
-        {!isLoading &&
-          data &&
-          data.map((msg) => <Row key={msg.id} type={msg.type} content={msg.content} />)}
       </YStack>
     </View>
   )
