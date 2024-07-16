@@ -3214,6 +3214,7 @@ __metadata:
     "@siva/config": "npm:0.0.1"
     "@tamagui/build": "npm:^1.101.3"
     "@tamagui/toast": "npm:^1.101.3"
+    react-native-svg: "npm:^15.4.0"
     tamagui: "npm:^1.101.3"
   languageName: unknown
   linkType: soft
@@ -12239,7 +12240,7 @@ __metadata:
     react-native-gesture-handler: "npm:~2.16.2"
     react-native-safe-area-context: "npm:4.10.4"
     react-native-screens: "npm:~3.31.1"
-    react-native-svg: "npm:15.3.0"
+    react-native-svg: "npm:^15.4.0"
     react-native-web: "npm:~0.19.12"
     typescript: "npm:^5.4.5"
   languageName: unknown

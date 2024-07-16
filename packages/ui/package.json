@@ -19,6 +19,7 @@
   "dependencies": {
     "@siva/config": "0.0.1",
     "@tamagui/toast": "^1.101.3",
+    "react-native-svg": "^15.4.0",
     "tamagui": "^1.101.3"
   },
   "devDependencies": {
