@@ -1,6 +1,6 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { Colors } from '../base/colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../base/colors';
 import { ShadowPrimary } from '../base/shadows';
 
 interface ForYouPosting {
@@ -55,7 +55,7 @@ export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
 
 const styles = StyleSheet.create({
     card: {
-        width: "46%",
+        width: "100%",
         backgroundColor: "white",
         borderRadius: 10,
         color: 'black',
