@@ -1,7 +1,6 @@
-
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../base/colors';
-import FontAwesome from '@expo/vector-icons/FontAwesome'
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { ShadowPrimary } from '../base/shadows';
 
 interface ForYouPosting {
@@ -12,7 +11,7 @@ interface ForYouPosting {
     description: string;
     imageUrl: string | any;
     location: string;
-    owner: string
+    owner: string;
 }
 
 interface CardProps {
@@ -24,10 +23,13 @@ export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
     return (
         <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onCardClick}>
             <View style={styles.imageCont}>
+                <View style={styles.centerTextContainer}>
+                    <Text style={styles.centerText}> {/* <VerifiedIcon /> */} Verificato</Text>
+                </View>
                 <Image source={posting.imageUrl} style={styles.cardImage} />
             </View>
             <View style={styles.cardContent}>
-                <Text style={styles.cardDescription}>{posting.owner}</Text>
+                <Text style={styles.cardDescription}>{posting.owner} {/* <VerifiedIcon /> */} </Text>
                 <Text style={styles.cardTitle}>{posting.brand} {posting.model}</Text>
                 <View style={styles.priceContainer}>
                     <Text style={styles.priceNumber}>
@@ -39,7 +41,7 @@ export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
                 </View>
                 <View style={styles.durationText}>
                     <Text style={{ color: Colors.greyPrimary }}>
-                        {posting.duration == "GIORNALIERO" ? "Breve" : "Lungo"} termine
+                        {/* {posting.duration == "GIORNALIERO" ? <ShortIcon /> : <LongIcon />} */}    {posting.duration == "GIORNALIERO" ? "Breve" : "Lungo"} termine
                     </Text>
                 </View>
             </View>
@@ -53,7 +55,7 @@ export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
 
 const styles = StyleSheet.create({
     card: {
-        width: "45%",
+        width: "46%",
         backgroundColor: "white",
         borderRadius: 10,
         color: 'black',
@@ -68,14 +70,35 @@ const styles = StyleSheet.create({
     },
     imageCont: {
         width: '100%',
-        height: 150,
+        height: 140,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        overflow: "hidden"
+        overflow: "hidden",
+        position: "relative",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    centerTextContainer: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        top: 13,
+        left: 13,
+        borderWidth: 1,
+        borderColor: Colors.greySecondary,
+        paddingHorizontal: 2,
+        paddingVertical: 2,
+        borderRadius: 2,
+        zIndex: 999
+    },
+    centerText: {
+        color: 'black',
+        fontSize: 12,
     },
     cardImage: {
+        position: "relative",
         width: "100%",
-        height: "100%"
+        height: "100%",
+        top: -1
     },
     cardContent: {
         paddingVertical: 10,
@@ -91,7 +114,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         fontSize: 14,
         color: Colors.greyPrimary,
-        fontWeight:"200"
+        fontWeight: "200"
     },
     priceContainer: {
         display: "flex",
