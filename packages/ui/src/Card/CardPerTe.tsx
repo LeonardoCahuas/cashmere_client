@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../base/colors';
 import FontAwesome from '@expo/vector-icons/FontAwesome'
@@ -38,7 +38,7 @@ export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
                     </Text>
                 </View>
                 <View style={styles.durationText}>
-                    <Text style={{ color: "white" }}>
+                    <Text style={{ color: Colors.greyPrimary }}>
                         {posting.duration == "GIORNALIERO" ? "Breve" : "Lungo"} termine
                     </Text>
                 </View>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     },
     cardContent: {
         paddingVertical: 10,
-        width: "95%",
+        width: "90%",
         borderBottomColor: Colors.greySecondary,
         borderBottomWidth: 1,
     },
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     cardDescription: {
         fontSize: 14,
         color: Colors.greyPrimary,
+        fontWeight:"200"
     },
     priceContainer: {
         display: "flex",
@@ -106,17 +107,17 @@ const styles = StyleSheet.create({
         color: Colors.greyPrimary
     },
     durationText: {
-        paddingHorizontal: 5,
-        paddingVertical: 0,
-        borderRadius: 5,
-        backgroundColor: Colors.greenPrimary,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 0,
+        backgroundColor: Colors.greySecondary,
         color: "white",
         alignSelf: 'flex-start',
         marginTop: 5
     },
     locationText: {
-        paddingHorizontal: 5,
-        paddingVertical: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
         display: "flex",
         flexDirection: "row",
         alignItems: "center",

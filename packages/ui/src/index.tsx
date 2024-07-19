@@ -1,5 +1,3 @@
-import { CardsPerTe } from './Card/CardPerTe'
-
 export { config } from '@siva/config'
 export * from '@tamagui/toast'
 export * from 'tamagui'
