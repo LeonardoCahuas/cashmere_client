@@ -1,8 +1,10 @@
 import { SvgProps } from 'react-native-svg'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
+import { ClockIcon } from './clock.icon'
 import { DistanceIcon } from './distance.icon'
 import { HeartFilledIcon } from './heart-filled.icon'
+import { LightningIcon } from './lightning.icon'
 import { LocationIcon } from './location.icon'
 import { MotorBikeIcon } from './motorbike.icon'
 import { ShareIcon } from './share.icon'
@@ -11,6 +13,7 @@ import { HeartIcon } from './tab-bar/heart.icon'
 import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
+import { VerifiedCheckIcon } from './verified-check.icon'
 
 export enum Icons {
   car = 'car',
@@ -26,6 +29,9 @@ export enum Icons {
   share = 'share',
   heart_filled = 'heart_filled',
   card_payment = 'card_payment',
+  verified_check = 'verified_check',
+  clock = 'clock',
+  lightning = 'lightning',
 }
 
 export type IconName = `${Icons}`
@@ -62,6 +68,12 @@ export const Icon = ({ ...props }: IconProps) => {
       return <HeartFilledIcon {...p} />
     case 'card_payment':
       return <CardPaymentIcon {...p} />
+    case 'verified_check':
+      return <VerifiedCheckIcon {...p} />
+    case 'clock':
+      return <ClockIcon {...p} />
+    case 'lightning':
+      return <LightningIcon {...p} />
     default:
       return <></>
   }

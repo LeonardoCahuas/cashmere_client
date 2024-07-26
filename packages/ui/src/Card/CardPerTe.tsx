@@ -1,5 +1,5 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from '@siva/ui';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../base/colors';
 import { ShadowPrimary } from '../base/shadows';
 
@@ -20,42 +20,47 @@ interface CardProps {
 }
 
 export const CardsPerTe: React.FC<CardProps> = ({ posting, onCardClick }) => {
+    const isShortTerm = posting.duration == 'GIORNALIERO'
     return (
         <TouchableOpacity style={styles.card} activeOpacity={0.9} onPress={onCardClick}>
             <View style={styles.imageCont}>
                 <View style={styles.centerTextContainer}>
-                    <Text style={styles.centerText}> {/* <VerifiedIcon /> */} Verificato</Text>
+                    <Icon name='verified_check' color={Colors.greenPrimary} />
+                    <Text style={styles.centerText}> Verificato</Text>
                 </View>
-                <Image source={posting.imageUrl} style={styles.cardImage} />
+                <Image source={{uri: posting.imageUrl}} style={styles.cardImage} />
             </View>
             <View style={styles.cardContent}>
-                <Text style={styles.cardDescription}>{posting.owner} {/* <VerifiedIcon /> */} </Text>
+                <Text style={styles.owner}>{posting.owner} <Icon name='verified_check' color={Colors.greenPrimary} /></Text>
                 <Text style={styles.cardTitle}>{posting.brand} {posting.model}</Text>
                 <View style={styles.priceContainer}>
                     <Text style={styles.priceNumber}>
-                        €{posting.price}
+                        €{posting.price}{" "}
                     </Text>
                     <Text style={styles.priceLabel}>
-                        /{posting.duration == "GIORNALIERO" ? "giorno" : "mese"}
+                        /{" "}{posting.duration == "GIORNALIERO" ? "giorno" : "mese"}
                     </Text>
                 </View>
-                <View style={styles.durationText}>
-                    <Text style={{ color: Colors.greyPrimary }}>
-                        {/* {posting.duration == "GIORNALIERO" ? <ShortIcon /> : <LongIcon />} */}    {posting.duration == "GIORNALIERO" ? "Breve" : "Lungo"} termine
+                <View style={styles.durationContainer}>
+                    <Icon name={isShortTerm ? 'lightning' : 'clock'} color={Colors.greenPrimary} />
+                    <Text style={styles.durationText}>
+                        {isShortTerm ? 'Breve': 'Lungo'} termine
                     </Text>
                 </View>
             </View>
             <View style={styles.locationText}>
-                <FontAwesome size={18} name="map-marker" color={Colors.greyPrimary} />
+                <Icon name='location' color={Colors.greyPrimary} />
                 <Text style={{ color: Colors.greyPrimary }}>{posting.location}</Text>
             </View>
         </TouchableOpacity>
     );
 };
 
+const { width } = Dimensions.get('window')
+
 const styles = StyleSheet.create({
     card: {
-        width: "100%",
+        width: (width - 48) / 2,
         backgroundColor: "white",
         borderRadius: 10,
         color: 'black',
@@ -85,10 +90,14 @@ const styles = StyleSheet.create({
         left: 13,
         borderWidth: 1,
         borderColor: Colors.greySecondary,
-        paddingHorizontal: 2,
+        paddingHorizontal: 4,
         paddingVertical: 2,
         borderRadius: 2,
-        zIndex: 999
+        zIndex: 999,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     centerText: {
         color: 'black',
@@ -102,25 +111,28 @@ const styles = StyleSheet.create({
     },
     cardContent: {
         paddingVertical: 10,
-        width: "90%",
-        borderBottomColor: Colors.greySecondary,
-        borderBottomWidth: 1,
+        width: "100%",
+        borderBottomColor: Colors.tertiaryGray,
+        borderBottomWidth: 5,
+        padding: 8,
     },
     cardTitle: {
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: 'medium',
-        marginBottom: 10,
+        marginBottom: 48,
     },
-    cardDescription: {
+    owner: {
         fontSize: 14,
         color: Colors.greyPrimary,
-        fontWeight: "200"
+        fontWeight: "300",
+        marginBottom: 6
     },
     priceContainer: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-start"
+        justifyContent: "flex-start",
+        marginBottom: 8
     },
     priceNumber: {
         color: Colors.blackPrimary,
@@ -129,14 +141,20 @@ const styles = StyleSheet.create({
     priceLabel: {
         color: Colors.greyPrimary
     },
-    durationText: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+    durationContainer: {
+        paddingHorizontal: 6,
         borderRadius: 0,
-        backgroundColor: Colors.greySecondary,
-        color: "white",
+        backgroundColor: Colors.lightGray,
         alignSelf: 'flex-start',
-        marginTop: 5
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 3,
+        height: 22,
+    },
+    durationText: {
+        color: Colors.greenPrimary,
+        fontWeight: '500' ,
     },
     locationText: {
         paddingHorizontal: 10,
@@ -148,5 +166,10 @@ const styles = StyleSheet.create({
         color: Colors.greyPrimary,
         alignSelf: 'flex-start',
         gap: 5
+    },
+    row : {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent:'space-between'
     }
 });
