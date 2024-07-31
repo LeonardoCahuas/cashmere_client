@@ -1,4 +1,3 @@
-
 export const Colors = {
   greenPrimary: '#1DAB61',
   blackPrimary: '#000000',
