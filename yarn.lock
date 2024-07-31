@@ -3207,7 +3207,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@siva/ui@npm:0.0.1, @siva/ui@workspace:packages/ui":
+"@siva/ui@npm:0.0.1, @siva/ui@workspace:^, @siva/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@siva/ui@workspace:packages/ui"
   dependencies:
@@ -14927,6 +14927,7 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.24.6"
     "@manypkg/cli": "npm:^0.21.4"
+    "@siva/ui": "workspace:^"
     check-dependency-version-consistency: "npm:^4.1.0"
     eslint: "npm:^9.3.0"
     node-gyp: "npm:^10.1.0"

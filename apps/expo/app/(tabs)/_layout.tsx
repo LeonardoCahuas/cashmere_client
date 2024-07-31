@@ -1,21 +1,22 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { Icon } from '@siva/ui'
 import { Tabs } from 'expo-router'
 
 function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: '#1DAB61' }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#000' }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="home" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
         }}
       />
       <Tabs.Screen
         name="saved"
         options={{
           title: 'Salvati',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="heart" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
         }}
       />
       <Tabs.Screen
@@ -29,14 +30,14 @@ function TabLayout() {
         name="chats"
         options={{
           title: 'Chats',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="plane" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profilo',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="user" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
         }}
       />
     </Tabs>

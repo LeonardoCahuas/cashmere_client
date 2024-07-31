@@ -1,6 +1,7 @@
 export { config } from '@siva/config'
 export * from '@tamagui/toast'
 export * from 'tamagui'
+export * from './Card'
 export * from './CustomToast'
 export * from './base/Row'
 export * from './base/buttons'
