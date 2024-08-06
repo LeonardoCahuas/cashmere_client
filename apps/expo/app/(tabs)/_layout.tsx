@@ -1,10 +1,16 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Icon } from '@siva/ui'
 import { Tabs } from 'expo-router'
+import { StyleSheet, View } from 'react-native'
 
 function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: '#000' }}>
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#000',
+        tabBarStyle: styles.tabWrapper,
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -43,5 +49,17 @@ function TabLayout() {
     </Tabs>
   )
 }
+
+const styles = StyleSheet.create({
+  tabWrapper:{
+    backgroundColor: 'background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 1) 100%)', 
+    borderTopWidth: 0,
+    elevation: 0,
+    position: 'absolute',
+    bottom: 0, 
+    left: 0, 
+    right: 0,
+  }
+})
 
 export default TabLayout
