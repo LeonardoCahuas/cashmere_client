@@ -14,6 +14,7 @@ import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
+import { View } from 'react-native'
 
 export enum Icons {
   car = 'car',
