@@ -1,5 +1,6 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { Icon } from '@siva/ui'
+import ChatBadge from '@siva/ui/src/ChatBadge'
 import { Tabs } from 'expo-router'
 
 function TabLayout() {
@@ -30,7 +31,7 @@ function TabLayout() {
         name="chats"
         options={{
           title: 'Chats',
-          tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} />,
+          tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} messages={15} />,
         }}
       />
       <Tabs.Screen

@@ -14,7 +14,8 @@ import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
-
+import { View } from 'react-native'
+import ChatBadge from '../../ChatBadge'
 export enum Icons {
   car = 'car',
   motorbike = 'motorbike',
@@ -36,10 +37,10 @@ export enum Icons {
 
 export type IconName = `${Icons}`
 
-type IconProps = SvgProps & { name: IconName }
+type IconProps = SvgProps & { name: IconName, messages?: number }
 
 export const Icon = ({ ...props }: IconProps) => {
-  const { fill = '#000000' } = props
+  const { fill = '#000000', messages } = props
   const p = { ...props, fill }
   switch (props.name) {
     case 'car':
@@ -55,7 +56,12 @@ export const Icon = ({ ...props }: IconProps) => {
     case 'tab_search':
       return <TabSearchIcon {...p} />
     case 'tab_chat':
-      return <ChatIcon {...p} />
+      return (
+        <View>
+          <ChatBadge messages={messages || 0}/>
+          <ChatIcon {...p} />
+        </View>
+        )
     case 'tab_profile':
       return <ProfileIcon {...p} />
     case 'distance':

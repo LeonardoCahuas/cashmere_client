@@ -1,10 +1,15 @@
-import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const ChatBadge = () => {
+type ChatBadgeProps = {
+  messages: number;
+};
+
+const ChatBadge = ({ messages }: ChatBadgeProps) => {
+  if (messages === 0) return null;
+
   return (
     <View style={styles.badgeContainer}>
-      <Text style={styles.badgeText}>1</Text>
+      <Text style={styles.badgeText}>{messages}</Text>
     </View>
   );
 };
@@ -14,8 +19,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     borderRadius: 10,
     display:"flex",
-    width:15,
-    height:15,
+    width:18,
+    height:18,
     flexDirection:"column", 
     justifyContent: 'center',
     alignItems: 'center', 
