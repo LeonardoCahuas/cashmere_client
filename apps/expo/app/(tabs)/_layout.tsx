@@ -52,7 +52,7 @@ function TabLayout() {
 
 const styles = StyleSheet.create({
   tabWrapper:{
-    backgroundColor: 'background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 1) 100%)', 
+    backgroundColor: 'linear-gradient(90deg, rgba(255, 255, 255, 0.975) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 100%)', 
     borderTopWidth: 0,
     elevation: 0,
     position: 'absolute',
