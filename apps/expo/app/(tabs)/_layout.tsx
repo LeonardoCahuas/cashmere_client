@@ -57,7 +57,7 @@ function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.greenPrimary,
+        tabBarActiveTintColor: Colors.blackPrimary,
         tabBarStyle: styles.container,
         tabBarBackground() {
           return <BlurView intensity={80} tint="light" style={styles.blurView} />
