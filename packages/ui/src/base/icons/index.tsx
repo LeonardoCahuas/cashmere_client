@@ -10,6 +10,7 @@ import { MotorBikeIcon } from './motorbike.icon'
 import { ShareIcon } from './share.icon'
 import { ChatIcon } from './tab-bar/chat.icon'
 import { HeartIcon } from './tab-bar/heart.icon'
+import { TabPlusIcon } from './tab-bar/plus.icon'
 import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
@@ -32,6 +33,7 @@ export enum Icons {
   verified_check = 'verified_check',
   clock = 'clock',
   lightning = 'lightning',
+  tab_plus = 'tab_plus',
 }
 
 export type IconName = `${Icons}`
@@ -74,6 +76,8 @@ export const Icon = ({ ...props }: IconProps) => {
       return <ClockIcon {...p} />
     case 'lightning':
       return <LightningIcon {...p} />
+    case 'tab_plus':
+      return <TabPlusIcon {...p} />
     default:
       return <></>
   }
