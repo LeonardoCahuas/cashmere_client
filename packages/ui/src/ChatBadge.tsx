@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 type ChatBadgeProps = {
-  messages: number;
+  messages?: number;
 };
 
 const ChatBadge = ({ messages }: ChatBadgeProps) => {
-  if (messages === 0) return null;
+  if (messages === undefined || messages < 1) return null;
 
   return (
     <View style={styles.badgeContainer}>
