@@ -1,65 +1,87 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { Icon } from '@siva/ui'
+import { Colors, Icon } from '@siva/ui'
+import { BlurView } from 'expo-blur'
 import { Tabs } from 'expo-router'
-import { StyleSheet, View } from 'react-native'
+import { Platform, StyleSheet } from 'react-native'
 
 function TabLayout() {
+  const screens = () => [
+    <Tabs.Screen
+      name="index"
+      options={{
+        title: 'Home',
+        tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
+      }}
+    />,
+    <Tabs.Screen
+      name="saved"
+      options={{
+        title: 'Salvati',
+        tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
+      }}
+    />,
+    <Tabs.Screen
+      name="add"
+      options={{
+        title: 'Inserziona',
+        tabBarIcon: ({ color }) => <Icon name="tab_plus" color={color} />,
+      }}
+    />,
+    <Tabs.Screen
+      name="chats"
+      options={{
+        title: 'Chats',
+        tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} />,
+      }}
+    />,
+    <Tabs.Screen
+      name="profile"
+      options={{
+        title: 'Profilo',
+        tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
+      }}
+    />,
+  ]
+
+  if (Platform.OS === 'android') {
+    return (
+      <Tabs
+        screenOptions={{
+          tabBarActiveTintColor: Colors.blackPrimary,
+        }}
+      >
+        {screens()}
+      </Tabs>
+    )
+  }
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#000',
-        tabBarStyle: styles.tabWrapper,
+        tabBarActiveTintColor: Colors.greenPrimary,
+        tabBarStyle: styles.container,
+        tabBarBackground() {
+          return <BlurView intensity={80} tint="light" style={styles.blurView} />
+        },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="saved"
-        options={{
-          title: 'Salvati',
-          tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="add"
-        options={{
-          title: 'Inserziona',
-          tabBarIcon: ({ color }) => <FontAwesome size={28} name="plus-circle" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="chats"
-        options={{
-          title: 'Chats',
-          tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profilo',
-          tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
-        }}
-      />
+      {screens()}
     </Tabs>
   )
 }
 
-const styles = StyleSheet.create({
-  tabWrapper:{
-    backgroundColor: 'linear-gradient(90deg, rgba(255, 255, 255, 0.975) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 100%)', 
-    borderTopWidth: 0,
-    elevation: 0,
-    position: 'absolute',
-    bottom: 0, 
-    left: 0, 
-    right: 0,
-  }
-})
-
 export default TabLayout
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
+    elevation: 10,
+  },
+  blurView: {
+    flex: 1,
+  },
+})
