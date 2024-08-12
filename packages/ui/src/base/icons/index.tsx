@@ -1,4 +1,6 @@
+import { View } from 'react-native'
 import { SvgProps } from 'react-native-svg'
+import ChatBadge from '../../ChatBadge'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
 import { ClockIcon } from './clock.icon'
@@ -38,10 +40,10 @@ export enum Icons {
 
 export type IconName = `${Icons}`
 
-type IconProps = SvgProps & { name: IconName }
+type IconProps = SvgProps & { name: IconName, data?: Record<string, any> }
 
 export const Icon = ({ ...props }: IconProps) => {
-  const { fill = '#000000' } = props
+  const { fill = '#000000', data } = props
   const p = { ...props, fill }
   switch (props.name) {
     case 'car':
@@ -57,7 +59,12 @@ export const Icon = ({ ...props }: IconProps) => {
     case 'tab_search':
       return <TabSearchIcon {...p} />
     case 'tab_chat':
-      return <ChatIcon {...p} />
+      return (
+        <View>
+          <ChatBadge messages={data?.messages}/>
+          <ChatIcon {...p} />
+        </View>
+        )
     case 'tab_profile':
       return <ProfileIcon {...p} />
     case 'distance':
