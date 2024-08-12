@@ -63,6 +63,7 @@ function TabLayout() {
           return <BlurView intensity={80} tint="light" style={styles.blurView} />
         },
       }}
+      sceneContainerStyle={{ backgroundColor: 'white' }}
     >
       {screens()}
     </Tabs>

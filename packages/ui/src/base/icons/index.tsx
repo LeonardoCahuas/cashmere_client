@@ -10,6 +10,7 @@ import { LightningIcon } from './lightning.icon'
 import { LocationIcon } from './location.icon'
 import { MotorBikeIcon } from './motorbike.icon'
 import { ShareIcon } from './share.icon'
+import { ShortTermArrowIcon } from './short-term-arrow.icon'
 import { ChatIcon } from './tab-bar/chat.icon'
 import { HeartIcon } from './tab-bar/heart.icon'
 import { TabPlusIcon } from './tab-bar/plus.icon'
@@ -36,11 +37,12 @@ export enum Icons {
   clock = 'clock',
   lightning = 'lightning',
   tab_plus = 'tab_plus',
+  short_term_arrow_icon = 'short_term_arrow_icon',
 }
 
 export type IconName = `${Icons}`
 
-type IconProps = SvgProps & { name: IconName, data?: Record<string, any> }
+type IconProps = SvgProps & { name: IconName; data?: Record<string, any> }
 
 export const Icon = ({ ...props }: IconProps) => {
   const { fill = '#000000', data } = props
@@ -61,10 +63,10 @@ export const Icon = ({ ...props }: IconProps) => {
     case 'tab_chat':
       return (
         <View>
-          <ChatBadge messages={data?.messages}/>
+          <ChatBadge messages={data?.messages} />
           <ChatIcon {...p} />
         </View>
-        )
+      )
     case 'tab_profile':
       return <ProfileIcon {...p} />
     case 'distance':
@@ -85,6 +87,8 @@ export const Icon = ({ ...props }: IconProps) => {
       return <LightningIcon {...p} />
     case 'tab_plus':
       return <TabPlusIcon {...p} />
+    case 'short_term_arrow_icon':
+      return <ShortTermArrowIcon {...p} />
     default:
       return <></>
   }
