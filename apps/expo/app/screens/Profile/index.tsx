@@ -1,5 +1,6 @@
 import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
 import * as v from 'valibot'
@@ -46,12 +47,12 @@ const Profile: React.FC = () => {
   }
 
   async function handleOAuthSignIn() {
-    const callbackUrl = Linking.createURL('App')
+    const callbackUrl = Linking.createURL('callback')
     const result = await WebBrowser.openAuthSessionAsync(
       'http://localhost:3000/auth/apple/login',
       callbackUrl
     )
-    console.log({ callbackUrl })
+    console.log({ callbackUrl, result })
 
     if (result.type === 'success') {
       // Extract the auth token from the URL
@@ -70,17 +71,9 @@ const Profile: React.FC = () => {
     }
   }
 
-  const _handlePressButtonAsync = async () => {
-    const callbackUrl = Linking.createURL('App')
-    const result = await WebBrowser.openAuthSessionAsync(
-      'http://localhost:3000/auth/apple/login',
-      callbackUrl
-    )
-
-    console.log({ result, callbackUrl })
-
-    if (result.type === 'success') return
-  }
+  useEffect(() => {
+    WebBrowser.maybeCompleteAuthSession()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -113,12 +106,6 @@ const Profile: React.FC = () => {
         />
         <Button title="Log out" onPress={() => logOut()} />
         <Button title="User" onPress={() => console.log(user)} />
-        <Button
-          title="Web"
-          onPress={() => {
-            _handlePressButtonAsync()
-          }}
-        />
         <Button title="Sign in with OAuth" onPress={handleOAuthSignIn} />
       </View>
     </View>
