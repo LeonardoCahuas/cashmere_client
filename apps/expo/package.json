@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.24.6",
     "@expo/config-plugins": "~8.0.4",
     "@siva/api": "workspace:^",
-    "@siva/ui": "0.0.1",
+    "@siva/ui": "workspace:^",
     "add": "^2.0.6",
     "app": "0.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
