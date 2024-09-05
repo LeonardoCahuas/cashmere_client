@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContainer: {
     flexGrow: 1,
-    paddingBottom: 24,
+    paddingBottom: 96,
   },
   contentContainerStyle: {
     paddingBottom: 40,
