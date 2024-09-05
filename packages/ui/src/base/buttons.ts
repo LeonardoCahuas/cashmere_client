@@ -5,7 +5,7 @@ export const PrimaryButton = styled(BaseButton, {
   width: "100%",
   height: 48,
   color: 'white',
-  backgroundColor: '#1DAB61',
+  backgroundColor: '#00C15C',
   borderRadius: 8,
   justifyContent: 'center',
   alignItems: 'center',
