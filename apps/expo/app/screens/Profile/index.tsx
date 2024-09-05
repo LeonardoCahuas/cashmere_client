@@ -1,27 +1,11 @@
+import * as Linking from 'expo-linking'
+import * as WebBrowser from 'expo-web-browser'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
 import * as v from 'valibot'
 import { Input } from '../../components/Input'
-import { supabase } from '../../lib/supabase'
-import { AuthenticatedUser } from '../../setup/auth/AuthContext'
-import { useIsAuthenticated } from '../../setup/auth/hooks'
+import { LoginSchema, LoginSchemaType, auth, useIsAuthenticated } from '../../setup/auth/hooks'
 import { useAuthContext } from '../../setup/auth/useAuthContext'
-import { Auth } from './apple-auth'
-
-const LoginSchema = v.object({
-  email: v.pipe(
-    v.string('Email must be a string'),
-    v.nonEmpty('Please Enter an email'),
-    v.email('Email badly formatted')
-  ),
-  password: v.pipe(
-    v.string('Password must be a string'),
-    v.nonEmpty('Please enter your password.'),
-    v.minLength(6, 'Password must be at least 6 characters long')
-  ),
-})
-
-type LoginSchemaType = v.InferOutput<typeof LoginSchema>
 
 function getLoginData(
   data: unknown
@@ -39,45 +23,68 @@ const Profile: React.FC = () => {
   const { control, handleSubmit, reset } = useForm()
 
   async function signInWithEmail({ email, password }: LoginSchemaType) {
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    })
-
-    if (error) {
-      Alert.alert(error.message)
+    const user = await auth.logInWithEmail({ email, password })
+    if (!user) {
+      Alert.alert('error logging in!')
       return
     }
-
-    if (!data?.user?.email || !data.session.expires_at) return
-    const user: AuthenticatedUser = {
-      id: data.user.id,
-      email: data.user.email,
-      role: 'member',
-      exp: data.session.expires_at,
-    }
-
     setUser(user)
     reset()
   }
 
   async function signUpWithEmail({ email, password }: LoginSchemaType) {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email,
-      password,
-    })
+    const user = await auth.signUpWithEmail({ email, password })
+    if (!user) {
+      Alert.alert('error logging in')
+    }
+    if (false) Alert.alert('Please check your inbox for email verification!')
+    setUser(user)
+  }
 
-    if (error) Alert.alert(error.message)
-    if (!session) Alert.alert('Please check your inbox for email verification!')
+  function logOut() {
+    setUser(null)
+  }
+
+  async function handleOAuthSignIn() {
+    const callbackUrl = Linking.createURL('App')
+    const result = await WebBrowser.openAuthSessionAsync(
+      'http://localhost:3000/auth/apple/login',
+      callbackUrl
+    )
+    console.log({ callbackUrl })
+
+    if (result.type === 'success') {
+      // Extract the auth token from the URL
+      const { url } = result
+      const token = Linking.parse(url).queryParams?.['token'] as string
+
+      if (token) {
+        // Use the token to authenticate the user
+        const user = await auth.loginWithToken(token)
+        if (user) {
+          setUser(user)
+        } else {
+          Alert.alert('Error logging in with OAuth')
+        }
+      }
+    }
+  }
+
+  const _handlePressButtonAsync = async () => {
+    const callbackUrl = Linking.createURL('App')
+    const result = await WebBrowser.openAuthSessionAsync(
+      'http://localhost:3000/auth/apple/login',
+      callbackUrl
+    )
+
+    console.log({ result, callbackUrl })
+
+    if (result.type === 'success') return
   }
 
   return (
     <View style={styles.container}>
       {isLoggedIn && <Text>Logged In as {user?.email}</Text>}
-      {!isLoggedIn && false && <Auth />}
 
       <View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -86,28 +93,33 @@ const Profile: React.FC = () => {
         <View style={styles.verticallySpaced}>
           <Input name="password" placeholder="*****" control={control} password />
         </View>
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Button
-            title="Sign in"
-            onPress={handleSubmit((values) => {
-              const result = getLoginData(values)
-              if (result.error) return
-              const { email, password } = result.values
-              signInWithEmail({ email, password })
-            })}
-          />
-        </View>
-        <View style={styles.verticallySpaced}>
-          <Button
-            title="Sign up"
-            onPress={handleSubmit((values) => {
-              const result = getLoginData(values)
-              if (result.error) return
-              const { email, password } = result.values
-              signUpWithEmail({ email, password })
-            })}
-          />
-        </View>
+        <Button
+          title="Sign IN"
+          onPress={handleSubmit((values) => {
+            const result = getLoginData(values)
+            if (result.error) return
+            const { email, password } = result.values
+            signInWithEmail({ email, password })
+          })}
+        />
+        <Button
+          title="Sign up"
+          onPress={handleSubmit((values) => {
+            const result = getLoginData(values)
+            if (result.error) return
+            const { email, password } = result.values
+            signUpWithEmail({ email, password })
+          })}
+        />
+        <Button title="Log out" onPress={() => logOut()} />
+        <Button title="User" onPress={() => console.log(user)} />
+        <Button
+          title="Web"
+          onPress={() => {
+            _handlePressButtonAsync()
+          }}
+        />
+        <Button title="Sign in with OAuth" onPress={handleOAuthSignIn} />
       </View>
     </View>
   )

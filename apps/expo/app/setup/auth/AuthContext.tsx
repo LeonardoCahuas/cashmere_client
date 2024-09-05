@@ -6,6 +6,8 @@ export interface AuthenticatedUser {
   email: string
   role: UserRole | null
   exp: number
+  session: string | null
+  verified: boolean
 }
 
 export interface AuthContextProps {

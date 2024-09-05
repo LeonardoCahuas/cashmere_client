@@ -25,7 +25,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-refresh": "^0.14.0",
-    "react-native-svg": "15.3.0",
+    "react-native-svg": "^15.4.0",
     "react-native-web": "~0.19.12"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "@siva/ui": "workspace:^",
     "check-dependency-version-consistency": "^4.1.0",
     "eslint": "^9.3.0",
+    "expo-web-browser": "^13.0.3",
     "node-gyp": "^10.1.0",
     "prettier": "^3.2.5",
     "turbo": "^1.13.3",

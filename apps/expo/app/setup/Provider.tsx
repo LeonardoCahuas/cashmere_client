@@ -7,8 +7,10 @@ import { PropsWithChildren, useEffect } from 'react'
 import { useColorScheme } from 'react-native'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { AuthProvider } from './auth/AuthContext'
+import { LargeSecureStore } from './local-storage/secure-store'
 
 const queryClient = new QueryClient()
+export const secureStore = new LargeSecureStore()
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
