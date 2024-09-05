@@ -1,6 +1,7 @@
 import { CardsPerTe } from '@siva/ui'
 import React from 'react'
-import { FlatList, StyleSheet, View } from 'react-native'
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
+import { HighlightedButton } from './components/InEvidenceButton'
 
 type Posting = React.ComponentProps<typeof CardsPerTe>['posting']
 
@@ -51,14 +52,28 @@ const Home: React.FC = () => {
 
   return (
     <View>
-      <FlatList
-        data={postings}
-        keyExtractor={(item) => item.model}
-        contentContainerStyle={styles.contentContainerStyle}
-        renderItem={({ item }) => <CardRenderer item={item} />}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapperStyle}
-      />
+      <ScrollView style={{ paddingBottom: 64 }}>
+        <FlatList
+          data={postings}
+          keyExtractor={(item) => item.model}
+          contentContainerStyle={styles.contentContainerStyle}
+          renderItem={({ item }) => <CardRenderer item={item} />}
+          numColumns={2}
+          columnWrapperStyle={styles.columnWrapperStyle}
+        />
+        <View style={{ width: '100%', paddingHorizontal: 16 }}>
+          <HighlightedButton
+            data={{
+              title: 'Luxury Breve Termine',
+              text: 'Vivi un’esperienza coni veicoli luxury',
+              buttonText: 'Guarda gli annunci',
+              imageUrl:
+                'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/luxury.png?t=2024-09-05T21%3A13%3A44.014Z',
+            }}
+            onButtonClick={() => {}}
+          />
+        </View>
+      </ScrollView>
     </View>
   )
 }
