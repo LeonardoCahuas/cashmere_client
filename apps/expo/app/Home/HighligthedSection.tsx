@@ -1,6 +1,7 @@
 import React from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { HighlightedButton } from './components/InEvidenceButton'
+import { SectionTitle } from './components/SectionTitle'
 
 interface Highlight {
   title: string
@@ -35,7 +36,7 @@ export const HighlightedSection: React.FC = () => {
   return (
     <>
       <View style={{ marginTop: 24, marginBottom: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: '600', marginLeft: 16 }}>In evidenza</Text>
+        <SectionTitle>In Evidenza</SectionTitle>
       </View>
       <ScrollView
         horizontal

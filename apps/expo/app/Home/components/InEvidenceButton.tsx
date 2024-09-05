@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: width * 0.85,
     padding: 6,
-    borderColor: Colors.lightGray,
+    borderColor: Colors.greySecondary,
     borderWidth: 1,
     borderRadius: 10,
     overflow: 'hidden',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
     fontWeight: '600',
   },
