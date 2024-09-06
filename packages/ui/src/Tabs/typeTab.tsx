@@ -1,5 +1,5 @@
 import { Icon, IconName } from '@siva/ui'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Colors } from '../base/colors'
 import CustomButton from './typeButton'
@@ -10,7 +10,7 @@ const tabs: Array<TabItem> = [
   { label: 'Furgoni', icon: 'truck' },
 ]
 
-export const TypeTab: React.FC = () => {
+export const TypeTab = () => {
   const [activeTypes, setActiveTypes] = useState(tabs.map((tab) => ({ ...tab, selected: false })))
 
   return (
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    margin: 5,
+    gap: 8,
   },
 })
 

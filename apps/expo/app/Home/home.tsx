@@ -33,8 +33,6 @@ const Home: React.FC = () => {
             paddingHorizontal: 16,
             display: 'flex',
             alignItems: 'center',
-            paddingTop: 32,
-            paddingBottom: 32,
           }}
         >
           <Image
@@ -44,13 +42,14 @@ const Home: React.FC = () => {
             style={{ width: 80, height: 25, marginBottom: 16 }}
           />
           <SearchButton />
-          <View style={{ width: '100%', marginTop: 8 }}>
-            <TypeTab />
-          </View>
+        </View>
+        <View style={{ width: '100%', marginTop: 16, paddingHorizontal: 16, paddingBottom: 32 }}>
+          <TypeTab />
         </View>
         <ForYouSection />
-        <View style={{ width: '100%', paddingHorizontal: 16 }}>
-          <PostingCard.Medium posting={posting} onCardClick={() => {}} />
+
+        <View style={{ width: '100%', paddingHorizontal: 16, display: 'flex', gap: 16 }}>
+          <PostingCard.Large posting={posting} onCardClick={() => {}} />
         </View>
 
         <HighlightedSection />
