@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
-    backgroundColor: Colors.tertiaryGray,
+    backgroundColor: '#F6F6F6',
     margin: 5,
     color: 'black',
   },
@@ -41,8 +41,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   buttonText: {
-    fontSize: 13,
-    color: Colors.greySecondary,
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textSecondary,
     marginLeft: 10,
   },
   buttonTextActive: {

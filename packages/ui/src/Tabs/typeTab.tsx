@@ -18,7 +18,7 @@ export const TypeTab: React.FC = () => {
       {activeTypes.map(({ label, icon, selected }, i) => (
         <CustomButton
           key={label}
-          icon={<Icon name={icon} color={selected ? 'white' : Colors.greySecondary} />}
+          icon={<Icon name={icon} color={selected ? 'white' : Colors.textSecondary} />}
           label={label}
           active={selected}
           onClick={() => {

@@ -1,8 +1,9 @@
-import { PostingCard } from '@siva/ui'
+import { PostingCard, TypeTab } from '@siva/ui'
 import React from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, View } from 'react-native'
 import { ForYouSection } from './ForYouSection'
 import { HighlightedSection } from './HighligthedSection'
+import { SearchButton } from './components/SearchButton'
 
 type Posting = React.ComponentProps<typeof PostingCard.Large>['posting']
 
@@ -26,6 +27,27 @@ const Home: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <View
+          style={{
+            width: '100%',
+            paddingHorizontal: 16,
+            display: 'flex',
+            alignItems: 'center',
+            paddingTop: 32,
+            paddingBottom: 32,
+          }}
+        >
+          <Image
+            source={{
+              uri: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/LOGO.png?t=2024-09-06T07%3A09%3A24.114Z',
+            }}
+            style={{ width: 80, height: 25, marginBottom: 16 }}
+          />
+          <SearchButton />
+          <View style={{ width: '100%', marginTop: 8 }}>
+            <TypeTab />
+          </View>
+        </View>
         <ForYouSection />
         <View style={{ width: '100%', paddingHorizontal: 16 }}>
           <PostingCard.Medium posting={posting} onCardClick={() => {}} />
