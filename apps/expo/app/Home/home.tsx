@@ -1,12 +1,13 @@
-import { CardsPerTe } from '@siva/ui'
+import { CardsPerTe, PostingCard } from '@siva/ui'
 import React from 'react'
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
 import { HighlightedSection } from './HighligthedSection'
 
-type Posting = React.ComponentProps<typeof CardsPerTe>['posting']
+type ForYouPosting = React.ComponentProps<typeof CardsPerTe>['posting']
+type Posting = React.ComponentProps<typeof PostingCard.Large>['posting']
 
 interface CardRendererProps {
-  item: Posting
+  item: ForYouPosting
 }
 
 const CardRenderer = ({ item }: CardRendererProps) => {
@@ -18,7 +19,7 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 }
 
 const Home: React.FC = () => {
-  const postings: Array<Posting> = [
+  const postings: Array<ForYouPosting> = [
     {
       brand: 'Volvo',
       model: 'XC60',
@@ -65,9 +66,28 @@ const Home: React.FC = () => {
     },
   ]
 
+  const posting: Posting = {
+    brand: 'Kia',
+    model: 'Seltos',
+    duration: 'MENSILE',
+    price: 550,
+    description: 'SUV Subcompatta',
+    imageUrl:
+      'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg?t=2024-09-06T04%3A03%3A19.187Z',
+    location: 'Milano',
+    owner: 'Fratelli Giacomel',
+    kmLimit: 500,
+    anticipo: 200,
+    minimumAge: 25,
+    minimumMonths: 36,
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <View style={{ width: '100%', paddingHorizontal: 16 }}>
+          <PostingCard.Medium posting={posting} onCardClick={() => {}} />
+        </View>
         <FlatList
           data={postings}
           keyExtractor={(item) => item.model}

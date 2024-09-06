@@ -1,2 +1,2 @@
 export * from './CardPerTe'
-export * from './SearchCard'
+export * from './PostingCard'
