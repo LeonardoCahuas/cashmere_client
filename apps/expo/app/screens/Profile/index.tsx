@@ -1,11 +1,11 @@
-import * as Linking from 'expo-linking'
 import * as WebBrowser from 'expo-web-browser'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
 import * as v from 'valibot'
 import { Input } from '../../components/Input'
-import { LoginSchema, LoginSchemaType, auth, useIsAuthenticated } from '../../setup/auth/hooks'
+import { LoginSchema, LoginSchemaType, auth } from '../../setup/auth/helpers'
+import { useIsAuthenticated } from '../../setup/auth/hooks'
 import { useAuthContext } from '../../setup/auth/useAuthContext'
 
 function getLoginData(
@@ -47,28 +47,12 @@ const Profile: React.FC = () => {
   }
 
   async function handleOAuthSignIn() {
-    const callbackUrl = Linking.createURL('callback')
-    const result = await WebBrowser.openAuthSessionAsync(
-      'http://localhost:3000/auth/apple/login',
-      callbackUrl
-    )
-    console.log({ callbackUrl, result })
-
-    if (result.type === 'success') {
-      // Extract the auth token from the URL
-      const { url } = result
-      const token = Linking.parse(url).queryParams?.['token'] as string
-
-      if (token) {
-        // Use the token to authenticate the user
-        const user = await auth.loginWithToken(token)
-        if (user) {
-          setUser(user)
-        } else {
-          Alert.alert('Error logging in with OAuth')
-        }
-      }
+    const user = await auth.loginWithApple()
+    if (!user) {
+      Alert.alert('Error logging in with OAuth')
+      return
     }
+    setUser(user)
   }
 
   useEffect(() => {
