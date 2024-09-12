@@ -31,11 +31,23 @@ export const LoginSchema = v.object({
 
 export type LoginSchemaType = v.InferOutput<typeof LoginSchema>
 
+export function getLoginData(
+  data: unknown
+): { values: LoginSchemaType; error: false } | { error: true; issues: unknown[] } {
+  const result = v.safeParse(LoginSchema, data)
+  if (result.success) {
+    return { values: result.output, error: false }
+  }
+  return { issues: result.issues, error: true }
+}
+
+const baseURL = 'https://sivahono-production.up.railway.app'
+
 const logInWithEmail = async ({
   email,
   password,
 }: LoginSchemaType): Promise<AuthenticatedUser | null> => {
-  const response = await fetch('http://localhost:3000/auth/login', {
+  const response = await fetch(`${baseURL}/auth/login`, {
     method: 'POST',
     body: JSON.stringify({ email, password }),
     headers: { 'Content-Type': 'application/json' },
@@ -50,7 +62,7 @@ const signUpWithEmail = async ({
   email,
   password,
 }: LoginSchemaType): Promise<AuthenticatedUser | null> => {
-  const response = await fetch('http://localhost:3000/auth/signup', {
+  const response = await fetch(`${baseURL}/auth/signup`, {
     method: 'POST',
     body: JSON.stringify({ email, password }),
     headers: { 'Content-Type': 'application/json' },
@@ -64,7 +76,7 @@ const signUpWithEmail = async ({
 const loginWithApple = async () => {
   const callbackUrl = Linking.createURL('callback')
   const result = await WebBrowser.openAuthSessionAsync(
-    'http://localhost:3000/auth/apple/login?isMobile=true',
+    `${baseURL}/auth/apple/login?isMobile=true`,
     callbackUrl
   )
 
@@ -83,7 +95,27 @@ const loginWithApple = async () => {
   return null
 }
 
-const loginWithGoogle = async () => {}
+const loginWithGoogle = async () => {
+  const callbackUrl = Linking.createURL('callback')
+  const result = await WebBrowser.openAuthSessionAsync(
+    `${baseURL}/auth/google/login?isMobile=true`,
+    callbackUrl
+  )
+
+  if (result.type === 'success') {
+    const { url } = result
+    const session = Linking.parse(decodeURIComponent(url)).queryParams?.['token'] as string
+    if (session) {
+      const user = JSON.parse(session) as AuthenticatedUser
+      if (user) {
+        return user
+      } else {
+        return null
+      }
+    }
+  }
+  return null
+}
 
 export const auth = {
   logInWithEmail,

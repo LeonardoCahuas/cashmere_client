@@ -2,21 +2,10 @@ import * as WebBrowser from 'expo-web-browser'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
-import * as v from 'valibot'
 import { Input } from '../../components/Input'
-import { LoginSchema, LoginSchemaType, auth } from '../../setup/auth/helpers'
+import { LoginSchemaType, auth, getLoginData } from '../../setup/auth/helpers'
 import { useIsAuthenticated } from '../../setup/auth/hooks'
 import { useAuthContext } from '../../setup/auth/useAuthContext'
-
-function getLoginData(
-  data: unknown
-): { values: LoginSchemaType; error: false } | { error: true; issues: unknown[] } {
-  const result = v.safeParse(LoginSchema, data)
-  if (result.success) {
-    return { values: result.output, error: false }
-  }
-  return { issues: result.issues, error: true }
-}
 
 const Profile: React.FC = () => {
   const isLoggedIn = useIsAuthenticated()
@@ -46,8 +35,17 @@ const Profile: React.FC = () => {
     setUser(null)
   }
 
-  async function handleOAuthSignIn() {
+  async function loginWithApple() {
     const user = await auth.loginWithApple()
+    if (!user) {
+      Alert.alert('Error logging in with OAuth')
+      return
+    }
+    setUser(user)
+  }
+
+  async function loginWithGoogle() {
+    const user = await auth.loginWithGoogle()
     if (!user) {
       Alert.alert('Error logging in with OAuth')
       return
@@ -71,7 +69,7 @@ const Profile: React.FC = () => {
           <Input name="password" placeholder="*****" control={control} password />
         </View>
         <Button
-          title="Sign IN"
+          title="Sign IN!!!"
           onPress={handleSubmit((values) => {
             const result = getLoginData(values)
             if (result.error) return
@@ -90,7 +88,8 @@ const Profile: React.FC = () => {
         />
         <Button title="Log out" onPress={() => logOut()} />
         <Button title="User" onPress={() => console.log(user)} />
-        <Button title="Sign in with OAuth" onPress={handleOAuthSignIn} />
+        <Button title="Sign in with Apple" onPress={loginWithApple} />
+        <Button title="Sign in with Google" onPress={loginWithGoogle} />
       </View>
     </View>
   )
