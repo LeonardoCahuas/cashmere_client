@@ -1,6 +1,6 @@
 import { BrandCard, CardsPerTe, Colors } from '@siva/ui'
 import React from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, Text, View, Image } from 'react-native'
 import { SectionTitle } from './components/SectionTitle'
 
 type BrandPosting = React.ComponentProps<typeof BrandCard>
@@ -81,7 +81,7 @@ export const BrandSection = () => {
         <>
             <View style={styles.titleRow}>
                 <SectionTitle>Marchi più richiesti</SectionTitle>
-                
+
             </View>
             <FlatList
                 data={postings}
@@ -91,12 +91,22 @@ export const BrandSection = () => {
                 columnWrapperStyle={styles.columnWrapperStyle}
                 contentContainerStyle={styles.contentContainerStyle}
             />
+           <View style={styles.logoContainer}>
+                <Image
+                    source={{
+                        uri: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/LOGO.png?t=2024-09-06T07%3A09%3A24.114Z',
+                    }}
+                    style={{ width: 80, height: 25, marginBottom: 30 }}
+                />
+                <View style={styles.overlay} />
+            </View>
         </>
     )
 }
 
 const styles = StyleSheet.create({
     contentContainerStyle: {
+        paddingTop: 16,
         paddingBottom: 40,
         paddingHorizontal: 8,
     },
@@ -111,10 +121,26 @@ const styles = StyleSheet.create({
         paddingTop: 16,
     },
     titleRow: {
+        paddingTop: 50,
         display: 'flex',
         flexDirection: 'row',
         width: '100%',
         justifyContent: 'space-between',
         paddingRight: 16,
     },
+    logoContainer: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)', // Colore bianco semi-trasparente
+        zIndex: 1, // Porta l'overlay in primo piano
+    }
 })

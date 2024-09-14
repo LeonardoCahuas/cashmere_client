@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   detailRowsContainer: {
-    width: '65%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
