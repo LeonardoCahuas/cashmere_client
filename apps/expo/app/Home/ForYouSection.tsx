@@ -1,7 +1,8 @@
 import { CardsPerTe, Colors } from '@siva/ui'
 import React from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SectionTitle } from './components/SectionTitle'
+import { useRouter } from 'expo-router'
 
 type ForYouPosting = React.ComponentProps<typeof CardsPerTe>['posting']
 
@@ -12,12 +13,19 @@ interface CardRendererProps {
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
     <View style={styles.cardWrapper}>
-      <CardsPerTe posting={item} onCardClick={() => {}} />
+      <CardsPerTe posting={item} onCardClick={() => { }} />
     </View>
   )
 }
 
 export const ForYouSection = () => {
+
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push('/news'); // Utilizza il percorso relativo alla pagina di ricerca
+  };
+
   const postings: Array<ForYouPosting> = [
     {
       brand: 'Volvo',
@@ -69,9 +77,11 @@ export const ForYouSection = () => {
     <>
       <View style={styles.titleRow}>
         <SectionTitle>Novità</SectionTitle>
-        <Text style={{ color: Colors.greenPrimary, fontSize: 14, fontWeight: '600' }}>
-          Vedi Tutto
-        </Text>
+        <TouchableOpacity onPress={handlePress}>
+          <Text style={{ color: Colors.greenPrimary, fontSize: 14, fontWeight: '600' }}>
+            Vedi Tutto
+          </Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={postings}

@@ -18,6 +18,7 @@ import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
+import { CloseIcon } from './close.icon'
 
 export enum Icons {
   car = 'car',
@@ -38,6 +39,7 @@ export enum Icons {
   lightning = 'lightning',
   tab_plus = 'tab_plus',
   short_term_arrow_icon = 'short_term_arrow_icon',
+  close = 'close'
 }
 
 export type IconName = `${Icons}`
@@ -89,6 +91,8 @@ export const Icon = ({ ...props }: IconProps) => {
       return <TabPlusIcon {...p} />
     case 'short_term_arrow_icon':
       return <ShortTermArrowIcon {...p} />
+    case 'close':
+      return <CloseIcon {...p} />
     default:
       return <></>
   }
