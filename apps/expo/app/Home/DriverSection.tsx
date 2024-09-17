@@ -1,10 +1,10 @@
-import { CardsPerTe } from '@siva/ui'
+import { PostingCard } from '@siva/ui'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { SectionTitle } from './components/SectionTitle'
 import { SeeMoreButton } from './components/SeeMoreButton'
 
-type ForYouPosting = React.ComponentProps<typeof CardsPerTe>['posting']
+type ForYouPosting = React.ComponentProps<typeof PostingCard.Medium>['posting']
 type ImagesData = React.ComponentProps<typeof SeeMoreButton>['data']
 
 interface CardRendererProps {
@@ -22,7 +22,7 @@ const images: ImagesData = {
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
     <View style={styles.cardWrapper}>
-      <CardsPerTe posting={item} onCardClick={() => {}} />
+      <PostingCard.Medium posting={item} onCardClick={() => {}} />
     </View>
   )
 }
@@ -32,13 +32,17 @@ export const DriverSection = () => {
     {
       brand: 'Volvo',
       model: 'XC60',
-      duration: '123',
+      duration: 'GIORNALIERO',
       price: 6500,
       description: 'A cool SUV',
       imageUrl:
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/huracan.png',
       location: 'Corsico, MI',
       owner: 'Fratelli Giacomel',
+      kmLimit: 0,
+      anticipo: 0,
+      minimumMonths: 0,
+      minimumAge: 0,
     },
     {
       brand: 'Volvo',
@@ -50,17 +54,25 @@ export const DriverSection = () => {
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/g-class.png?t=2024-07-24T20%3A57%3A21.219Z',
       location: 'Pavia, PV',
       owner: 'Fratelli Giacomel',
+      kmLimit: 0,
+      anticipo: 0,
+      minimumMonths: 0,
+      minimumAge: 0,
     },
     {
       brand: 'Volvo',
       model: 'Polestar 2',
-      duration: '123',
+      duration: 'GIORNALIERO',
       price: 330,
       description: 'A cool SUV',
       imageUrl:
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/smart-fortwo.png?t=2024-07-24T20%3A57%3A29.672Z',
       location: 'Milano',
       owner: 'Fratelli Giacomel',
+      kmLimit: 0,
+      anticipo: 0,
+      minimumMonths: 0,
+      minimumAge: 0,
     },
     {
       brand: 'Volvo',
@@ -72,6 +84,10 @@ export const DriverSection = () => {
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/g-class.png?t=2024-07-24T20%3A57%3A21.219Z',
       location: 'Pavia, PV',
       owner: 'Fratelli Giacomel',
+      kmLimit: 0,
+      anticipo: 0,
+      minimumMonths: 0,
+      minimumAge: 0,
     },
   ]
 
@@ -84,8 +100,6 @@ export const DriverSection = () => {
         data={postings}
         keyExtractor={(item) => item.model}
         renderItem={({ item }) => <CardRenderer item={item} />}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapperStyle}
         contentContainerStyle={styles.contentContainerStyle}
       />
       <View style={styles.seeMoreContainer}>
@@ -105,15 +119,14 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 8,
   },
-  columnWrapperStyle: {
-    justifyContent: 'space-between',
-  },
+
   cardWrapper: {
-    width: '50%',
+    width: '100%',
     display: 'flex',
+    paddingHorizontal: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 16,
+    paddingTop: 24,
   },
   titleRow: {
     paddingTop: 48,
