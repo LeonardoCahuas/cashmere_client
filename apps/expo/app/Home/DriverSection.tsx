@@ -1,25 +1,23 @@
-import { AnimatedSwitch, CardsPerTe, Colors, Icon } from '@siva/ui'
+import { CardsPerTe } from '@siva/ui'
 import React from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
 import { SectionTitle } from './components/SectionTitle'
 import { SeeMoreButton } from './components/SeeMoreButton'
 
 type ForYouPosting = React.ComponentProps<typeof CardsPerTe>['posting']
 type ImagesData = React.ComponentProps<typeof SeeMoreButton>['data']
 
-
-  
 interface CardRendererProps {
   item: ForYouPosting
 }
 
 const images: ImagesData = {
-    images: [
-      'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg?t=2024-09-06T04%3A03%3A19.187Z',
-      "https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/yamaha.png",
-      "https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/volkswagen.png?t=2024-09-12T08%3A36%3A24.014Z",
-    ],
-  }
+  images: [
+    'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg?t=2024-09-06T04%3A03%3A19.187Z',
+    'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/yamaha.png',
+    'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/volkswagen.png?t=2024-09-12T08%3A36%3A24.014Z',
+  ],
+}
 
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
@@ -32,14 +30,15 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 export const DriverSection = () => {
   const postings: Array<ForYouPosting> = [
     {
-        brand: 'Volvo',
-        model: 'XC60',
-        duration: '123',
-        price: 6500,
-        description: 'A cool SUV',
-        imageUrl: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/huracan.png',
-        location: 'Corsico, MI',
-        owner: 'Fratelli Giacomel',
+      brand: 'Volvo',
+      model: 'XC60',
+      duration: '123',
+      price: 6500,
+      description: 'A cool SUV',
+      imageUrl:
+        'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/huracan.png',
+      location: 'Corsico, MI',
+      owner: 'Fratelli Giacomel',
     },
     {
       brand: 'Volvo',
@@ -90,9 +89,12 @@ export const DriverSection = () => {
         contentContainerStyle={styles.contentContainerStyle}
       />
       <View style={styles.seeMoreContainer}>
-        <SeeMoreButton data={images} onButtonClick={function (): void {
-              console.log("see more")
-          } } />
+        <SeeMoreButton
+          data={images}
+          onButtonClick={function (): void {
+            console.log('see more')
+          }}
+        />
       </View>
     </>
   )
@@ -114,17 +116,17 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   titleRow: {
-    paddingTop: 30,
+    paddingTop: 48,
     display: 'flex',
-    flexDirection: 'row',   
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
     paddingRight: 16,
-    alignSelf: 'center',    
+    alignSelf: 'center',
   },
-  seeMoreContainer:{
+  seeMoreContainer: {
     width: '92%',
     alignSelf: 'center',
-  }
+  },
 })

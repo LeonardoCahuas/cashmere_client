@@ -71,9 +71,7 @@ const Home: React.FC = () => {
           <TypeTab />
         </View>
         <ForYouSection />
-
         <SwitchSection/>
-
         <HighlightedSection />
         <DriverSection/>
         <BrandSection/>
