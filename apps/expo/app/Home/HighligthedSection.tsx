@@ -35,8 +35,8 @@ export const highlights: Highlight[] = [
 export const HighlightedSection: React.FC = () => {
   return (
     <>
-      <View style={{ marginTop: 24, marginBottom: 16 }}>
-        <SectionTitle>In Evidenza</SectionTitle>
+      <View style={{ marginTop: 48, marginBottom: 16 }}>
+        <SectionTitle>In evidenza</SectionTitle>
       </View>
       <ScrollView
         horizontal

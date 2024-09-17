@@ -1,11 +1,34 @@
-import { PostingCard, TypeTab } from '@siva/ui'
+import { AnimatedSwitch, Icon, PostingCard, TypeTab } from '@siva/ui'
 import React from 'react'
 import { Image, ScrollView, StyleSheet, View } from 'react-native'
 import { ForYouSection } from './ForYouSection'
 import { HighlightedSection } from './HighligthedSection'
 import { SearchButton } from './components/SearchButton'
+import { SeeMoreButton } from './components/SeeMoreButton'
+import { SwitchSection } from './SwitchSection'
+import { BrandSection } from './BrandSection'
+import { DriverSection } from './DriverSection'
 
 type Posting = React.ComponentProps<typeof PostingCard.Large>['posting']
+type ImagesData = React.ComponentProps<typeof SeeMoreButton>['data']
+const tabs = [
+  {
+    label: 'Breve Termine',
+    icon: <Icon name="lightning" width={24} color="black" />,
+  },
+  {
+    label: 'Lungo Termine',
+    icon: <Icon name="clock" width={24} color="black" />,
+  },
+]
+
+const images: ImagesData = {
+  images: [
+    'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg?t=2024-09-06T04%3A03%3A19.187Z',
+    "https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/yamaha.png",
+    "https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/brands/volkswagen.png?t=2024-09-12T08%3A36%3A24.014Z",
+  ],
+}
 
 const Home: React.FC = () => {
   const posting: Posting = {
@@ -33,6 +56,7 @@ const Home: React.FC = () => {
             paddingHorizontal: 16,
             display: 'flex',
             alignItems: 'center',
+            gap:10
           }}
         >
           <Image
@@ -43,16 +67,14 @@ const Home: React.FC = () => {
           />
           <SearchButton />
         </View>
-        <View style={{ width: '100%', marginTop: 16, paddingHorizontal: 16, paddingBottom: 32 }}>
+        <View style={{ width: '100%', marginTop: 25, paddingHorizontal: 16, paddingBottom: 32 }}>
           <TypeTab />
         </View>
         <ForYouSection />
-
-        <View style={{ width: '100%', paddingHorizontal: 16, display: 'flex', gap: 16 }}>
-          <PostingCard.Large posting={posting} onCardClick={() => {}} />
-        </View>
-
+        <SwitchSection/>
         <HighlightedSection />
+        <DriverSection/>
+        <BrandSection/>
       </ScrollView>
     </View>
   )
@@ -67,5 +89,6 @@ const styles = StyleSheet.create({
   scrollViewContainer: {
     flexGrow: 1,
     paddingBottom: 96,
+    paddingTop:20
   },
 })
