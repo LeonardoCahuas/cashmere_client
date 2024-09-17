@@ -2,7 +2,7 @@ import { Icon, IconName } from '@siva/ui'
 import { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Colors } from '@siva/ui'
-import FilterButton from './filterButton'
+import FilterButton from './FilterButton'
 
 const tabs: Array<TabItem> = [
   { label: 'Audi', icon: 'close' },

@@ -1,8 +1,7 @@
 import { CardsPerTe, Colors, PostingCard } from '@siva/ui'
 import React from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
-import { SectionTitle } from '../Home/components/SectionTitle'
-import { FilterTab } from './filterTabs'
+import { FlatList, StyleSheet, View } from 'react-native'
+import { FilterTab } from './FilterTabs'
 
 
 type PostingCard = React.ComponentProps<typeof PostingCard.Large>['posting']
