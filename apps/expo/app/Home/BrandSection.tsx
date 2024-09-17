@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Colore bianco semi-trasparente
-    zIndex: 1, // Porta l'overlay in primo piano
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    zIndex: 1,
   },
 })

@@ -20,7 +20,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.app.siva"
+      "bundleIdentifier": "com.app.siva",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {
@@ -38,6 +39,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "64eef3e8-90b5-448d-8053-00f871f7d44d"
+      }
     }
   }
 }
