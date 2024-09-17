@@ -1,15 +1,37 @@
+import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
-import { Tabs } from 'expo-router'
-import { Platform, StyleSheet } from 'react-native'
+import { Tabs, useRouter } from 'expo-router'
+import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native'
 
 function TabLayout() {
+  const router = useRouter()
+
   const screens = () => [
     <Tabs.Screen
-      name="index"
+      name="home"
       options={{
-        title: 'Home',
+        title: router.canGoBack() ? 'Avvia la ricerca' : 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
+        headerShown: true,
+        headerLeft: () => {
+          if (router.canGoBack()) {
+            return (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <FontAwesome
+                  name="chevron-left"
+                  color={Colors.blackPrimary}
+                  style={{ marginLeft: 12 }}
+                  size={13}
+                />
+                <Text>Indietro</Text>
+              </TouchableOpacity>
+            )
+          }
+        },
       }}
     />,
     <Tabs.Screen
