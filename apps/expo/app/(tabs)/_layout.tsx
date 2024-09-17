@@ -1,24 +1,37 @@
+import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
 import { Tabs, useRouter } from 'expo-router'
 import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
 
 function TabLayout() {
-
-  const router = useRouter();
-
-  const handlePress = () => {
-    router.push('/'); // Utilizza il percorso relativo alla pagina di ricerca
-  };
-
+  const router = useRouter()
 
   const screens = () => [
     <Tabs.Screen
-      name="index"
+      name="home"
       options={{
-        title: 'Home',
+        title: router.canGoBack() ? 'Avvia la ricerca' : 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
+        headerShown: true,
+        headerLeft: () => {
+          if (router.canGoBack()) {
+            return (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <FontAwesome
+                  name="chevron-left"
+                  color={Colors.blackPrimary}
+                  style={{ marginLeft: 12 }}
+                  size={13}
+                />
+                <Text>Indietro</Text>
+              </TouchableOpacity>
+            )
+          }
+        },
       }}
     />,
     <Tabs.Screen
@@ -47,24 +60,6 @@ function TabLayout() {
       options={{
         title: 'Profilo',
         tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
-      }}
-    />,
-    <Tabs.Screen
-      name="search"
-      options={{
-        title: "Avvia la ricerca",
-        href: null,
-        headerLeft: () => (
-          <TouchableOpacity onPress={handlePress} style={{display:"flex", flexDirection:"row", alignItems:"center", gap:5}}>
-            <FontAwesome
-              name="chevron-left" // Usa l'icona per la freccia indietro
-              color={Colors.blackPrimary} // Funzione per tornare indietro
-              style={{ marginLeft: 10 }} // Aggiungi un po' di margine se necessario
-              size={13}
-            />
-            <Text>Indietro</Text>
-          </TouchableOpacity>
-        ),
       }}
     />,
   ]
