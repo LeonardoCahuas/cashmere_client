@@ -56,7 +56,7 @@ export const AnimatedSwitch = ({ tabs }: AnimatedSwitchProps) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    height: 38,
+    height: 40,
     backgroundColor: Colors.lightGray,
     borderRadius: 2.5,
     overflow: 'hidden',

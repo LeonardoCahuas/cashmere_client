@@ -1,22 +1,21 @@
+import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
 import { Tabs, useRouter } from 'expo-router'
 import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { FontAwesome } from '@expo/vector-icons'
 
 function TabLayout() {
-
-  const router = useRouter();
+  const router = useRouter()
 
   const handlePress = () => {
-    router.push('/'); // Utilizza il percorso relativo alla pagina di ricerca
-  };
+    router.push('/') // Utilizza il percorso relativo alla pagina di ricerca
+  }
 
   const screens = () => [
     <Tabs.Screen
       name="home"
       options={{
-        title: router.canGoBack() ? 'Esplora' : 'Home',
+        title: 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
         headerShown: true,
         headerLeft: () => {
@@ -70,10 +69,13 @@ function TabLayout() {
     <Tabs.Screen
       name="news"
       options={{
-        title: "Novità",
+        title: 'Novità',
         href: null,
         headerLeft: () => (
-          <TouchableOpacity onPress={handlePress} style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 5 }}>
+          <TouchableOpacity
+            onPress={handlePress}
+            style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+          >
             <FontAwesome
               name="chevron-left" // Usa l'icona per la freccia indietro
               color={Colors.blackPrimary} // Funzione per tornare indietro

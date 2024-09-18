@@ -26,7 +26,7 @@ const DurationCard: React.FC<DurationButtonProps> = ({ duration }) => {
       </Text>
       <TouchableOpacity style={styles.searchButton}>
         <Text style={styles.searchText}>Avvia ricerca</Text>
-        <FontAwesome name="arrow-right" size={16} color={Colors.greenPrimary} />
+        <FontAwesome name="chevron-right" size={16} color={Colors.greenPrimary} />
       </TouchableOpacity>
     </View>
   )
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     gap: 10,
     alignItems: 'center',
     marginBottom: 5,
-    paddingVertical: 50,
+    paddingVertical: 30,
   },
   iconContainer: {
     backgroundColor: Colors.tertiaryGray,
