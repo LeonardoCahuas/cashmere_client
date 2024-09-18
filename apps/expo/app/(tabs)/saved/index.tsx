@@ -1,17 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
+import Saved from './_sections'
 
 export default function Tab() {
-  return (
-    <View style={styles.container}>
-      <Text>Salvati</Text>
-    </View>
-  )
+  return <Saved />
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})

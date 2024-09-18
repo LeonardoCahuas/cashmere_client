@@ -1,17 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native'
+import Add from './_sections'
 
 export default function Tab() {
-  return (
-    <View style={styles.container}>
-      <Text>Add vehicle</Text>
-    </View>
-  )
+  return <Add />
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})
