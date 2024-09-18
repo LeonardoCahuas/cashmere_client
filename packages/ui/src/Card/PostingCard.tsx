@@ -356,6 +356,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     width: '100%',
+    minWidth: '100%',
     paddingHorizontal: 18,
     paddingBottom: 10,
     paddingTop: 20,
