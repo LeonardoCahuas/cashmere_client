@@ -41,7 +41,7 @@ function TabLayout() {
     <Tabs.Screen
       name="saved"
       options={{
-        title: 'Salvati',
+        title: 'Preferiti',
         tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
       }}
     />,

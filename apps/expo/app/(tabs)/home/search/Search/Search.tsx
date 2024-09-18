@@ -1,6 +1,6 @@
 import { Colors, ScrollView } from '@siva/ui'
-import { ExploreSection } from 'apps/expo/app/(tabs)/home/Home/ExploreSection'
-import DurationCard from 'apps/expo/app/(tabs)/home/Home/components/DurationButton'
+import { ExploreSection } from 'apps/expo/app/(tabs)/home/_components/ExploreSection'
+import DurationCard from 'apps/expo/app/(tabs)/home/_components/components/DurationButton'
 import { View } from 'react-native'
 
 export default function Search() {
