@@ -8,7 +8,7 @@ function TabLayout() {
   const router = useRouter()
 
   const handlePress = () => {
-    router.push('/') // Utilizza il percorso relativo alla pagina di ricerca
+    router.push('/')
   }
 
   const screens = () => [
@@ -77,9 +77,9 @@ function TabLayout() {
             style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
           >
             <FontAwesome
-              name="chevron-left" // Usa l'icona per la freccia indietro
-              color={Colors.blackPrimary} // Funzione per tornare indietro
-              style={{ marginLeft: 10 }} // Aggiungi un po' di margine se necessario
+              name="chevron-left"
+              color={Colors.blackPrimary}
+              style={{ marginLeft: 10 }}
               size={13}
             />
             <Text>Indietro</Text>
