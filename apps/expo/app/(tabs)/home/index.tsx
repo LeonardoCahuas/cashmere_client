@@ -1,4 +1,4 @@
-import Home from './_components'
+import Home from './_sections'
 
 export default function Screen() {
   return <Home />
