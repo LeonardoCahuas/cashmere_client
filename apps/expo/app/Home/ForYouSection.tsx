@@ -23,7 +23,7 @@ export const ForYouSection = () => {
   const router = useRouter();
 
   const handlePress = () => {
-    router.push('/news'); // Utilizza il percorso relativo alla pagina di ricerca
+    router.push('/home/news'); // Utilizza il percorso relativo alla pagina di ricerca
   };
 
   const postings: Array<ForYouPosting> = [

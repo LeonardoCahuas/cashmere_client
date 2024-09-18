@@ -14,10 +14,29 @@ function TabLayout() {
 
   const screens = () => [
     <Tabs.Screen
-      name="index"
+      name="home"
       options={{
-        title: 'Home',
+        title: router.canGoBack() ? 'Esplora' : 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
+        headerShown: true,
+        headerLeft: () => {
+          if (router.canGoBack()) {
+            return (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+              >
+                <FontAwesome
+                  name="chevron-left"
+                  color={Colors.blackPrimary}
+                  style={{ marginLeft: 12 }}
+                  size={13}
+                />
+                <Text>Indietro</Text>
+              </TouchableOpacity>
+            )
+          }
+        },
       }}
     />,
     <Tabs.Screen
