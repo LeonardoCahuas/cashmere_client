@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native'
-import Profile from '../../screens/Profile'
+import Profile from './_sections'
 
 export default function Tab() {
   return (

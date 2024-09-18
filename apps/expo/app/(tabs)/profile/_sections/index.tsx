@@ -2,10 +2,10 @@ import * as WebBrowser from 'expo-web-browser'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
-import { Input } from '../../components/Input'
-import { LoginSchemaType, auth, getLoginData } from '../../setup/auth/helpers'
-import { useIsAuthenticated } from '../../setup/auth/hooks'
-import { useAuthContext } from '../../setup/auth/useAuthContext'
+import { Input } from '../../../components/Input'
+import { LoginSchemaType, auth, getLoginData } from '../../../setup/auth/helpers'
+import { useIsAuthenticated } from '../../../setup/auth/hooks'
+import { useAuthContext } from '../../../setup/auth/useAuthContext'
 
 const Profile: React.FC = () => {
   const isLoggedIn = useIsAuthenticated()
