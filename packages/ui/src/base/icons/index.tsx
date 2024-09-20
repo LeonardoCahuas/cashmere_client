@@ -4,7 +4,9 @@ import ChatBadge from '../../ChatBadge'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
 import { ClockIcon } from './clock.icon'
+import { CloseIcon } from './close.icon'
 import { DistanceIcon } from './distance.icon'
+import { FilterIcon } from './filter.icon'
 import { HeartFilledIcon } from './heart-filled.icon'
 import { LightningIcon } from './lightning.icon'
 import { LocationIcon } from './location.icon'
@@ -18,7 +20,6 @@ import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
-import { CloseIcon } from './close.icon'
 
 export enum Icons {
   car = 'car',
@@ -39,7 +40,8 @@ export enum Icons {
   lightning = 'lightning',
   tab_plus = 'tab_plus',
   short_term_arrow_icon = 'short_term_arrow_icon',
-  close = 'close'
+  close = 'close',
+  filter = 'filter',
 }
 
 export type IconName = `${Icons}`
@@ -93,6 +95,8 @@ export const Icon = ({ ...props }: IconProps) => {
       return <ShortTermArrowIcon {...p} />
     case 'close':
       return <CloseIcon {...p} />
+    case 'filter':
+      return <FilterIcon {...p} />
     default:
       return <></>
   }

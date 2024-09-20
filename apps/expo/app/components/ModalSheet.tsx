@@ -41,7 +41,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
       <BottomSheet
         ref={ref}
         index={-1}
-        snapPoints={['25%', '50%']}
+        snapPoints={['40%', '60%']}
         onChange={onChange}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
@@ -61,6 +61,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
           <View style={modalStyles.actionsContainer}>
             {options.options.map(({ icon, label, action }) => (
               <TouchableOpacity
+                key={label}
                 style={modalStyles.action}
                 onPress={() => {
                   action()

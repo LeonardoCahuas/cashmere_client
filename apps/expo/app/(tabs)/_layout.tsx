@@ -28,9 +28,12 @@ function TabLayout() {
     },
     saved: {
       right: (
-        <View style={{ paddingRight: 24, display: 'flex', flexDirection: 'row' }}>
-          <TouchableOpacity onPress={() => modalRef.current?.expand()}>
+        <View style={{ paddingRight: 24, display: 'flex', flexDirection: 'row', gap: 24 }}>
+          <TouchableOpacity>
             <Icon name="search" color={Colors.blackPrimary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => modalRef.current?.expand()}>
+            <Icon name="filter" color={Colors.blackPrimary} />
           </TouchableOpacity>
         </View>
       ),
