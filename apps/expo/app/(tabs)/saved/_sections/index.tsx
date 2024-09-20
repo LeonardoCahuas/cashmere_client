@@ -1,11 +1,12 @@
 import { AnimatedSwitch, Icon, PostingCard } from '@siva/ui'
 import { ModalOptions, ModalSheet, ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
 import { useAppStore } from 'apps/expo/app/setup/store'
+import { useState } from 'react'
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native'
 
-type ForYouPosting = React.ComponentProps<typeof PostingCard.Medium>['posting']
+type Posting = React.ComponentProps<typeof PostingCard.Medium>['posting']
 interface CardRendererProps {
-  item: ForYouPosting
+  item: Posting
 }
 
 const CardRenderer = ({ item }: CardRendererProps) => {
@@ -18,6 +19,9 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 
 const Saved = () => {
   const ref = useAppStore((state) => state.saved.modalRef)
+  const [sorting, setSorting] = useState<{ key: keyof Posting; direction: 'asc' | 'desc' }>()
+  const [filter, setFilter] = useState<Posting['duration']>('MENSILE')
+
   const modalOptions: ModalOptions = {
     title: 'Ordina',
     options: [
@@ -36,12 +40,16 @@ const Saved = () => {
       {
         label: 'Prezzo crescente',
         action: () => {
+          const key: keyof Posting = 'price'
+          setSorting({ key, direction: 'asc' })
           ref.current?.close()
         },
       },
       {
         label: 'Prezzo decrescente',
         action: () => {
+          const key: keyof Posting = 'price'
+          setSorting({ key, direction: 'desc' })
           ref.current?.close()
         },
       },
@@ -64,18 +72,24 @@ const Saved = () => {
     {
       label: 'Lungo Termine',
       icon: <Icon name="clock" width={24} color="black" />,
+      action: () => {
+        setFilter('MENSILE')
+      },
     },
     {
       label: 'Breve Termine',
       icon: <Icon name="lightning" width={24} color="black" />,
+      action: () => {
+        setFilter('GIORNALIERO')
+      },
     },
   ]
 
-  const postings: Array<ForYouPosting> = [
+  const postings: Array<Posting> = [
     {
       brand: 'Volvo',
       model: 'XC60',
-      duration: 'GIORNALIERO',
+      duration: 'MENSILE',
       price: 6500,
       description: 'A cool SUV',
       imageUrl:
@@ -91,7 +105,7 @@ const Saved = () => {
       brand: 'Volvo',
       model: 'XC90',
       duration: 'GIORNALIERO',
-      price: 330,
+      price: 190,
       description: 'A cool SUV',
       imageUrl:
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/g-class.png?t=2024-07-24T20%3A57%3A21.219Z',
@@ -106,7 +120,7 @@ const Saved = () => {
       brand: 'Volvo',
       model: 'Polestar 2',
       duration: 'GIORNALIERO',
-      price: 330,
+      price: 85,
       description: 'A cool SUV',
       imageUrl:
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/smart-fortwo.png?t=2024-07-24T20%3A57%3A29.672Z',
@@ -143,14 +157,20 @@ const Saved = () => {
           </View>
           <FlatList
             horizontal={false}
-            data={postings}
+            data={postings
+              .filter((p) => p.duration === filter)
+              .sort((a, b) => {
+                if (!sorting?.key) return 0
+                const result = a[sorting.key] - b[sorting.key]
+                return sorting.direction === 'asc' ? result : result * -1
+              })}
             keyExtractor={(item) => item.model}
             renderItem={({ item }) => <CardRenderer item={item} />}
             contentContainerStyle={styles.contentContainerStyle}
           />
         </ScrollView>
       </View>
-      <ModalSheet ref={ref} onChange={() => {}} options={modalOptions} />
+      <ModalSheet ref={ref} onChange={() => {}} options={modalOptions} selected={sorting?.key} />
     </ModalSheetProvider>
   )
 }

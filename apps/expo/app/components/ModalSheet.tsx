@@ -21,10 +21,11 @@ export interface ModalOptions {
 export interface ModalSheetProps {
   options: ModalOptions
   onChange: (index: number) => void
+  selected?: string
 }
 
 export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
-  ({ options, onChange }, ref) => {
+  ({ options, onChange, selected }, ref) => {
     const renderBackdrop = useCallback(
       (props) => (
         <BottomSheetBackdrop
@@ -135,5 +136,9 @@ const modalStyles = StyleSheet.create({
   actionLabel: {
     fontSize: 16,
     fontWeight: '300',
+  },
+  actionLabelSelected: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 })

@@ -1,5 +1,5 @@
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import { useRef } from 'react'
+import { createRef } from 'react'
 import { create } from 'zustand'
 
 interface HomeState {}
@@ -30,7 +30,7 @@ export const useAppStore = create<AppState>((set) => ({
   home: {},
   search: {},
   saved: {
-    modalRef: useRef<ModalSheetRef>(null),
+    modalRef: createRef<ModalSheetRef>(),
   },
   messages: {},
   profile: {},
