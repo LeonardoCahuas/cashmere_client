@@ -1,28 +1,9 @@
-import {
-  ModalOptions,
-  ModalSheet,
-  ModalSheetProvider,
-  useModalSheetRef,
-} from 'apps/expo/app/components/ModalSheet'
-import { useCallback, useState } from 'react'
-import { Button, StyleSheet, Text, View } from 'react-native'
+import { ModalOptions, ModalSheet, ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
+import { useAppStore } from 'apps/expo/app/setup/store'
+import { StyleSheet, Text, View } from 'react-native'
 
 const Saved = () => {
-  const ref = useModalSheetRef()
-  const [isOpen, setIsOpen] = useState(false)
-
-  const handleSheetChanges = useCallback((index: number) => {
-    setIsOpen(index !== -1)
-  }, [])
-
-  const toggleBottomSheet = useCallback(() => {
-    if (isOpen) {
-      ref.current?.close()
-    } else {
-      ref.current?.expand()
-    }
-  }, [isOpen])
-
+  const ref = useAppStore((state) => state.saved.modalRef)
   const modalOptions: ModalOptions = {
     title: 'Ordina',
     options: [
@@ -34,10 +15,9 @@ const Saved = () => {
   return (
     <ModalSheetProvider style={styles.container}>
       <View style={styles.content}>
-        <Text>Salvati</Text>
-        <Button title={isOpen ? 'Close Sheet' : 'Open Sheet'} onPress={toggleBottomSheet} />
+        <Text>Salvati {ref.current?.isOpen}</Text>
       </View>
-      <ModalSheet ref={ref} onChange={handleSheetChanges} options={modalOptions} />
+      <ModalSheet ref={ref} onChange={() => {}} options={modalOptions} />
     </ModalSheetProvider>
   )
 }

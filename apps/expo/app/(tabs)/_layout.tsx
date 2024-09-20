@@ -3,9 +3,11 @@ import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
 import { Tabs, useRouter } from 'expo-router'
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { useAppStore } from '../setup/store'
 
 function TabLayout() {
   const router = useRouter()
+  const { modalRef } = useAppStore((state) => state.saved)
 
   const NavBarItems = {
     home: {
@@ -27,7 +29,7 @@ function TabLayout() {
     saved: {
       right: (
         <View style={{ paddingRight: 24, display: 'flex', flexDirection: 'row' }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => modalRef.current?.expand()}>
             <Icon name="search" color={Colors.blackPrimary} />
           </TouchableOpacity>
         </View>
