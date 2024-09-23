@@ -8,6 +8,7 @@ interface SearchState {}
 
 interface SavedState {
   modalRef: React.RefObject<ModalSheetRef>
+  openModal: () => void
 }
 
 interface ModalSheetRef extends BottomSheetMethods {
@@ -26,11 +27,15 @@ interface AppState {
   profile: ProfileState
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   home: {},
   search: {},
   saved: {
     modalRef: createRef<ModalSheetRef>(),
+    openModal: () => {
+      const state = get()
+      state.saved.modalRef.current?.expand()
+    },
   },
   messages: {},
   profile: {},

@@ -7,7 +7,7 @@ import { useAppStore } from '../setup/store'
 
 function TabLayout() {
   const router = useRouter()
-  const { modalRef } = useAppStore((state) => state.saved)
+  const { openModal } = useAppStore((state) => state.saved)
 
   const NavBarItems = {
     home: {
@@ -32,7 +32,7 @@ function TabLayout() {
           <TouchableOpacity>
             <Icon name="search" color={Colors.blackPrimary} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => modalRef.current?.expand()}>
+          <TouchableOpacity onPress={openModal}>
             <Icon name="filter" color={Colors.blackPrimary} />
           </TouchableOpacity>
         </View>

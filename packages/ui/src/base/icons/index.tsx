@@ -11,6 +11,12 @@ import { HeartFilledIcon } from './heart-filled.icon'
 import { LightningIcon } from './lightning.icon'
 import { LocationIcon } from './location.icon'
 import { MotorBikeIcon } from './motorbike.icon'
+import { DecreasingIcon } from './saved/decreasing.icon'
+import { IncreasingIcon } from './saved/increasing.icon'
+import { SortingMinus } from './saved/minus.icon'
+import { PercentageIcon } from './saved/percentage.icon'
+import { SortingPlus } from './saved/plus.icon'
+import { UpDownArrows } from './saved/updownarrows.icon'
 import { ShareIcon } from './share.icon'
 import { ShortTermArrowIcon } from './short-term-arrow.icon'
 import { ChatIcon } from './tab-bar/chat.icon'
@@ -42,6 +48,12 @@ export enum Icons {
   short_term_arrow_icon = 'short_term_arrow_icon',
   close = 'close',
   filter = 'filter',
+  up_down_arrows = 'up_down_arrows',
+  percentage = 'percentage',
+  increasing_value = 'increasing_value',
+  decreasing_value = 'decreasing_value',
+  sorting_plus = 'sorting_plus',
+  sorting_minus = 'sorting_minus',
 }
 
 export type IconName = `${Icons}`
@@ -97,6 +109,18 @@ export const Icon = ({ ...props }: IconProps) => {
       return <CloseIcon {...p} />
     case 'filter':
       return <FilterIcon {...p} />
+    case 'up_down_arrows':
+      return <UpDownArrows {...p} />
+    case 'percentage':
+      return <PercentageIcon {...p} />
+    case 'increasing_value':
+      return <IncreasingIcon {...p} />
+    case 'decreasing_value':
+      return <DecreasingIcon {...p} />
+    case 'sorting_plus':
+      return <SortingPlus {...p} />
+    case 'sorting_minus':
+      return <SortingMinus {...p} />
     default:
       return <></>
   }

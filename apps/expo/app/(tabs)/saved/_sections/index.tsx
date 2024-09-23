@@ -26,18 +26,21 @@ const Saved = () => {
     title: 'Ordina',
     options: [
       {
+        icon: <Icon name="up_down_arrows" color="#000" />,
         label: 'Ultimo salvato',
         action: () => {
           ref.current?.close()
         },
       },
       {
+        icon: <Icon name="percentage" color="#000" />,
         label: 'Veicoli scontati',
         action: () => {
           ref.current?.close()
         },
       },
       {
+        icon: <Icon name="increasing_value" color="#000" />,
         label: 'Prezzo crescente',
         action: () => {
           const key: keyof Posting = 'price'
@@ -46,6 +49,7 @@ const Saved = () => {
         },
       },
       {
+        icon: <Icon name="decreasing_value" color="#000" />,
         label: 'Prezzo decrescente',
         action: () => {
           const key: keyof Posting = 'price'
@@ -54,12 +58,14 @@ const Saved = () => {
         },
       },
       {
+        icon: <Icon name="sorting_plus" color="#000" />,
         label: 'Prezzo IVA Incl.',
         action: () => {
           ref.current?.close()
         },
       },
       {
+        icon: <Icon name="sorting_minus" color="#000" />,
         label: 'Prezzo IVA Escl.',
         action: () => {
           ref.current?.close()
