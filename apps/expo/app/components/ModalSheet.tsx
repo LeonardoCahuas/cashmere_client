@@ -13,9 +13,15 @@ export const ModalSheetProvider = GestureHandlerRootView
 
 export const useModalSheetRef = () => useRef<BottomSheet>(null)
 
+interface ModalOption {
+  icon?: JSX.Element
+  label: string
+  action: () => void
+}
+
 export interface ModalOptions {
   title: string
-  options: Array<{ icon?: JSX.Element; label: string; action: () => void }>
+  options: Array<ModalOption>
 }
 
 export interface ModalSheetProps {
