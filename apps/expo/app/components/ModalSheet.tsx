@@ -20,12 +20,12 @@ export interface ModalOptions {
 
 export interface ModalSheetProps {
   options: ModalOptions
-  onChange: (index: number) => void
+  onChange?: (index: number) => void
   selected?: string
 }
 
 export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
-  ({ options, onChange, selected }, ref) => {
+  ({ options, onChange }, ref) => {
     const renderBackdrop = useCallback(
       (props) => (
         <BottomSheetBackdrop

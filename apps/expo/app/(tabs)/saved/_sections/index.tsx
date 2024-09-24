@@ -176,7 +176,7 @@ const Saved = () => {
           />
         </ScrollView>
       </View>
-      <ModalSheet ref={ref} onChange={() => {}} options={modalOptions} selected={sorting?.key} />
+      <ModalSheet ref={ref} options={modalOptions} />
     </ModalSheetProvider>
   )
 }
