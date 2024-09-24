@@ -2,12 +2,13 @@ import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
 import { Tabs, useRouter } from 'expo-router'
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Button, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { useAppStore } from '../setup/store'
 
 function TabLayout() {
   const router = useRouter()
-  const { openModal } = useAppStore((state) => state.saved)
+  const { openModal, onSearchTextChange, closeModal, openSearch, isSearchOpen, closeSearch } =
+    useAppStore((state) => state.saved)
 
   const NavBarItems = {
     home: {
@@ -29,12 +30,32 @@ function TabLayout() {
     saved: {
       right: (
         <View style={{ paddingRight: 24, display: 'flex', flexDirection: 'row', gap: 24 }}>
-          <TouchableOpacity>
-            <Icon name="search" color={Colors.blackPrimary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={openModal}>
-            <Icon name="filter" color={Colors.blackPrimary} />
-          </TouchableOpacity>
+          {isSearchOpen ? (
+            <>
+              <Button
+                title="Annulla"
+                onPress={() => {
+                  closeModal()
+                  closeSearch()
+                }}
+                color={Colors.blackPrimary}
+              />
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  closeModal()
+                  openSearch()
+                }}
+              >
+                <Icon name="search" color={Colors.blackPrimary} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openModal}>
+                <Icon name="filter" color={Colors.blackPrimary} />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       ),
     },
@@ -60,6 +81,25 @@ function TabLayout() {
         title: 'Preferiti',
         tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
         headerRight: () => NavBarItems.saved.right,
+        headerTitleAlign: 'left',
+        headerTitle: isSearchOpen
+          ? () => (
+              <TextInput
+                placeholder="you@email.com"
+                onChangeText={onSearchTextChange}
+                style={{
+                  fontSize: 16,
+                  backgroundColor: Colors.lightGray,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderRadius: 10,
+                  borderColor: '#999',
+                  width: '100%',
+                  minWidth: 260,
+                }}
+              />
+            )
+          : `Preferiti`,
       }}
     />,
     <Tabs.Screen

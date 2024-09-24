@@ -1,5 +1,5 @@
 import { Controller } from 'react-hook-form'
-import { TextInput } from 'react-native'
+import { StyleProp, TextInput, TextStyle } from 'react-native'
 
 interface InputProps {
   name: string
@@ -7,9 +7,10 @@ interface InputProps {
   control: any
   required?: boolean
   password?: boolean
+  style?: StyleProp<TextStyle>
 }
 
-export const Input = ({ name, placeholder, control, required, password }: InputProps) => {
+export const Input = ({ name, placeholder, control, required, password, style }: InputProps) => {
   return (
     <Controller
       name={name}
@@ -23,6 +24,7 @@ export const Input = ({ name, placeholder, control, required, password }: InputP
           onBlur={onBlur}
           autoCapitalize="none"
           secureTextEntry={password}
+          style={style}
         />
       )}
     />

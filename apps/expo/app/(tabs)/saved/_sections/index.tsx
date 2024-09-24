@@ -18,7 +18,7 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 }
 
 const Saved = () => {
-  const ref = useAppStore((state) => state.saved.modalRef)
+  const { modalRef: ref, searchText } = useAppStore((state) => state.saved)
   const [sorting, setSorting] = useState<{ key: keyof Posting; direction: 'asc' | 'desc' }>()
   const [filter, setFilter] = useState<Posting['duration']>('MENSILE')
 
@@ -107,8 +107,8 @@ const Saved = () => {
       minimumAge: 0,
     },
     {
-      brand: 'Volvo',
-      model: 'XC90',
+      brand: 'Kia',
+      model: 'Sorento',
       duration: 'GIORNALIERO',
       price: 190,
       description: 'A cool SUV',
@@ -164,6 +164,12 @@ const Saved = () => {
             horizontal={false}
             data={postings
               .filter((p) => p.duration === filter)
+              .filter(
+                (p) =>
+                  searchText == null ||
+                  p.brand.toLowerCase().includes(searchText.toLowerCase()) ||
+                  p.model.toLowerCase().includes(searchText.toLowerCase())
+              )
               .sort((a, b) => {
                 if (!sorting?.key) return 0
                 const result = a[sorting.key] - b[sorting.key]
@@ -175,7 +181,7 @@ const Saved = () => {
           />
         </ScrollView>
       </View>
-      <ModalSheet ref={ref} title="Ordine" options={modalOptions} />
+      <ModalSheet ref={ref} title="Ordina" options={modalOptions} />
     </ModalSheetProvider>
   )
 }
