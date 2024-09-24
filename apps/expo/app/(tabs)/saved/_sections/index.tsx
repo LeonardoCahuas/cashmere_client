@@ -23,7 +23,6 @@ const Saved = () => {
   const [filter, setFilter] = useState<Posting['duration']>('MENSILE')
 
   const modalOptions: ModalOptions = {
-    title: 'Ordina',
     options: [
       {
         icon: <Icon name="up_down_arrows" color="#000" />,
@@ -176,7 +175,7 @@ const Saved = () => {
           />
         </ScrollView>
       </View>
-      <ModalSheet ref={ref} options={modalOptions} />
+      <ModalSheet ref={ref} title="Ordine" options={modalOptions} />
     </ModalSheetProvider>
   )
 }
