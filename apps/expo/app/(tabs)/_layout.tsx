@@ -2,13 +2,63 @@ import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
 import { BlurView } from 'expo-blur'
 import { Tabs, useRouter } from 'expo-router'
-import { Platform, StyleSheet, Text, TouchableOpacity } from 'react-native'
+import { Button, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useAppStore } from '../setup/store'
 
 function TabLayout() {
   const router = useRouter()
+  const { openModal, onSearchTextChange, closeModal, openSearch, isSearchOpen, closeSearch } =
+    useAppStore((state) => state.saved)
 
-  const handlePress = () => {
-    router.push('/')
+  const NavBarItems = {
+    home: {
+      left: (
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+        >
+          <FontAwesome
+            name="chevron-left"
+            color={Colors.blackPrimary}
+            style={{ marginLeft: 12 }}
+            size={13}
+          />
+          <Text>Indietro</Text>
+        </TouchableOpacity>
+      ),
+    },
+    saved: {
+      right: (
+        <View style={{ paddingRight: 24, display: 'flex', flexDirection: 'row', gap: 24 }}>
+          {isSearchOpen ? (
+            <>
+              <Button
+                title="Annulla"
+                onPress={() => {
+                  closeModal()
+                  closeSearch()
+                }}
+                color={Colors.blackPrimary}
+              />
+            </>
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={() => {
+                  closeModal()
+                  openSearch()
+                }}
+              >
+                <Icon name="search" color={Colors.blackPrimary} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={openModal}>
+                <Icon name="filter" color={Colors.blackPrimary} />
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      ),
+    },
   }
 
   const screens = () => [
@@ -20,20 +70,7 @@ function TabLayout() {
         headerShown: true,
         headerLeft: () => {
           if (router.canGoBack()) {
-            return (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
-              >
-                <FontAwesome
-                  name="chevron-left"
-                  color={Colors.blackPrimary}
-                  style={{ marginLeft: 12 }}
-                  size={13}
-                />
-                <Text>Indietro</Text>
-              </TouchableOpacity>
-            )
+            return NavBarItems.home.left
           }
         },
       }}
@@ -43,6 +80,26 @@ function TabLayout() {
       options={{
         title: 'Preferiti',
         tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
+        headerRight: () => NavBarItems.saved.right,
+        headerTitleAlign: 'left',
+        headerTitle: isSearchOpen
+          ? () => (
+              <TextInput
+                placeholder="Cerca..."
+                onChangeText={onSearchTextChange}
+                style={{
+                  fontSize: 16,
+                  backgroundColor: Colors.lightGray,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderRadius: 10,
+                  borderColor: '#999',
+                  width: '100%',
+                  minWidth: 260,
+                }}
+              />
+            )
+          : `Preferiti`,
       }}
     />,
     <Tabs.Screen
@@ -64,27 +121,6 @@ function TabLayout() {
       options={{
         title: 'Profilo',
         tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
-      }}
-    />,
-    <Tabs.Screen
-      name="news"
-      options={{
-        title: 'Novità',
-        href: null,
-        headerLeft: () => (
-          <TouchableOpacity
-            onPress={handlePress}
-            style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 5 }}
-          >
-            <FontAwesome
-              name="chevron-left"
-              color={Colors.blackPrimary}
-              style={{ marginLeft: 10 }}
-              size={13}
-            />
-            <Text>Indietro</Text>
-          </TouchableOpacity>
-        ),
       }}
     />,
   ]

@@ -1,7 +1,6 @@
-import { Stack, useRouter } from 'expo-router'
+import { Stack } from 'expo-router'
 
 const StackLayout = () => {
-  const router = useRouter()
   return (
     <Stack
       screenOptions={{

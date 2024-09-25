@@ -5,7 +5,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet'
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import { Colors, Icon } from '@siva/ui'
-import React, { forwardRef, useCallback, useRef } from 'react'
+import React, { ReactNode, forwardRef, useCallback, useRef, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
@@ -13,18 +13,28 @@ export const ModalSheetProvider = GestureHandlerRootView
 
 export const useModalSheetRef = () => useRef<BottomSheet>(null)
 
+interface ModalOption {
+  icon?: JSX.Element
+  label: string
+  action: () => void
+}
+
 export interface ModalOptions {
-  title: string
-  options: Array<{ icon?: JSX.Element; label: string; action: () => void }>
+  options: Array<ModalOption>
 }
 
 export interface ModalSheetProps {
-  options: ModalOptions
-  onChange: (index: number) => void
+  title: string
+  options?: ModalOptions
+  onChange?: (index: number) => void
+  selected?: string
+  children?: ReactNode
 }
 
 export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
-  ({ options, onChange }, ref) => {
+  ({ title, options, onChange, children }, ref) => {
+    const hasChildren = children !== undefined
+    const padding = hasChildren ? 164 : 132
     const renderBackdrop = useCallback(
       (props) => (
         <BottomSheetBackdrop
@@ -36,12 +46,13 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
       ),
       [ref]
     )
+    const [size, setSize] = useState({ width: 0, height: 0 })
 
     return (
       <BottomSheet
         ref={ref}
         index={-1}
-        snapPoints={['25%', '50%']}
+        snapPoints={[size.height + padding]}
         onChange={onChange}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
@@ -50,7 +61,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
         <BottomSheetView style={modalStyles.contentContainer}>
           <View style={modalStyles.titleContainer}>
             <View style={modalStyles.leftIconContainer}></View>
-            <Text style={modalStyles.title}>{options.title}</Text>
+            <Text style={modalStyles.title}>{title}</Text>
             <TouchableOpacity
               style={modalStyles.rightIconContainer}
               onPress={() => (ref as React.RefObject<BottomSheetMethods>).current?.close()}
@@ -58,18 +69,29 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
               <Icon name="close" color={Colors.greyPrimary} />
             </TouchableOpacity>
           </View>
-          <View style={modalStyles.actionsContainer}>
-            {options.options.map(({ icon, label, action }) => (
-              <TouchableOpacity
-                style={modalStyles.action}
-                onPress={() => {
-                  action()
-                }}
-              >
-                {!!icon && <View style={modalStyles.iconContainer}>{icon}</View>}
-                <Text style={modalStyles.actionLabel}>{label}</Text>
-              </TouchableOpacity>
-            ))}
+          <View
+            style={modalStyles.actionsContainer}
+            onLayout={(e) => {
+              const { height } = e.nativeEvent.layout
+              setSize({ width: 0, height: Math.ceil(height) })
+            }}
+          >
+            {!hasChildren &&
+              !!options &&
+              options.options.map(({ icon, label, action }) => (
+                <TouchableOpacity
+                  key={label}
+                  style={modalStyles.action}
+                  onPress={() => {
+                    action()
+                  }}
+                >
+                  {!!icon && <View style={modalStyles.iconContainer}>{icon}</View>}
+                  <Text style={modalStyles.actionLabel}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+
+            {hasChildren && <>{children}</>}
           </View>
         </BottomSheetView>
       </BottomSheet>
@@ -113,7 +135,7 @@ const modalStyles = StyleSheet.create({
   },
   actionsContainer: {
     width: '100%',
-    paddingTop: 32,
+    paddingVertical: 32,
     paddingHorizontal: 24,
     display: 'flex',
     gap: 40,
@@ -134,5 +156,9 @@ const modalStyles = StyleSheet.create({
   actionLabel: {
     fontSize: 16,
     fontWeight: '300',
+  },
+  actionLabelSelected: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 })

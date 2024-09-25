@@ -5,14 +5,16 @@ import { Colors } from '../base/colors'
 interface TabItem {
   label: string
   icon?: JSX.Element
+  action: () => void
 }
 
 interface AnimatedSwitchProps {
   tabs: Array<TabItem>
+  initial?: number
 }
 
-export const AnimatedSwitch = ({ tabs }: AnimatedSwitchProps) => {
-  const [active, setActive] = useState<number>(0)
+export const AnimatedSwitch = ({ tabs, initial }: AnimatedSwitchProps) => {
+  const [active, setActive] = useState<number>(initial !== undefined ? initial : 0)
   const [componentWidth, setComponentWidth] = useState(0)
   const indicatorPosition = useRef(new Animated.Value(0)).current
 
@@ -44,7 +46,14 @@ export const AnimatedSwitch = ({ tabs }: AnimatedSwitchProps) => {
         ]}
       />
       {tabs.map((tab, i) => (
-        <TouchableOpacity key={tab.label} style={styles.button} onPress={() => setActive(i)}>
+        <TouchableOpacity
+          key={tab.label}
+          style={styles.button}
+          onPress={() => {
+            setActive(i)
+            tab.action()
+          }}
+        >
           {tab?.icon && cloneElement(tab.icon, { style: { color: Colors.greyPrimary } })}
           <Text style={styles.text}>{tab.label}</Text>
         </TouchableOpacity>
