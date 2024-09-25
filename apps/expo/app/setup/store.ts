@@ -46,7 +46,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const state = get()
       state.saved.modalRef.current?.close()
     },
-    isSearchOpen: true,
+    isSearchOpen: false,
     openSearch: () => set((state) => ({ ...state, saved: { ...state.saved, isSearchOpen: true } })),
     closeSearch: () =>
       set((state) => ({ ...state, saved: { ...state.saved, isSearchOpen: false } })),

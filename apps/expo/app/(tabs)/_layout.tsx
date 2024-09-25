@@ -85,7 +85,7 @@ function TabLayout() {
         headerTitle: isSearchOpen
           ? () => (
               <TextInput
-                placeholder="you@email.com"
+                placeholder="Cerca..."
                 onChangeText={onSearchTextChange}
                 style={{
                   fontSize: 16,
