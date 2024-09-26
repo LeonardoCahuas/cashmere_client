@@ -3730,6 +3730,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@siva/entities@workspace:^, @siva/entities@workspace:packages/entities":
+  version: 0.0.0-use.local
+  resolution: "@siva/entities@workspace:packages/entities"
+  languageName: unknown
+  linkType: soft
+
 "@siva/ui@workspace:^, @siva/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@siva/ui@workspace:packages/ui"
@@ -6708,6 +6714,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"axios@npm:^1.7.7":
+  version: 1.7.7
+  resolution: "axios@npm:1.7.7"
+  dependencies:
+    follow-redirects: "npm:^1.15.6"
+    form-data: "npm:^4.0.0"
+    proxy-from-env: "npm:^1.1.0"
+  checksum: 10/7f875ea13b9298cd7b40fd09985209f7a38d38321f1118c701520939de2f113c4ba137832fe8e3f811f99a38e12c8225481011023209a77b0c0641270e20cde1
+  languageName: node
+  linkType: hard
+
 "axobject-query@npm:^3.2.1":
   version: 3.2.1
   resolution: "axobject-query@npm:3.2.1"
@@ -8482,12 +8499,6 @@ __metadata:
   checksum: 10/ede2a35c9bce1aeccd055a1b445d41c75a14a2bb1cd22e242f20cf04d236cdcd7f9c859eb83f76885327bfae0c25bf03303665ee1ce3d47c5927b98b0e3e3d48
   languageName: node
   linkType: hard
-
-"entities@workspace:packages/entities":
-  version: 0.0.0-use.local
-  resolution: "entities@workspace:packages/entities"
-  languageName: unknown
-  linkType: soft
 
 "env-editor@npm:^0.4.1":
   version: 0.4.2
@@ -13059,6 +13070,7 @@ __metadata:
     "@hookform/resolvers": "npm:^3.9.0"
     "@react-native-async-storage/async-storage": "npm:^1.24.0"
     "@siva/api": "workspace:^"
+    "@siva/entities": "workspace:^"
     "@siva/ui": "workspace:^"
     "@tamagui/babel-plugin": "npm:^1.111.10"
     "@types/add": "npm:^2"
@@ -13067,6 +13079,7 @@ __metadata:
     add: "npm:^2.0.6"
     aes-js: "npm:^3.1.2"
     app: "npm:0.0.0"
+    axios: "npm:^1.7.7"
     babel-plugin-module-resolver: "npm:^5.0.2"
     burnt: "npm:^0.12.2"
     expo: "npm:^51.0.9"
