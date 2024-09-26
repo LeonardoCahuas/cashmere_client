@@ -10,11 +10,20 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-  console.log('that.-----...')
+  console.log('that..--.')
   return (
     <Provider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="screens/PostingDetailView"
+          options={{
+            headerShown: true,
+            title: 'Dettaglio Annuncio',
+            headerTintColor: '#000',
+            headerBackTitle: 'Indietro',
+          }}
+        />
       </Stack>
     </Provider>
   )
