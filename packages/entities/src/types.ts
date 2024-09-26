@@ -1,0 +1,25 @@
+export interface Posting {
+  id: string
+  created_at: string
+  posting_id: string
+  duration: string
+  subtitle: string
+  dropoff_location_plain: string
+  pickup_location_plain: string
+  deposit: string
+  price: string
+  age_required: string
+  distance_limit_in_km: string
+  taxes_included: boolean
+  vehicle_id: string
+  brand: string
+  model: string
+  fuel_type: string
+  year: number
+  interior_material: string | null
+  interior_color: string | null
+  exterior_color: string | null
+  transmission_type: string | null
+  vehicle_images: string[] | null
+  renter_name: string | null
+}

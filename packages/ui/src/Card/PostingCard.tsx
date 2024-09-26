@@ -1,22 +1,10 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { Posting } from '@siva/entities'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Colors } from '../base/colors'
 import { Icon } from '../base/icons/index'
 
-interface PostingCardProps {
-  brand: string
-  model: string
-  duration: 'MENSILE' | 'GIORNALIERO'
-  price: number
-  description: string
-  imageUrl: string | any
-  location: string
-  owner: string
-  kmLimit: number
-  anticipo: number
-  minimumMonths: number
-  minimumAge: number
-}
+interface PostingCardProps extends Posting {}
 
 interface CardProps {
   posting: PostingCardProps
@@ -28,6 +16,7 @@ const PostingCardBase = ({
   onCardClick,
   size,
 }: CardProps & { size: 'small' | 'medium' | 'large' }) => {
+  const isShortTerm = posting.duration === 'short_term'
   return (
     <TouchableOpacity style={styles.container} activeOpacity={0.9} onPress={onCardClick}>
       <View style={styles.card}>
@@ -57,7 +46,10 @@ const PostingCardBase = ({
                     />
                   </View>
                 </View>
-                <Image source={{ uri: posting.imageUrl }} style={styles.cardImage} />
+                <Image
+                  source={{ uri: posting.vehicle_images ? posting.vehicle_images[0] : '' }}
+                  style={styles.cardImage}
+                />
               </View>
             </View>
             <View style={styles.cardContent}>
@@ -65,24 +57,24 @@ const PostingCardBase = ({
                 <Text style={styles.cardTitle}>
                   {posting.brand} {posting.model}
                 </Text>
-                <Text style={styles.descriptionText}>{posting.description}</Text>
+                <Text style={styles.descriptionText}>{posting.subtitle}</Text>
               </View>
               <View style={styles.cardContentBottom}>
                 <View style={styles.priceContainer}>
                   <Text style={styles.priceNumber}>€{posting.price}</Text>
                   <Text style={styles.priceLabel}>
                     {'/ '}
-                    {posting.duration == 'GIORNALIERO' ? 'giorno' : 'mese IVA inc.'}
+                    {posting.duration == 'short_term' ? 'giorno' : 'mese IVA inc.'}
                   </Text>
                 </View>
                 <View style={styles.durationTextCont}>
                   <Icon
-                    name={posting.duration == 'GIORNALIERO' ? 'lightning' : 'clock'}
+                    name={posting.duration == 'short_term' ? 'lightning' : 'clock'}
                     color={Colors.greenPrimary}
                     width={15}
                   />
                   <Text style={styles.durationText}>
-                    {posting.duration == 'GIORNALIERO' ? 'Breve' : 'Lungo'} termine
+                    {posting.duration == 'short_term' ? 'Breve' : 'Lungo'} termine
                   </Text>
                 </View>
               </View>
@@ -98,7 +90,7 @@ const PostingCardBase = ({
                   <Text style={styles.mediumCardTitle}>
                     {posting.brand} {posting.model}
                   </Text>
-                  <Text style={styles.mediumCardSubtitle}>Offerta estiva</Text>
+                  <Text style={styles.mediumCardSubtitle}>{posting.subtitle}</Text>
                 </View>
 
                 <View
@@ -111,16 +103,23 @@ const PostingCardBase = ({
                 >
                   <View style={styles.mediumPriceContainer}>
                     <Text style={styles.mediumPriceAmount}>€{posting.price}</Text>
-                    <Text style={styles.mediumPriceUnit}>/ mese IVA inc.</Text>
+                    <Text style={styles.mediumPriceUnit}>
+                      / {isShortTerm ? 'giorno' : 'mese'} IVA inc.
+                    </Text>
                   </View>
                   <View style={styles.durationBadge}>
-                    <Icon name="clock" color={Colors.greenPrimary} />
-                    <Text style={styles.durationText}>Lungo termine</Text>
+                    <Icon name={isShortTerm ? 'lightning' : 'clock'} color={Colors.greenPrimary} />
+                    <Text style={styles.durationText}>
+                      {isShortTerm ? 'Breve' : 'lungo'} termine
+                    </Text>
                   </View>
                 </View>
               </View>
               <View style={styles.mediumImageContainer}>
-                <Image source={{ uri: posting.imageUrl }} style={styles.mediumCardImage} />
+                <Image
+                  source={{ uri: posting.vehicle_images ? posting.vehicle_images[0] : '' }}
+                  style={styles.mediumCardImage}
+                />
                 <View
                   style={{
                     position: 'absolute',
@@ -151,14 +150,14 @@ const PostingCardBase = ({
               <View style={styles.iconDetailsCont}>
                 <Icon name="card_payment" color={Colors.textSecondary} />
               </View>
-              {posting.duration == 'MENSILE' ? (
+              {posting.duration == 'long_term' ? (
                 <Text style={styles.valueText}>
-                  <Text style={styles.labelText}>Anticipo: </Text> €{posting.anticipo}{' '}
+                  <Text style={styles.labelText}>Anticipo: </Text> €{posting.deposit}{' '}
                   <Text style={styles.ivaText}>IVA inc.</Text>
                 </Text>
               ) : (
                 <Text style={styles.valueText}>
-                  <Text style={styles.labelText}>Cauzione: </Text> €{posting.anticipo}
+                  <Text style={styles.labelText}>Cauzione: </Text> €{posting.deposit}
                 </Text>
               )}
             </View>
@@ -169,9 +168,9 @@ const PostingCardBase = ({
               </View>
               <Text style={styles.valueText}>
                 <Text style={styles.labelText}>
-                  Limite Km {posting.duration == 'MENSILE' ? 'mensile' : 'giornaliero'}:{' '}
+                  Limite Km {posting.duration == 'long_term' ? 'mensile' : 'giornaliero'}:{' '}
                 </Text>
-                {posting.kmLimit}
+                {posting.distance_limit_in_km}
               </Text>
             </View>
 
@@ -179,15 +178,15 @@ const PostingCardBase = ({
               <View style={styles.iconDetailsCont}>
                 <Icon name="clock" color={Colors.textSecondary} />
               </View>
-              {posting.duration == 'MENSILE' ? (
+              {posting.duration == 'long_term' ? (
                 <Text style={styles.valueText}>
                   <Text style={styles.labelText}>Durata noleggio: </Text>
-                  {posting.minimumMonths}
+                  {/*TODO: MINIMO MESI */}
                 </Text>
               ) : (
                 <Text style={styles.valueText}>
                   <Text style={styles.labelText}>Età minima: </Text>
-                  {posting.minimumAge}
+                  {posting.age_required}
                 </Text>
               )}
             </View>
@@ -197,7 +196,7 @@ const PostingCardBase = ({
                 <Icon name="location" color={Colors.greenPrimary} />
               </View>
               <Text style={{ color: Colors.greenPrimary, fontWeight: '600', fontSize: 15 }}>
-                {posting.location}
+                {posting.pickup_location_plain}
               </Text>
             </View>
           </View>
@@ -205,7 +204,7 @@ const PostingCardBase = ({
         <View style={styles.ownerContainer}>
           <View style={styles.ownerReviewsCont}>
             <Text>
-              {posting.owner} {/* <VerifiedIcon/> */}
+              {posting.renter_name} {/* <VerifiedIcon/> */}
             </Text>
             <View style={styles.starsReviewsCont}>
               <View style={styles.starsCont}>
@@ -271,6 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    minHeight: 18,
   },
   valueText: {
     fontSize: 15,

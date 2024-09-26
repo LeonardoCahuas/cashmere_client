@@ -3,7 +3,7 @@ import { useQuery } from 'react-query'
 import { apiUrl } from './constants'
 import { queryKeys } from './queryKeys'
 import { apiRoutes } from './routes'
-import { AccessToken, Bookmark, Coupon, Message } from './types'
+import { Bookmark, Coupon, Message } from './types'
 
 export const useGetMessages = (id: string) => {
   const url = `${apiUrl}/${apiRoutes.getMeesagesByChatId.split(':')[0]}${id}`
@@ -35,7 +35,7 @@ const getUserParams = (token?: any) => {
   return { id, headers }
 }
 
-export const useGetBookmarksByUserJwt = (token?: AccessToken) => {
+export const useGetBookmarksByUserJwt = (token?: any) => {
   const { id, headers } = getUserParams(token)
   const url = `${apiUrl}/${apiRoutes.getBookmarksByUserId.split(':')[0]}${id}`
   return useQuery<Array<Bookmark>>({
