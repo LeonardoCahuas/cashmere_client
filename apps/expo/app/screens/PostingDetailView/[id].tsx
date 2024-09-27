@@ -10,7 +10,7 @@ const PostingDetailView = () => {
 
   const { data: posting, isLoading } = useGetPosting(id)
 
-  if (!isLoading) {
+  if (isLoading) {
     return <Text>Loading...</Text>
   }
 
