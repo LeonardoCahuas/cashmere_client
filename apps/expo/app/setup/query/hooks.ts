@@ -12,3 +12,11 @@ export const useGetBookmarksByUser = (id: string) => {
     queryFn: () => axios.get(url).then((res) => res.data),
   })
 }
+
+export const useGetPosting = (id: string) => {
+  const url = `${apiUrl}/${apiRoutes.getPostingById.split(':')[0]}${id}`
+  return useQuery<Posting>({
+    queryKey: [queryKeys.getPostingById],
+    queryFn: () => axios.get(url).then((res) => res.data),
+  })
+}
