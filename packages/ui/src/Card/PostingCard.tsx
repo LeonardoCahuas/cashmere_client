@@ -232,6 +232,7 @@ const PostingCardBase = ({
 export const PostingCard = {
   Large: (props: CardProps) => <PostingCardBase {...props} size="large" />,
   Medium: (props: CardProps) => <PostingCardBase {...props} size="medium" />,
+  Small: (props: CardProps) => <PostingCardBase {...props} size="small" />,
 }
 
 const styles = StyleSheet.create({
