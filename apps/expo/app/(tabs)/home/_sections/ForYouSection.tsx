@@ -1,10 +1,11 @@
-import { CardsPerTe, Colors } from '@siva/ui'
+import { Colors, PostingCard } from '@siva/ui'
+import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
 import { useRouter } from 'expo-router'
 import React from 'react'
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SectionTitle } from './components/SectionTitle'
 
-type ForYouPosting = React.ComponentProps<typeof CardsPerTe>['posting']
+type ForYouPosting = React.ComponentProps<typeof PostingCard.Small>['posting']
 
 interface CardRendererProps {
   item: ForYouPosting
@@ -13,7 +14,7 @@ interface CardRendererProps {
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
     <View style={styles.cardWrapper}>
-      <CardsPerTe posting={item} onCardClick={() => {}} />
+      <PostingCard.Small posting={item} onCardClick={() => linkToDetail(item)} />
     </View>
   )
 }
@@ -21,21 +22,35 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 export const ForYouSection = () => {
   const router = useRouter()
 
-  const handlePress = () => {
-    router.push('/home/news')
-  }
+  const handlePress = () => router.push('/home/news')
 
   const postings: Array<ForYouPosting> = [
     {
-      brand: 'Volvo',
-      model: 'XC60',
-      duration: '123',
-      price: 6500,
-      description: 'A cool SUV',
-      imageUrl:
-        'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/huracan.png',
-      location: 'Corsico, MI',
-      owner: 'Fratelli Giacomel',
+      id: 'id',
+      posting_id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
+      created_at: '2024-09-18T10:32:35.000Z',
+      duration: 'long_term',
+      subtitle: 'Offertona Estiva',
+      dropoff_location_plain: 'Milano',
+      pickup_location_plain: 'Malpensa',
+      deposit: '40',
+      price: '43',
+      age_required: '18',
+      distance_limit_in_km: '',
+      taxes_included: true,
+      vehicle_id: '5da8af70-9543-4770-90a6-4c5995520924',
+      brand: 'Kia',
+      model: 'Sorento',
+      fuel_type: 'Diesel',
+      year: 2024,
+      interior_material: 'Black',
+      interior_color: 'Gray',
+      exterior_color: 'Beige',
+      transmission_type: 'Manual',
+      renter_name: 'Imbruttito Noleggi',
+      vehicle_images: [
+        'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
+      ],
     },
     {
       brand: 'Volvo',
@@ -108,6 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 16,
+    borderWidth: 1,
   },
   titleRow: {
     display: 'flex',

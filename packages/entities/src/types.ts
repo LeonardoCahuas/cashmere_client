@@ -7,8 +7,8 @@ export interface Posting {
   dropoff_location_plain: string
   pickup_location_plain: string
   deposit: string
-  price: string
-  age_required: string
+  price: number
+  age_required: number
   distance_limit_in_km: string
   taxes_included: boolean
   vehicle_id: string
