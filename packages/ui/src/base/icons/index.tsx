@@ -4,6 +4,7 @@ import ChatBadge from '../../ChatBadge'
 import { BodyIcon } from './body.icon'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
+import { ChevronRightIcon } from './chevron-right.icon'
 import { ClockIcon } from './clock.icon'
 import { CloseIcon } from './close.icon'
 import ConditionIcon from './condition.icon'
@@ -80,6 +81,7 @@ export enum Icons {
   trasmission = 'trasmission',
   wheel = 'wheel',
   phone = 'phone',
+  chevron_right = 'chevron-right',
 }
 
 export type IconName = `${Icons}`
@@ -173,6 +175,8 @@ export const Icon = ({ ...props }: IconProps) => {
       return <WheelIcon {...p} />
     case 'phone':
       return <PhoneIcon {...p} />
+    case 'chevron-right':
+      return <ChevronRightIcon {...p} />
     default:
       return <></>
   }
