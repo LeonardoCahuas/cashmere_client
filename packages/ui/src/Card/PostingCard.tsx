@@ -252,14 +252,17 @@ const PostingCardBase = ({
             <Text style={styles.smallCard_owner}>
               {posting.renter_name} <Icon name="verified_check" color={Colors.greenPrimary} />
             </Text>
-            <Text style={styles.smallCard_cardTitle}>
-              {posting.brand} {posting.model}
-            </Text>
+            <View style={styles.smallCard_cardTitleContainer}>
+              <Text style={styles.smallCard_cardTitle}>
+                {posting.brand} {posting.model}
+              </Text>
+              {!!posting?.subtitle && (
+                <Text style={styles.smallCard_cardSubTitle}>{posting.subtitle}</Text>
+              )}
+            </View>
             <View style={styles.smallCard_priceContainer}>
               <Text style={styles.smallCard_priceNumber}>€{posting.price} </Text>
-              <Text style={styles.smallCard_priceLabel}>
-                / {posting.duration == 'GIORNALIERO' ? 'giorno' : 'mese'}
-              </Text>
+              <Text style={styles.smallCard_priceLabel}>/ {isShortTerm ? 'giorno' : 'mese'}</Text>
             </View>
             <View style={styles.smallCard_durationContainer}>
               <Icon name={isShortTerm ? 'lightning' : 'clock'} color={Colors.greenPrimary} />
@@ -619,8 +622,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   smallCard_card: {
-    width: (width - 36) / 1,
-    maxWidth: 160,
+    width: (width - 48) / 2,
     backgroundColor: 'white',
     borderRadius: 10,
     color: 'black',
@@ -676,15 +678,22 @@ const styles = StyleSheet.create({
     borderBottomWidth: 5,
     padding: 8,
   },
+  smallCard_cardTitleContainer: {
+    display: 'flex',
+    minHeight: 32,
+  },
   smallCard_cardTitle: {
     fontSize: 14,
     fontWeight: 'medium',
-    marginBottom: 48,
+  },
+  smallCard_cardSubTitle: {
+    fontSize: 14,
+    fontWeight: '200',
   },
   smallCard_owner: {
     fontSize: 14,
     color: Colors.greyPrimary,
-    fontWeight: '300',
+    fontWeight: 'thin',
     marginBottom: 6,
   },
   smallCard_priceContainer: {
@@ -693,10 +702,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     marginBottom: 8,
+    marginTop: 32,
   },
   smallCard_priceNumber: {
     color: Colors.blackPrimary,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
   },
   smallCard_priceLabel: {
     color: Colors.greyPrimary,
