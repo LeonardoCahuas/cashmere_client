@@ -1,22 +1,33 @@
 import { View } from 'react-native'
 import { SvgProps } from 'react-native-svg'
 import ChatBadge from '../../ChatBadge'
+import { BodyIcon } from './body.icon'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
 import { ClockIcon } from './clock.icon'
 import { CloseIcon } from './close.icon'
+import ConditionIcon from './condition.icon'
+import DescriptionIcon from './description.icon'
+import DetailsIcon from './details.icon'
 import { DistanceIcon } from './distance.icon'
+import DoorIcon from './door.icon'
+import DurationIcon from './duration.icon'
+import EngineIcon from './engine.icon'
 import { FilterIcon } from './filter.icon'
+import FuelIcon from './fuel.icon'
 import { HeartFilledIcon } from './heart-filled.icon'
 import { LightningIcon } from './lightning.icon'
 import { LocationIcon } from './location.icon'
 import { MotorBikeIcon } from './motorbike.icon'
+import PhoneIcon from './phone.icon'
 import { DecreasingIcon } from './saved/decreasing.icon'
 import { IncreasingIcon } from './saved/increasing.icon'
 import { SortingMinus } from './saved/minus.icon'
 import { PercentageIcon } from './saved/percentage.icon'
 import { SortingPlus } from './saved/plus.icon'
 import { UpDownArrows } from './saved/updownarrows.icon'
+import SeatsIcon from './seats.icon'
+import ServicesIcon from './services.icon'
 import { ShareIcon } from './share.icon'
 import { ShortTermArrowIcon } from './short-term-arrow.icon'
 import { ChatIcon } from './tab-bar/chat.icon'
@@ -24,8 +35,10 @@ import { HeartIcon } from './tab-bar/heart.icon'
 import { TabPlusIcon } from './tab-bar/plus.icon'
 import { ProfileIcon } from './tab-bar/profile.icon'
 import { SearchIcon as TabSearchIcon } from './tab-bar/search.icon'
+import TransmissionIcon from './transmission.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
+import WheelIcon from './wheel.icon'
 
 export enum Icons {
   car = 'car',
@@ -54,6 +67,19 @@ export enum Icons {
   decreasing_value = 'decreasing_value',
   sorting_plus = 'sorting_plus',
   sorting_minus = 'sorting_minus',
+  body = 'body',
+  condition = 'condition',
+  description = 'description',
+  details = 'details',
+  engine = 'engine',
+  door = 'door',
+  duration = 'duration',
+  services = 'services',
+  seats = 'seats',
+  fuel = 'fuel',
+  trasmission = 'trasmission',
+  wheel = 'wheel',
+  phone = 'phone',
 }
 
 export type IconName = `${Icons}`
@@ -121,6 +147,32 @@ export const Icon = ({ ...props }: IconProps) => {
       return <SortingPlus {...p} />
     case 'sorting_minus':
       return <SortingMinus {...p} />
+    case 'body':
+      return <BodyIcon {...p} />
+    case 'condition':
+      return <ConditionIcon {...p} />
+    case 'description':
+      return <DescriptionIcon {...p} />
+    case 'details':
+      return <DetailsIcon {...p} />
+    case 'door':
+      return <DoorIcon {...p} />
+    case 'duration':
+      return <DurationIcon {...p} />
+    case 'engine':
+      return <EngineIcon {...p} />
+    case 'fuel':
+      return <FuelIcon {...p} />
+    case 'seats':
+      return <SeatsIcon {...p} />
+    case 'services':
+      return <ServicesIcon {...p} />
+    case 'trasmission':
+      return <TransmissionIcon {...p} />
+    case 'wheel':
+      return <WheelIcon {...p} />
+    case 'phone':
+      return <PhoneIcon {...p} />
     default:
       return <></>
   }

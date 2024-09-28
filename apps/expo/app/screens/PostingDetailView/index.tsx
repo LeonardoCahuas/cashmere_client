@@ -1,5 +1,5 @@
-import PostingDetailView from './sections'
+import ProductPage from './meh'
 
 export default function Screen() {
-  return <PostingDetailView />
+  return <ProductPage />
 }
