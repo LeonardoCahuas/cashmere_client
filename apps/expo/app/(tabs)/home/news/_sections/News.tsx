@@ -1,4 +1,4 @@
-import { NewsSection } from 'apps/expo/app/(tabs)/home/_sections/components/NewsSection'
+import { NewsSection } from './components/NewsSection'
 
 export const News = () => {
   return <NewsSection />

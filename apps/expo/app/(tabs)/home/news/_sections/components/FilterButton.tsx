@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity } from 'react-native'
-import { Colors } from '@siva/ui'
 
 interface ButtonProps {
   label: string
@@ -35,8 +34,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'white',
     color: 'black',
-    borderColor:"black",
-    borderWidth:0.3
+    borderColor: 'black',
+    borderWidth: 0.3,
   },
   buttonActive: {
     backgroundColor: 'black',
@@ -44,7 +43,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 14,
     fontWeight: '400',
-    color: "black",
+    color: 'black',
     marginLeft: 10,
   },
   buttonTextActive: {

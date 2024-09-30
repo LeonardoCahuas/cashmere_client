@@ -1,7 +1,8 @@
 import { PostingCard } from '@siva/ui'
+import { Stack } from 'expo-router'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { FilterTab } from './FilterTabs'
+import { FilterTab } from './FilterTab'
 
 type PostingCard = React.ComponentProps<typeof PostingCard.Large>['posting']
 
@@ -82,7 +83,12 @@ export const NewsSection = () => {
   ]
 
   return (
-    <>
+    <View>
+      <Stack.Screen
+        options={{
+          title: 'Per te',
+        }}
+      />
       <FilterTab />
       <FlatList
         horizontal={false}
@@ -91,7 +97,7 @@ export const NewsSection = () => {
         renderItem={({ item }) => <CardRenderer item={item} />}
         contentContainerStyle={styles.contentContainerStyle}
       />
-    </>
+    </View>
   )
 }
 
