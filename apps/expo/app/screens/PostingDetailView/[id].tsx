@@ -73,7 +73,7 @@ const PostingDetailView = () => {
             </View>
             <View style={styles.priceContainer}>
               <Text style={styles.price}>€{posting.price.toLocaleString('it-IT')}</Text>
-              <Text style={styles.priceDuration}>/mese</Text>
+              <Text style={styles.priceDuration}>/ mese</Text>
             </View>
             <Text style={styles.vatDeductible}>
               {!posting.taxes_included ? 'IVA deducibile' : 'IVA non deducibile'}

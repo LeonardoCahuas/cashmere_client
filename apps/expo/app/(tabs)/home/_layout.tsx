@@ -1,11 +1,13 @@
-import { Stack, useRouter } from 'expo-router'
+import { Stack } from 'expo-router'
 
 const StackLayout = () => {
-  const router = useRouter()
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerTintColor: '#000',
+        headerBackTitle: 'Indietro',
+        title: 'Home',
+        headerShown: true,
       }}
     ></Stack>
   )
