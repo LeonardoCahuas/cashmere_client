@@ -1,4 +1,5 @@
 import { PostingCard } from '@siva/ui'
+import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
 import { Stack } from 'expo-router'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
@@ -13,7 +14,7 @@ interface CardRendererProps {
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
     <View style={styles.cardWrapper}>
-      <PostingCard.Large posting={item} onCardClick={() => {}} />
+      <PostingCard.Large posting={item} onCardClick={() => linkToDetail(item)} />
     </View>
   )
 }
