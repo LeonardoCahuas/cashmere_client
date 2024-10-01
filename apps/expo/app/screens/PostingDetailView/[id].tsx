@@ -14,60 +14,18 @@ import {
 import { ModalSheet, ModalSheetProvider, useModalSheetRef } from '../../components/ModalSheet'
 import { useGetPosting } from '../../setup/query/hooks'
 
+type ModalKey = 'features' | 'engine' | 'equipment' | 'services'
+
 const PostingDetailView = () => {
   const { id } = useLocalSearchParams()
   if (!id || typeof id !== 'string') {
     return <Text>No id data</Text>
   }
+
   const ref = useModalSheetRef()
-  const modalOptions = {
-    options: [
-      {
-        icon: <Icon name="up_down_arrows" color="#000" />,
-        label: 'Ultimo salvato',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-      {
-        icon: <Icon name="percentage" color="#000" />,
-        label: 'Veicoli scontati',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-      {
-        icon: <Icon name="increasing_value" color="#000" />,
-        label: 'Prezzo crescente',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-      {
-        icon: <Icon name="decreasing_value" color="#000" />,
-        label: 'Prezzo decrescente',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-      {
-        icon: <Icon name="sorting_plus" color="#000" />,
-        label: 'Prezzo IVA Incl.',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-      {
-        icon: <Icon name="sorting_minus" color="#000" />,
-        label: 'Prezzo IVA Escl.',
-        action: () => {
-          ref.current?.close()
-        },
-      },
-    ],
-  }
   const { data: posting, isLoading } = useGetPosting(id)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [modalKey, setModalKey] = useState<ModalKey | null>(null)
 
   const handleScroll = (event) => {
     const slideWidth = Dimensions.get('window').width
@@ -86,227 +44,324 @@ const PostingDetailView = () => {
 
   const img = posting.vehicle_images ? posting.vehicle_images[0] : ''
 
+  const modals: Record<ModalKey, { title: string; content: JSX.Element }> = {
+    features: {
+      title: 'Caratteristiche',
+      content: (
+        <View style={{ display: 'flex', gap: 32 }}>
+          {[
+            { k: 'Porte', v: '5' },
+            { k: 'Colore esterno', v: 'Rosso' },
+            { k: 'Colore interno', v: 'Nero' },
+            { k: 'Materiale interni', v: 'Alcantara' },
+          ].map(({ k, v }) => (
+            <View key={`features-${k}`} style={{ ...styles.row, gap: 80 }}>
+              <Text style={{ ...styles.modalRowKey, width: 128 }}>{k}</Text>
+              <Text style={styles.modalRowValue}>{v}</Text>
+            </View>
+          ))}
+        </View>
+      ),
+    },
+    engine: {
+      title: 'Motore',
+      content: (
+        <View style={{ display: 'flex', gap: 32 }}>
+          {[
+            { k: 'Classe inquitamento', v: 'Euro 6' },
+            { k: 'Trazione', v: 'Anteriore' },
+            { k: 'Potenza', v: '700Cv / 900 Kw' },
+            { k: 'Marce', v: '6' },
+          ].map(({ k, v }) => (
+            <View key={`engine-${k}`} style={{ ...styles.row, gap: 64 }}>
+              <Text style={{ ...styles.modalRowKey, width: 152 }}>{k}</Text>
+              <Text style={styles.modalRowValue}>{v}</Text>
+            </View>
+          ))}
+        </View>
+      ),
+    },
+    equipment: {
+      title: 'Equipaggiamento',
+      content: (
+        <View style={{ display: 'flex', gap: 32 }}>
+          {['Airbag', 'Aria condizionata', 'Stereo bluetooth', 'Ruotino di scorta'].map((item) => (
+            <View
+              key={item}
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 12,
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  height: 5,
+                  width: 5,
+                  borderRadius: 5,
+                  backgroundColor: Colors.blackPrimary,
+                }}
+              />
+              <Text style={styles.modalRowValue}>{item}</Text>
+            </View>
+          ))}
+        </View>
+      ),
+    },
+    services: {
+      title: 'Servizi inclusi nel noleggio',
+      content: <View></View>,
+    },
+  }
+
+  const openModal = (k: ModalKey) => {
+    ref?.current?.expand()
+    setModalKey(k)
+  }
+
   return (
     <ModalSheetProvider style={styles.container}>
-      <ScrollView style={{ backgroundColor: 'white' }}>
-        <View style={{ position: 'relative' }}>
-          <FlatList
-            data={posting.vehicle_images}
-            renderItem={({ item: uri }) => (
-              <View>
-                <Image source={{ uri }} style={styles.sliderImage} />
-              </View>
+      <View>
+        <ScrollView style={{ backgroundColor: 'white' }}>
+          <View style={{ position: 'relative' }}>
+            <FlatList
+              data={posting.vehicle_images}
+              renderItem={({ item: uri }) => (
+                <View>
+                  <Image source={{ uri }} style={styles.sliderImage} />
+                </View>
+              )}
+              keyExtractor={(item) => item}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+            />
+            {!!posting?.vehicle_images && (
+              <Text
+                style={styles.slideCounter}
+              >{`${currentIndex + 1 > 0 ? currentIndex + 1 : 1}/${6969}`}</Text>
             )}
-            keyExtractor={(item) => item}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            onScroll={handleScroll}
+          </View>
+          <View style={styles.topInfoWrapper}>
+            <View style={styles.topInfoContainer}>
+              <Text style={styles.brandModel}>
+                {posting.brand} {posting.model}
+              </Text>
+              <Text style={styles.subTitle}>{posting.subtitle}</Text>
+              <View style={styles.locationContainer}>
+                <Icon name="location" color={Colors.bluePrimary} width={10} />
+                <Text style={styles.location}>{posting.pickup_location_plain}</Text>
+              </View>
+              <View style={styles.priceContainer}>
+                <Text style={styles.price}>€{posting.price?.toLocaleString('it-IT')}</Text>
+                <Text style={styles.priceDuration}>/ mese</Text>
+              </View>
+              <Text style={styles.vatDeductible}>
+                {!posting.taxes_included ? 'IVA deducibile' : 'IVA non deducibile'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.detailsGrid}>
+            <View style={styles.infoRow}>
+              <Icon name="duration" color="black" width={20} />
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.labelText}>Durata:</Text>
+                <Text style={styles.infoTextValue}>{posting.duration}</Text>
+              </View>
+            </View>
+            <View style={styles.infoRow}>
+              <Icon name="distance" color="black" width={20} />
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.labelText}>Percorrenza:</Text>
+                <Text style={styles.infoTextValue}>{'__mileage'}</Text>
+              </View>
+            </View>
+            <View style={styles.infoRow}>
+              <Icon name="card_payment" color="black" width={20} />
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.labelText}>Anticipo:</Text>
+                <Text style={styles.infoTextValue}>{posting.deposit}</Text>
+              </View>
+            </View>
+            <View style={styles.infoRow}>
+              <Icon name="trasmission" color="black" width={20} />
+              <View style={styles.infoTextContainer}>
+                <Text style={styles.labelText}>Cambio:</Text>
+                <Text style={styles.infoTextValue}>{posting.transmission_type}</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.cardCont}>
+            <View style={styles.card}>
+              {!!posting.vehicle_images && (
+                <Image source={{ uri: posting.vehicle_images[0] }} style={styles.image} />
+              )}
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{posting.renter_name}</Text>
+                <Text style={styles.cardSubtitle}>48 annunci attivi</Text>
+              </View>
+              <View style={styles.reviewCont}>
+                <Text style={styles.averageReview}>4.6</Text>
+                <View style={styles.starsCont}>
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greySecondary} />
+                </View>
+                <Text style={styles.reviewsText}>Recensioni</Text>
+              </View>
+            </View>
+          </View>
+
+          <Section title="Dati di base">
+            <View style={styles.details}>
+              <View style={styles.infoRowDetails}>
+                <View style={styles.detailsLabel}>
+                  <View style={{ width: 30 }}>
+                    <Icon name="fuel" color="black" />
+                  </View>
+                  <Text style={styles.detailsLabelText}>Alimentazione:</Text>
+                </View>
+                <Text style={styles.detailsValue}>{posting.fuel_type}</Text>
+              </View>
+
+              <View style={styles.infoRowDetails}>
+                <View style={styles.detailsLabel}>
+                  <View style={{ width: 30 }}>
+                    <Icon name="seats" color="black" />
+                  </View>
+                  <Text style={styles.detailsLabelText}>Posti:</Text>
+                </View>
+                <Text style={styles.detailsValue}>{'__seats'}</Text>
+              </View>
+
+              <View style={styles.infoRowDetails}>
+                <View style={styles.detailsLabel}>
+                  <View style={{ width: 30 }}>
+                    <Icon name="trasmission" color="black" />
+                  </View>
+                  <Text style={styles.detailsLabelText}>Cambio:</Text>
+                </View>
+                <Text style={styles.detailsValue}>{posting.transmission_type}</Text>
+              </View>
+
+              <View style={styles.infoRowDetails}>
+                <View style={styles.detailsLabel}>
+                  <View style={{ width: 30 }}>
+                    <Icon name="body" color="black" />
+                  </View>
+                  <Text style={styles.detailsLabelText}>Carrozzeria:</Text>
+                </View>
+                <Text style={styles.detailsValue}>{'__body_type'}</Text>
+              </View>
+            </View>
+          </Section>
+          <Section title="Stato veicolo" icon={<Icon name="condition" />}>
+            <View style={styles.details}>
+              <View style={styles.infoRowDetails}>
+                <Text style={styles.detailsLabelText}>Anno di immatricolazione</Text>
+
+                <Text style={styles.detailsValue}>{posting.year}</Text>
+              </View>
+              <View style={styles.infoRowDetails}>
+                <Text style={styles.detailsLabelText}>Kilometraggio</Text>
+                <Text style={styles.detailsValue}>{'__mileage'} km</Text>
+              </View>
+            </View>
+          </Section>
+          <Section
+            title="Caratteristiche"
+            icon={<Icon name="door" />}
+            onPress={() => openModal('features')}
           />
-          {!!posting?.vehicle_images && (
-            <Text
-              style={styles.slideCounter}
-            >{`${currentIndex + 1 > 0 ? currentIndex + 1 : 1}/${6969}`}</Text>
-          )}
-        </View>
-        <View style={styles.topInfoWrapper}>
-          <View style={styles.topInfoContainer}>
-            <Text style={styles.brandModel}>
-              {posting.brand} {posting.model}
-            </Text>
-            <Text style={styles.subTitle}>{posting.subtitle}</Text>
-            <View style={styles.locationContainer}>
-              <Icon name="location" color={Colors.bluePrimary} width={10} />
-              <Text style={styles.location}>{posting.pickup_location_plain}</Text>
-            </View>
-            <View style={styles.priceContainer}>
-              <Text style={styles.price}>€{posting.price?.toLocaleString('it-IT')}</Text>
-              <Text style={styles.priceDuration}>/ mese</Text>
-            </View>
-            <Text style={styles.vatDeductible}>
-              {!posting.taxes_included ? 'IVA deducibile' : 'IVA non deducibile'}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.detailsGrid}>
-          <View style={styles.infoRow}>
-            <Icon name="duration" color="black" width={20} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.labelText}>Durata:</Text>
-              <Text style={styles.infoTextValue}>{posting.duration}</Text>
-            </View>
-          </View>
-          <View style={styles.infoRow}>
-            <Icon name="distance" color="black" width={20} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.labelText}>Percorrenza:</Text>
-              <Text style={styles.infoTextValue}>{'__mileage'}</Text>
-            </View>
-          </View>
-          <View style={styles.infoRow}>
-            <Icon name="card_payment" color="black" width={20} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.labelText}>Anticipo:</Text>
-              <Text style={styles.infoTextValue}>{posting.deposit}</Text>
-            </View>
-          </View>
-          <View style={styles.infoRow}>
-            <Icon name="trasmission" color="black" width={20} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.labelText}>Cambio:</Text>
-              <Text style={styles.infoTextValue}>{posting.transmission_type}</Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.cardCont}>
-          <View style={styles.card}>
-            {!!posting.vehicle_images && (
-              <Image source={{ uri: posting.vehicle_images[0] }} style={styles.image} />
-            )}
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{posting.renter_name}</Text>
-              <Text style={styles.cardSubtitle}>48 annunci attivi</Text>
-            </View>
-            <View style={styles.reviewCont}>
-              <Text style={styles.averageReview}>4.6</Text>
-              <View style={styles.starsCont}>
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greySecondary} />
-              </View>
-              <Text style={styles.reviewsText}>Recensioni</Text>
-            </View>
-          </View>
-        </View>
-
-        <Section title="Dati di base">
-          <View style={styles.details}>
-            <View style={styles.infoRowDetails}>
-              <View style={styles.detailsLabel}>
-                <View style={{ width: 30 }}>
-                  <Icon name="fuel" width={1} color="black" />
-                </View>
-                <Text style={styles.detailsLabelText}>Alimentazione:</Text>
-              </View>
-              <Text style={styles.detailsValue}>{posting.fuel_type}</Text>
-            </View>
-
-            <View style={styles.infoRowDetails}>
-              <View style={styles.detailsLabel}>
-                <View style={{ width: 30 }}>
-                  <Icon name="seats" width={1} color="black" />
-                </View>
-                <Text style={styles.detailsLabelText}>Posti:</Text>
-              </View>
-              <Text style={styles.detailsValue}>{'__seats'}</Text>
-            </View>
-
-            <View style={styles.infoRowDetails}>
-              <View style={styles.detailsLabel}>
-                <View style={{ width: 30 }}>
-                  <Icon name="trasmission" width={1} color="black" />
-                </View>
-                <Text style={styles.detailsLabelText}>Cambio:</Text>
-              </View>
-              <Text style={styles.detailsValue}>{posting.transmission_type}</Text>
-            </View>
-
-            <View style={styles.infoRowDetails}>
-              <View style={styles.detailsLabel}>
-                <View style={{ width: 30 }}>
-                  <Icon name="body" width={1} color="black" />
-                </View>
-                <Text style={styles.detailsLabelText}>Carrozzeria:</Text>
-              </View>
-              <Text style={styles.detailsValue}>{'__body_type'}</Text>
-            </View>
-          </View>
-        </Section>
-        <Section title="Stato veicolo" icon={<Icon name="condition" />}>
-          <View style={styles.details}>
-            <View style={styles.infoRowDetails}>
-              <Text style={styles.detailsLabelText}>Anno di immatricolazione</Text>
-
-              <Text style={styles.detailsValue}>{posting.year}</Text>
-            </View>
-            <View style={styles.infoRowDetails}>
-              <Text style={styles.detailsLabelText}>Kilometraggio</Text>
-              <Text style={styles.detailsValue}>{'__mileage'} km</Text>
-            </View>
-          </View>
-        </Section>
-        <Section title="Caratteristiche" icon={<Icon name="door" />} />
-        <Section title="Motore" icon={<Icon name="engine" />} />
-        <Section title="Equipaggiamento" icon={<Icon name="wheel" />} />
-        <Section title="Servizi" icon={<Icon name="services" />} />
-        <Section title="Descrizione" icon={<Icon name="description" />}>
-          <Text style={styles.descriptionText}>
-            Sono NICOLAS di Giunima Auto per questa autovettura potete contattarmi al 3758018581
-            NESSUN COSTO NASCOSTO. GARANZIA INCLUSA NEL PREZZO. AUTO VISIONABILE PRESSO LA NOSTRA
-            SEDE IN VIA CUSAGO 160 (MI) MANUTENZIONE: TUTTO IN ORDINE DAL PUNTO DI VISTA MECCANICO
-            RICEVIAMO SU APPUNTAMENTO.
-          </Text>
-        </Section>
-
-        <View style={styles.ownerImages}>
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: img }} style={styles.bgImage} />
-            <Image source={{ uri: img }} style={styles.imageSquare} />
-          </View>
-        </View>
-
-        <View style={styles.cardContBottom}>
-          <View style={styles.card}>
-            <Image source={{ uri: img }} style={styles.image} />
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{posting.renter_name}</Text>
-              <Text style={styles.cardSubtitleBottom}>Visita il profilo</Text>
-            </View>
-            <View style={styles.reviewCont}>
-              <Text style={styles.averageReview}>4.6</Text>
-              <View style={styles.starsCont}>
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greenPrimary} />
-                <Icon name="clock" color={Colors.greySecondary} />
-              </View>
-              <Text style={styles.reviewsText}>Recensioni</Text>
-            </View>
-          </View>
-        </View>
-        <View style={{ paddingHorizontal: 18 }}>
-          <View
-            style={{
-              borderTopColor: Colors.greySecondary,
-              borderTopWidth: 1,
-              marginVertical: 15,
-            }}
-          ></View>
-        </View>
-        <View style={styles.logoContainer}>
-          <Image
-            source={{
-              uri: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/LOGO.png?t=2024-09-06T07%3A09%3A24.114Z',
-            }}
-            style={{ width: 80, height: 25, marginBottom: 30 }}
+          <Section
+            title="Motore"
+            icon={<Icon name="engine" />}
+            onPress={() => openModal('engine')}
           />
-          <View style={styles.overlay} />
+          <Section
+            title="Equipaggiamento"
+            icon={<Icon name="wheel" />}
+            onPress={() => openModal('equipment')}
+          />
+          <Section
+            title="Servizi inclusi nel noleggio"
+            icon={<Icon name="services" />}
+            onPress={() => openModal('services')}
+          />
+          <Section title="Descrizione" icon={<Icon name="description" />}>
+            <Text style={styles.descriptionText}>
+              Sono NICOLAS di Giunima Auto per questa autovettura potete contattarmi al 3758018581
+              NESSUN COSTO NASCOSTO. GARANZIA INCLUSA NEL PREZZO. AUTO VISIONABILE PRESSO LA NOSTRA
+              SEDE IN VIA CUSAGO 160 (MI) MANUTENZIONE: TUTTO IN ORDINE DAL PUNTO DI VISTA MECCANICO
+              RICEVIAMO SU APPUNTAMENTO.
+            </Text>
+          </Section>
+
+          <View style={styles.ownerImages}>
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: img }} style={styles.bgImage} />
+              <Image source={{ uri: img }} style={styles.imageSquare} />
+            </View>
+          </View>
+
+          <View style={styles.cardContBottom}>
+            <View style={styles.card}>
+              <Image source={{ uri: img }} style={styles.image} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{posting.renter_name}</Text>
+                <Text style={styles.cardSubtitleBottom}>Visita il profilo</Text>
+              </View>
+              <View style={styles.reviewCont}>
+                <Text style={styles.averageReview}>4.6</Text>
+                <View style={styles.starsCont}>
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greenPrimary} />
+                  <Icon name="clock" color={Colors.greySecondary} />
+                </View>
+                <Text style={styles.reviewsText}>Recensioni</Text>
+              </View>
+            </View>
+          </View>
+          <View style={{ paddingHorizontal: 18 }}>
+            <View
+              style={{
+                borderTopColor: Colors.greySecondary,
+                borderTopWidth: 1,
+                marginVertical: 15,
+              }}
+            ></View>
+          </View>
+          <View style={styles.logoContainer}>
+            <Image
+              source={{
+                uri: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/LOGO.png?t=2024-09-06T07%3A09%3A24.114Z',
+              }}
+              style={{ width: 80, height: 25, marginBottom: 30 }}
+            />
+            <View style={styles.overlay} />
+          </View>
+        </ScrollView>
+        <View style={styles.fixedButtonsContainer}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.95}>
+            <Icon name="phone" color="white" />
+            <Text style={styles.buttonText}>Chiama</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} activeOpacity={0.95}>
+            <Icon name="tab_chat" color="white" />
+            <Text style={styles.buttonText}>Chatta</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-      <View style={styles.fixedButtonsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={0.95}>
-          <Icon name="phone" color="white" />
-          <Text style={styles.buttonText}>Chiama</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} activeOpacity={0.95}>
-          <Icon name="tab_chat" color="white" />
-          <Text style={styles.buttonText}>Chatta</Text>
-        </TouchableOpacity>
       </View>
-      <ModalSheet ref={ref} title="Ordina" options={modalOptions} />
+      <ModalSheet ref={ref} title={modalKey ? modals[modalKey].title : ''}>
+        {!!modalKey && modals[modalKey].content}
+      </ModalSheet>
     </ModalSheetProvider>
   )
 }
@@ -324,7 +379,14 @@ const Section = ({ title, icon, children, onPress }: SectionProps) => {
   return (
     <View style={sectionStyles.container}>
       <View style={sectionStyles.borderContainer}>
-        <View style={sectionStyles.titleContainer}>
+        <View
+          style={sectionStyles.titleContainer}
+          onTouchEnd={() => {
+            if (onPress) {
+              onPress()
+            }
+          }}
+        >
           <View style={sectionStyles.titleRow}>
             {!!icon && cloneElement(icon, { color: '#000' })}
             <Text style={sectionStyles.title}>{title}</Text>
@@ -346,7 +408,7 @@ const sectionStyles = StyleSheet.create({
   },
   borderContainer: {
     width: '100%',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     paddingBottom: 20,
     borderBottomColor: Colors.greySecondary,
   },
@@ -374,6 +436,21 @@ const sectionStyles = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
+  row: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  modalRowKey: {
+    fontSize: 16,
+    fontWeight: '400',
+    color: Colors.greyPrimary,
+  },
+  modalRowValue: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.blackPrimary,
+  },
   container: {
     flex: 1,
   },

@@ -27,12 +27,13 @@ export interface ModalSheetProps {
   title: string
   options?: ModalOptions
   onChange?: (index: number) => void
+  onClose?: () => void
   selected?: string
   children?: ReactNode
 }
 
 export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
-  ({ title, options, onChange, children }, ref) => {
+  ({ title, options, onChange, onClose, children }, ref) => {
     const hasChildren = children !== undefined
     const padding = hasChildren ? 164 : 132
     const renderBackdrop = useCallback(
@@ -57,6 +58,11 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
         handleComponent={null}
+        onClose={() => {
+          if (onClose) {
+            onClose()
+          }
+        }}
       >
         <BottomSheetView style={modalStyles.contentContainer}>
           <View style={modalStyles.titleContainer}>
