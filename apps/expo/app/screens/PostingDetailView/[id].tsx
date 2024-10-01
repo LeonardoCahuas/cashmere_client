@@ -233,8 +233,23 @@ const PostingDetailView = () => {
                 <Text style={styles.location}>{posting.pickup_location_plain}</Text>
               </View>
               <View style={styles.priceContainer}>
-                <Text style={styles.price}>€{posting.price?.toLocaleString('it-IT')}</Text>
-                <Text style={styles.priceDuration}>/ mese</Text>
+                <View
+                  style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 3 }}
+                >
+                  <Text style={styles.price}>€{posting.price?.toLocaleString('it-IT')}</Text>
+                  <Text style={styles.priceDuration}>/ mese</Text>
+                </View>
+
+                <View style={styles.durationTextCont}>
+                  <Icon
+                    name={posting.duration == 'short_term' ? 'lightning' : 'clock'}
+                    color={Colors.greenPrimary}
+                    width={15}
+                  />
+                  <Text style={styles.durationText}>
+                    {posting.duration == 'short_term' ? 'Breve' : 'Lungo'} termine
+                  </Text>
+                </View>
               </View>
               <Text style={styles.vatDeductible}>
                 {!posting.taxes_included ? 'IVA deducibile' : 'IVA non deducibile'}
@@ -595,7 +610,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     gap: 3,
-    marginTop: 6,
+    marginTop: 8,
   },
   vatDeductible: {
     fontSize: 11,
@@ -607,10 +622,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 3,
     alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
   },
   priceDuration: {
     fontSize: 12,
     fontWeight: '100',
+  },
+  durationTextCont: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 0,
+    backgroundColor: Colors.tertiaryGray,
+    marginTop: 5,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  durationText: {
+    color: Colors.greenPrimary,
+    fontSize: 12,
+    fontWeight: '600',
   },
   location: {
     fontSize: 13,
