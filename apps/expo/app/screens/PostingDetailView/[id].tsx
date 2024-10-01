@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 import { ModalSheet, ModalSheetProvider, useModalSheetRef } from '../../components/ModalSheet'
 import { useGetPosting } from '../../setup/query/hooks'
+import { RelatedVehiclesSection } from './sections/RelatedSection'
 
 type ModalKey = 'features' | 'engine' | 'equipment' | 'services'
 
@@ -309,6 +310,9 @@ const PostingDetailView = () => {
             </View>
           </View>
 
+          <View style={{ width: '100%', paddingHorizontal: 20 }}>
+            <View style={{ height: 1, width: '100%', backgroundColor: Colors.greySecondary }} />
+          </View>
           <Section title="Dati di base">
             <View style={styles.details}>
               <View style={styles.infoRowDetails}>
@@ -430,6 +434,7 @@ const PostingDetailView = () => {
               }}
             ></View>
           </View>
+          <RelatedVehiclesSection />
           <View style={styles.logoContainer}>
             <Image
               source={{
