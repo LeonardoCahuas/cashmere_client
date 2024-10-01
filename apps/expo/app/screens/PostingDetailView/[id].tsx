@@ -1,6 +1,6 @@
 import { Colors, Icon } from '@siva/ui'
 import { useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
+import { cloneElement, useState } from 'react'
 import {
   Dimensions,
   FlatList,
@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import { ModalSheet, ModalSheetProvider, useModalSheetRef } from '../../components/ModalSheet'
 import { useGetPosting } from '../../setup/query/hooks'
 
 const PostingDetailView = () => {
@@ -18,7 +19,53 @@ const PostingDetailView = () => {
   if (!id || typeof id !== 'string') {
     return <Text>No id data</Text>
   }
-
+  const ref = useModalSheetRef()
+  const modalOptions = {
+    options: [
+      {
+        icon: <Icon name="up_down_arrows" color="#000" />,
+        label: 'Ultimo salvato',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+      {
+        icon: <Icon name="percentage" color="#000" />,
+        label: 'Veicoli scontati',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+      {
+        icon: <Icon name="increasing_value" color="#000" />,
+        label: 'Prezzo crescente',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+      {
+        icon: <Icon name="decreasing_value" color="#000" />,
+        label: 'Prezzo decrescente',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+      {
+        icon: <Icon name="sorting_plus" color="#000" />,
+        label: 'Prezzo IVA Incl.',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+      {
+        icon: <Icon name="sorting_minus" color="#000" />,
+        label: 'Prezzo IVA Escl.',
+        action: () => {
+          ref.current?.close()
+        },
+      },
+    ],
+  }
   const { data: posting, isLoading } = useGetPosting(id)
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -37,15 +84,17 @@ const PostingDetailView = () => {
     return <Text>No posting data</Text>
   }
 
+  const img = posting.vehicle_images ? posting.vehicle_images[0] : ''
+
   return (
-    <View style={styles.container}>
+    <ModalSheetProvider style={styles.container}>
       <ScrollView style={{ backgroundColor: 'white' }}>
         <View style={{ position: 'relative' }}>
           <FlatList
             data={posting.vehicle_images}
-            renderItem={({ item }) => (
+            renderItem={({ item: uri }) => (
               <View>
-                <Image source={{ uri: item }} style={styles.sliderImage} />
+                <Image source={{ uri }} style={styles.sliderImage} />
               </View>
             )}
             keyExtractor={(item) => item}
@@ -60,7 +109,6 @@ const PostingDetailView = () => {
             >{`${currentIndex + 1 > 0 ? currentIndex + 1 : 1}/${6969}`}</Text>
           )}
         </View>
-
         <View style={styles.topInfoWrapper}>
           <View style={styles.topInfoContainer}>
             <Text style={styles.brandModel}>
@@ -72,7 +120,7 @@ const PostingDetailView = () => {
               <Text style={styles.location}>{posting.pickup_location_plain}</Text>
             </View>
             <View style={styles.priceContainer}>
-              <Text style={styles.price}>€{posting.price.toLocaleString('it-IT')}</Text>
+              <Text style={styles.price}>€{posting.price?.toLocaleString('it-IT')}</Text>
               <Text style={styles.priceDuration}>/ mese</Text>
             </View>
             <Text style={styles.vatDeductible}>
@@ -132,9 +180,9 @@ const PostingDetailView = () => {
             </View>
           </View>
         </View>
-        <View style={styles.detailsWrapper}>
+
+        <Section title="Dati di base">
           <View style={styles.details}>
-            <Text style={styles.detailsTitle}>Dati di base</Text>
             <View style={styles.infoRowDetails}>
               <View style={styles.detailsLabel}>
                 <View style={{ width: 30 }}>
@@ -175,80 +223,43 @@ const PostingDetailView = () => {
               <Text style={styles.detailsValue}>{'__body_type'}</Text>
             </View>
           </View>
-        </View>
-
-        <View style={styles.detailsWrapper}>
+        </Section>
+        <Section title="Stato veicolo" icon={<Icon name="condition" />}>
           <View style={styles.details}>
-            <View style={styles.conditionTitle}>
-              <Icon name="condition" />
-              <Text style={styles.detailsTitle}>Stato veicolo</Text>
-            </View>
             <View style={styles.infoRowDetails}>
               <Text style={styles.detailsLabelText}>Anno di immatricolazione</Text>
 
               <Text style={styles.detailsValue}>{posting.year}</Text>
             </View>
-
             <View style={styles.infoRowDetails}>
               <Text style={styles.detailsLabelText}>Kilometraggio</Text>
-
               <Text style={styles.detailsValue}>{'__mileage'} km</Text>
             </View>
           </View>
-        </View>
+        </Section>
+        <Section title="Caratteristiche" icon={<Icon name="door" />} />
+        <Section title="Motore" icon={<Icon name="engine" />} />
+        <Section title="Equipaggiamento" icon={<Icon name="wheel" />} />
+        <Section title="Servizi" icon={<Icon name="services" />} />
+        <Section title="Descrizione" icon={<Icon name="description" />}>
+          <Text style={styles.descriptionText}>
+            Sono NICOLAS di Giunima Auto per questa autovettura potete contattarmi al 3758018581
+            NESSUN COSTO NASCOSTO. GARANZIA INCLUSA NEL PREZZO. AUTO VISIONABILE PRESSO LA NOSTRA
+            SEDE IN VIA CUSAGO 160 (MI) MANUTENZIONE: TUTTO IN ORDINE DAL PUNTO DI VISTA MECCANICO
+            RICEVIAMO SU APPUNTAMENTO.
+          </Text>
+        </Section>
 
-        <View style={{ paddingHorizontal: 18 }}>
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsButton}>
-              <Icon name="door" />
-              <Text style={styles.detailsButtonText}>Caratteristiche</Text>
-            </View>
-            <Icon name="chevron-right" color={Colors.greenPrimary} width={15} />
-          </View>
-
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsButton}>
-              <Icon name="engine" />
-              <Text style={styles.detailsButtonText}>Motore</Text>
-            </View>
-            <Icon name="chevron-right" color={Colors.greenPrimary} width={15} />
-          </View>
-
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsButton}>
-              <Icon name="wheel" />
-              <Text style={styles.detailsButtonText}>Equipaggiamento</Text>
-            </View>
-            <Icon name="chevron-right" color={Colors.greenPrimary} width={15} />
-          </View>
-
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailsButton}>
-              <Icon name="services" />
-              <Text style={styles.detailsButtonText}>Servizi inclusi con il noleggio</Text>
-            </View>
-            <Icon name="chevron-right" color={Colors.greenPrimary} width={15} />
-          </View>
-        </View>
-
-        <View style={styles.descriptionWrapper}>
-          <View style={styles.descriptionContainer}>
-            <View style={styles.descriptionTitle}>
-              <Icon name="description" />
-              <Text style={styles.detailsButtonText}>Descrizione</Text>
-            </View>
-            <Text style={styles.descriptionText}>{'__description'}</Text>
-          </View>
-        </View>
         <View style={styles.ownerImages}>
           <View style={styles.imageContainer}>
-            <Image source={{ uri: posting.bgImageUrl }} style={styles.bgImage} />
-            <Image source={{ uri: posting.imageUrl }} style={styles.imageSquare} />
+            <Image source={{ uri: img }} style={styles.bgImage} />
+            <Image source={{ uri: img }} style={styles.imageSquare} />
           </View>
         </View>
+
         <View style={styles.cardContBottom}>
           <View style={styles.card}>
-            <Image source={{ uri: posting.imageUrl }} style={styles.image} />
+            <Image source={{ uri: img }} style={styles.image} />
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{posting.renter_name}</Text>
               <Text style={styles.cardSubtitleBottom}>Visita il profilo</Text>
@@ -295,17 +306,76 @@ const PostingDetailView = () => {
           <Text style={styles.buttonText}>Chatta</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      <ModalSheet ref={ref} title="Ordina" options={modalOptions} />
+    </ModalSheetProvider>
   )
 }
 
 export default PostingDetailView
 
+interface SectionProps {
+  title: string
+  icon?: JSX.Element
+  children?: JSX.Element
+  onPress?: () => void
+}
+
+const Section = ({ title, icon, children, onPress }: SectionProps) => {
+  return (
+    <View style={sectionStyles.container}>
+      <View style={sectionStyles.borderContainer}>
+        <View style={sectionStyles.titleContainer}>
+          <View style={sectionStyles.titleRow}>
+            {!!icon && cloneElement(icon, { color: '#000' })}
+            <Text style={sectionStyles.title}>{title}</Text>
+          </View>
+
+          {!children && <Icon name="chevron-right" color={Colors.greenPrimary} />}
+        </View>
+        {!!children && <View style={sectionStyles.childrenContainer}>{children}</View>}
+      </View>
+    </View>
+  )
+}
+
+const sectionStyles = StyleSheet.create({
+  container: {
+    width: '100%',
+    paddingTop: 20,
+    paddingHorizontal: 20,
+  },
+  borderContainer: {
+    width: '100%',
+    borderBottomWidth: 1,
+    paddingBottom: 20,
+    borderBottomColor: Colors.greySecondary,
+  },
+  titleContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 8,
+  },
+  titleRow: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 12,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: '500',
+  },
+  childrenContainer: {
+    paddingTop: 20,
+  },
+})
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   sliderImage: {
     width: Dimensions.get('window').width,
@@ -469,9 +539,6 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   details: {
-    borderBottomColor: Colors.greySecondary,
-    borderBottomWidth: 1,
-    paddingBottom: 18,
     display: 'flex',
     flexDirection: 'column',
     gap: 23,
@@ -602,7 +669,7 @@ const styles = StyleSheet.create({
   },
   fixedButtonsContainer: {
     position: 'absolute',
-    bottom: 90,
+    bottom: 32,
     left: 0,
     right: 0,
     flexDirection: 'row',

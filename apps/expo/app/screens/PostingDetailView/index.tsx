@@ -1,5 +1,5 @@
-import ProductPage from './meh'
+import { Text } from 'react-native'
 
 export default function Screen() {
-  return <ProductPage />
+  return <Text>yo</Text>
 }
