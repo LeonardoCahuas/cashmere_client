@@ -1,4 +1,4 @@
-import { News } from './_sections/News'
+import News from './_sections/News'
 
 export default function Screen() {
   return <News />

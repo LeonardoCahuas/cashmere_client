@@ -1,5 +1,6 @@
 import { AnimatedSwitch, Icon, PostingCard } from '@siva/ui'
 import { ModalOptions, ModalSheet, ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
+import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
 import { useGetBookmarksByUser } from 'apps/expo/app/setup/query/hooks'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import { rentalDurations } from 'apps/expo/app/types'
@@ -14,7 +15,7 @@ interface CardRendererProps {
 const CardRenderer = ({ item }: CardRendererProps) => {
   return (
     <View style={styles.cardWrapper}>
-      <PostingCard.Medium posting={item} onCardClick={() => {}} />
+      <PostingCard.Medium posting={item} onCardClick={() => linkToDetail(item)} />
     </View>
   )
 }

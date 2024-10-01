@@ -3,12 +3,12 @@ export interface Posting {
   created_at: string
   posting_id: string
   duration: string
-  subtitle: string
+  subtitle: string | null
   dropoff_location_plain: string
   pickup_location_plain: string
   deposit: string
-  price: string
-  age_required: string
+  price: number
+  age_required: number
   distance_limit_in_km: string
   taxes_included: boolean
   vehicle_id: string

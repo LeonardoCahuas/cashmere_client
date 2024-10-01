@@ -67,12 +67,7 @@ function TabLayout() {
       options={{
         title: 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
-        headerShown: true,
-        headerLeft: () => {
-          if (router.canGoBack()) {
-            return NavBarItems.home.left
-          }
-        },
+        headerShown: false,
       }}
     />,
     <Tabs.Screen
