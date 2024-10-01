@@ -112,7 +112,84 @@ const PostingDetailView = () => {
     },
     services: {
       title: 'Servizi inclusi nel noleggio',
-      content: <View></View>,
+      content: (
+        <View style={{ display: 'flex' }}>
+          <View
+            style={{
+              display: 'flex',
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.greySecondary,
+            }}
+          >
+            <Text style={styles.modalRowValue}>Manutenzione</Text>
+            <View style={{ width: '100%', display: 'flex', gap: 20, paddingVertical: 20 }}>
+              {['Manutenzione ordinaria', 'Manutenzione straordinaria'].map((item) => (
+                <View
+                  key={item}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 16,
+                    alignItems: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 24,
+                      width: 24,
+                      backgroundColor: Colors.greenPrimary,
+                      borderRadius: 24,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Icon name="check" color="#fff" />
+                  </View>
+                  <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.blackPrimary }}>
+                    {item}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/*  */}
+          <View style={{ display: 'flex', paddingTop: 20 }}>
+            <Text style={styles.modalRowValue}>Copertura Assicurativa</Text>
+            <View style={{ width: '100%', display: 'flex', gap: 20, paddingVertical: 20 }}>
+              {['RCA', 'Kasko', 'Assistenza nelle pratiche burocratiche'].map((item) => (
+                <View
+                  key={item}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    gap: 16,
+                    alignItems: 'center',
+                  }}
+                >
+                  <View
+                    style={{
+                      height: 24,
+                      width: 24,
+                      backgroundColor: Colors.greenPrimary,
+                      borderRadius: 24,
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Icon name="check" color="#fff" />
+                  </View>
+                  <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.blackPrimary }}>
+                    {item}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </View>
+      ),
     },
   }
 
@@ -206,11 +283,11 @@ const PostingDetailView = () => {
               <View style={styles.reviewCont}>
                 <Text style={styles.averageReview}>4.6</Text>
                 <View style={styles.starsCont}>
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greySecondary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greySecondary} />
                 </View>
                 <Text style={styles.reviewsText}>Recensioni</Text>
               </View>
@@ -319,11 +396,11 @@ const PostingDetailView = () => {
               <View style={styles.reviewCont}>
                 <Text style={styles.averageReview}>4.6</Text>
                 <View style={styles.starsCont}>
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greenPrimary} />
-                  <Icon name="clock" color={Colors.greySecondary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greenPrimary} />
+                  <Icon name="star" color={Colors.greySecondary} />
                 </View>
                 <Text style={styles.reviewsText}>Recensioni</Text>
               </View>

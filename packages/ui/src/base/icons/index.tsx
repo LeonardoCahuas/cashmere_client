@@ -4,6 +4,7 @@ import ChatBadge from '../../ChatBadge'
 import { BodyIcon } from './body.icon'
 import { CarIcon } from './car.icon'
 import { CardPaymentIcon } from './card-payment.icon'
+import { CheckmarkIcon } from './check.icon'
 import { ChevronRightIcon } from './chevron-right.icon'
 import { ClockIcon } from './clock.icon'
 import { CloseIcon } from './close.icon'
@@ -31,6 +32,7 @@ import SeatsIcon from './seats.icon'
 import ServicesIcon from './services.icon'
 import { ShareIcon } from './share.icon'
 import { ShortTermArrowIcon } from './short-term-arrow.icon'
+import { StarIcon } from './star.icon'
 import { ChatIcon } from './tab-bar/chat.icon'
 import { HeartIcon } from './tab-bar/heart.icon'
 import { TabPlusIcon } from './tab-bar/plus.icon'
@@ -82,6 +84,8 @@ export enum Icons {
   wheel = 'wheel',
   phone = 'phone',
   chevron_right = 'chevron-right',
+  check = 'check',
+  star = 'star',
 }
 
 export type IconName = `${Icons}`
@@ -177,6 +181,10 @@ export const Icon = ({ ...props }: IconProps) => {
       return <PhoneIcon {...p} />
     case 'chevron-right':
       return <ChevronRightIcon {...p} />
+    case 'check':
+      return <CheckmarkIcon {...p} />
+    case 'star':
+      return <StarIcon {...p} />
     default:
       return <></>
   }
