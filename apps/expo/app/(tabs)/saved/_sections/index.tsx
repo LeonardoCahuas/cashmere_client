@@ -1,6 +1,7 @@
 import { AnimatedSwitch, Icon, PostingCard } from '@siva/ui'
 import { ModalOptions, ModalSheet, ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
 import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
+import { useUser } from 'apps/expo/app/setup/auth/hooks'
 import { useGetBookmarksByUser } from 'apps/expo/app/setup/query/hooks'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import { rentalDurations } from 'apps/expo/app/types'
@@ -21,6 +22,8 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 }
 
 const Saved = () => {
+  const user = useUser()
+  if (!user) return <Text>Fai log in</Text>
   const { modalRef: ref, searchText } = useAppStore((state) => state.saved)
   const [sorting, setSorting] = useState<{ key: keyof Posting; direction: 'asc' | 'desc' }>()
   const [filter, setFilter] = useState<(typeof rentalDurations)[number]>('long_term')
