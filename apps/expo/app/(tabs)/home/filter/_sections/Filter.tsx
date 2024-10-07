@@ -9,6 +9,7 @@ import MultiSlider from '@ptomasroos/react-native-multi-slider';
 import FilterComponentModal from "./components/FilterComponentWithModal"
 import { useLocalSearchParams, useRouter } from "expo-router"
 
+
 const tabs: Array<TabItem> = [
     { label: 'Auto', icon: 'car' },
     { label: 'Moto', icon: 'motorbike' },
@@ -152,7 +153,7 @@ function reducer(
     action:
         | { type: 'set_min_price'; payload: number }
         | { type: 'set_max_price'; payload: number }
-        | { type: 'set_brand_model'; payload: BrandModel }
+        | { type: 'set_brand_model'; payload: BrandModels }
         | { type: 'set_min_year'; payload: number }
         | { type: 'set_max_year'; payload: number }
         | { type: 'set_min_mileage'; payload: number }
@@ -197,14 +198,15 @@ function reducer(
         | { type: 'clean_materials'; payload: null }
         | { type: 'clean_traction'; payload: null }
         | { type: 'clean_emission'; payload: null }
+        | { type: 'add_brand'; payload: string }
+        | { type: 'set_brands_model'; payload: BrandModel }
+        | { type: 'remove_brand'; payload: string }
 ): SearchParameters {
     switch (action.type) {
         case 'set_min_price':
             return { ...state, minPrice: action.payload }
         case 'set_max_price':
             return { ...state, maxPrice: action.payload }
-        case 'set_brand_model':
-            return { ...state, brandModel: [...action.payload] }
         case 'set_doors':
             return { ...state, doors: action.payload }
         case 'set_seats':
@@ -277,7 +279,6 @@ function reducer(
             return { ...state, traction: state.traction.includes(action.payload) ? state.traction.filter(f => f != action.payload) : [...state.traction, action.payload] }
         case 'set_emission':
             return { ...state, emission: state.emission.includes(action.payload) ? state.emission.filter(f => f != action.payload) : [...state.emission, action.payload] }
-
         case 'clean_internal_colors':
             return { ...state, internalColors: [] }
         case 'clean_external_colors':
@@ -286,9 +287,19 @@ function reducer(
             return { ...state, internalMaterials: [] }
         case 'clean_traction':
             return { ...state, traction: [] }
-        case 'clean_emission':
-            return { ...state, emission: [] }
-
+        case 'add_brand':
+            return { ...state, brandModel: [...state.brandModel, { brand: action.payload, models: [] }] }
+        case 'set_brands_model':
+            return {
+                ...state,
+                brandModel: state.brandModel.map((item) =>
+                    item.brand === action.payload.brand
+                        ? { ...item, models: item.models.includes(action.payload.models) ? item.models.filter((m) => m != action.payload.models) : [...item.models, action.payload.models] }
+                        : item
+                )
+            };
+        case 'remove_brand':
+            return { ...state, brandModel: state.brandModel.filter((bm => bm.brand != action.payload)) }
         default:
             return state
     }
@@ -303,16 +314,36 @@ export const FilterSection = () => {
     const [search, dispatch] = useReducer(reducer, initialSearchParameters)
     const ref = useModalSheetRef()
     const [modal, setModal] = useState("")
-    const [modal2, setModal2] = useState("")
     const [selectedBrand, setSelectedBrand] = useState<string>("")
-    const [selectedModels, setSelectedModels] = useState<Array<string>>([])
-    const [addingMode, setAddingMode] = useState("")
     const router = useRouter()
     const [isHorses, setIsHorses] = useState(false)
     const [modalKey, setModalKey] = useState<ModalKey | null>(null)
 
     const handlePress = () => {
-        router.push(`/home/news`);
+        switch (modalKey) {
+            case "model":
+            case "equipment":
+            case "services":
+            case "colors":
+            case "engine":
+                closeModal()
+                setModalKey(null);
+                break;
+            case "internal":
+            case "external":
+            case "materials":
+                setModalKey("colors");
+                break;
+            case "traction":
+            case "emission":
+                setModalKey("engine");
+                break;
+            default:
+                closeModal()
+                console.log(search)
+                router.push(`/home/news`);
+                break;
+        }
     }
 
     const openModal = (k: ModalKey) => {
@@ -324,20 +355,6 @@ export const FilterSection = () => {
         ref?.current?.close()
     }
 
-    const removeBrandModel = (brand: string) => {
-
-    }
-
-    const handleValuesChange = (values: number[]) => {
-
-    };
-
-    const handlePowerChange = (values: number[]) => {
-
-    };
-
-
-
     const modals: Record<ModalKey, { title: string; content: JSX.Element }> = {
         brand: {
             title: 'Marca',
@@ -345,7 +362,11 @@ export const FilterSection = () => {
                 <View style={styles.brandsModal}>
                     {(
                         Object.keys(brands).map(brand => (
-                            <TouchableOpacity activeOpacity={1} key={brand} style={styles.onlyVerifiedCont} onPress={() => setSelectedBrand(brand)}>
+                            <TouchableOpacity activeOpacity={1} key={brand} style={styles.onlyVerifiedCont} onPress={() => {
+                                setSelectedBrand(brand)
+                                dispatch({ type: "add_brand", payload: brand })
+                                setModalKey("model")
+                            }}>
                                 <Text>
                                     {brand}
                                 </Text>
@@ -359,44 +380,57 @@ export const FilterSection = () => {
             title: 'Modello',
             content: (
                 <View style={styles.brandsModal}>
-                    {/* {
-                        brands[selectedBrand].map(model => (
-                            <TouchableOpacity key={model} activeOpacity={1} style={[styles.onlyVerifiedCont, selectedModels.includes(model) ? styles.onlyVerifiedContActive : {}]} onPress={() => selectedModels.includes(model) ? setSelectedModels(selectedModels.filter(m => m != model)) : setSelectedModels([...selectedModels, model])}>
+                    {
+                        brands[selectedBrand] && brands[selectedBrand].map(model => (
+                            <TouchableOpacity key={model} activeOpacity={1} style={styles.option} onPress={() => dispatch({ type: "set_brands_model", payload: { brand: selectedBrand, models: model } })}>
                                 <Text>
                                     {model}
                                 </Text>
+                                <View style={[styles.verifiedCheck, search?.brandModel?.find(b => b.brand == selectedBrand)?.models.includes(model) ? styles.verifiedCheckActive : {}]}>
+                                    <FontAwesome name="check" size={13} color={"white"} />
+                                </View>
                             </TouchableOpacity>
                         ))
-                    } */}
+                    }
                 </View>
             ),
         },
         equipment: {
             title: 'Equipaggiamento',
             content: (
-                <View style={{ display: 'flex', gap: 32 }}>
-                    {['Airbag', 'Aria condizionata', 'Stereo bluetooth', 'Ruotino di scorta'].map((item) => (
-                        <View
-                            key={item}
-                            style={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: 12,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <View
-                                style={{
-                                    height: 5,
-                                    width: 5,
-                                    borderRadius: 5,
-                                    backgroundColor: Colors.blackPrimary,
-                                }}
-                            />
-                            <Text style={styles.modalRowValue}>{item}</Text>
+                <View style={{ padding: 0, height: "100%" }}>
+                    <View style={{ padding: 6, borderBottomColor: Colors.lightGray, borderBottomWidth: 1 }}>
+                        <View style={styles.optionalInput}>
+                            <Icon name="search" color={Colors.greyPrimary} />
+                            <TextInput placeholder="Cerca" style={{ flex: 1 }} onChangeText={text => setSearchText(text)} />
                         </View>
-                    ))}
+                    </View>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
+                            <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
+                                {search.optionals.length} selezionati
+                            </Text>
+                            <TouchableOpacity onPress={() => dispatch({ type: "clean_optionals", payload: null })}>
+                                <Text style={{ color: Colors.greenPrimary, fontWeight: "600" }}>Azzera</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {
+                            optionals.filter(opt => opt.toLowerCase().includes(searchText.toLowerCase())).map((opt: string, key) => {
+                                return (
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_optionals", payload: opt })}>
+                                        <Text>
+                                            {opt}
+                                        </Text>
+                                        <View style={[styles.verifiedCheck, search.optionals.includes(opt) ? styles.verifiedCheckActive : {}]}>
+                                            <FontAwesome name="check" size={13} color={"white"} />
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                            }
+
+                            )
+                        }
+                    </ScrollView>
                 </View>
             ),
         },
@@ -404,7 +438,7 @@ export const FilterSection = () => {
             title: 'Servizi inclusi nel noleggio',
             content: (
                 <View>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                             </Text>
@@ -419,7 +453,7 @@ export const FilterSection = () => {
                         {
                             maintenance.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_maintenance", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_maintenance", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -440,7 +474,7 @@ export const FilterSection = () => {
                         {
                             insurances.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_insurances", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_insurances", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -461,7 +495,7 @@ export const FilterSection = () => {
                         {
                             otherServices.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_other_services", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_other_services", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -475,11 +509,6 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer, modal != "services" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             ),
         },
@@ -529,7 +558,10 @@ export const FilterSection = () => {
                                 <MultiSlider
                                     values={[search.minPower, search.maxPower]}
                                     sliderLength={300}
-                                    onValuesChange={handlePowerChange}
+                                    onValuesChange={values => {
+                                        dispatch({ type: "set_min_power", payload: values[0] })
+                                        dispatch({ type: "set_max_power", payload: values[1] })
+                                    }}
                                     min={0}
                                     max={1000}
                                     step={1}
@@ -550,11 +582,6 @@ export const FilterSection = () => {
                         }} />
 
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer2, modal != "engine" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         },
@@ -573,11 +600,6 @@ export const FilterSection = () => {
                             openModal("materials")
                         }} />
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer2, modal != "colors" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         },
@@ -585,7 +607,7 @@ export const FilterSection = () => {
             title: "Colore interni",
             content: (
                 <View>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                                 {search.internalColors.length} selezionati
@@ -597,7 +619,7 @@ export const FilterSection = () => {
                         {
                             colors.map((opt, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_internal_colors", payload: opt.name })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_internal_colors", payload: opt.name })}>
                                         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
                                             <View style={{ backgroundColor: opt.hex, width: 25, height: 25, borderRadius: 25, borderColor: Colors.lightGray, borderWidth: 1 }}></View>
                                             <Text>
@@ -614,11 +636,6 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView >
-                    <View style={[styles.modalButtonsContainer2, modal2 != "internal" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View >
             )
         },
@@ -626,7 +643,7 @@ export const FilterSection = () => {
             title: "Colore esterno",
             content: (
                 <View>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                                 {search.externalColors.length} selezionati
@@ -638,7 +655,7 @@ export const FilterSection = () => {
                         {
                             colors.map((opt, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_external_colors", payload: opt.name })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_external_colors", payload: opt.name })}>
                                         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
                                             <View style={{ backgroundColor: opt.hex, width: 25, height: 25, borderRadius: 25, borderColor: Colors.lightGray, borderWidth: 1 }}></View>
                                             <Text>
@@ -655,11 +672,6 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer2, modal2 != "external" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         },
@@ -667,7 +679,7 @@ export const FilterSection = () => {
             title: "Materiale interni",
             content: (
                 <View style={{ padding: 0, height: "100%" }}>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                                 {search.internalMaterials.length} selezionati
@@ -679,7 +691,7 @@ export const FilterSection = () => {
                         {
                             materials.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_materials", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_materials", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -692,11 +704,6 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer, modal2 != "materials" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         },
@@ -704,7 +711,7 @@ export const FilterSection = () => {
             title: "Trazione",
             content: (
                 <View style={{ padding: 0, height: "100%" }}>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                                 {search.traction.length} selezionati
@@ -716,7 +723,7 @@ export const FilterSection = () => {
                         {
                             traction.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_traction", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_traction", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -730,11 +737,6 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer, modal2 != "traction" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         },
@@ -742,7 +744,7 @@ export const FilterSection = () => {
             title: "",
             content: (
                 <View style={{ padding: 0, height: "100%" }}>
-                    <ScrollView contentContainerStyle={styles.optionalList}>
+                    <ScrollView contentContainerStyle={styles.optionsList}>
                         <View style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 10 }}>
                             <Text style={{ color: Colors.greyPrimary, fontWeight: "600" }}>
                                 {search.emission.length} selezionati
@@ -754,7 +756,7 @@ export const FilterSection = () => {
                         {
                             emission.map((opt: string, key) => {
                                 return (
-                                    <TouchableOpacity style={styles.optional} onPress={() => dispatch({ type: "set_emission", payload: opt })}>
+                                    <TouchableOpacity style={styles.option} onPress={() => dispatch({ type: "set_emission", payload: opt })}>
                                         <Text>
                                             {opt}
                                         </Text>
@@ -768,18 +770,13 @@ export const FilterSection = () => {
                             )
                         }
                     </ScrollView>
-                    <View style={[styles.modalButtonsContainer, modal2 != "emission" ? { display: "none" } : {}]}>
-                        <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={() => closeModal()}>
-                            <Text style={styles.buttonText}>Fatto</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             )
         }
     }
 
     return (
-        <View>
+        <View >
             <ScrollView horizontal={false}>
                 <View style={styles.container}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabContainer} >
@@ -799,29 +796,33 @@ export const FilterSection = () => {
                 <View style={{ paddingBottom: 140 }}>
                     <FilterComponent title="Marca e modello" icon="search">
                         <Button style={styles.buttonStyle} onPress={() => {
-                            setAddingMode("replace")
                             setModal("brandModel")
                             openModal("brand")
                         }}>Seleziona marca e modello</Button>
-                        {Object.keys(search.brandModel).length > 0 && (
-                            Object.keys(search.brandModel).map(bm => (
-                                <View style={styles.brandModel} key={bm}>
+                        {search.brandModel.length > 0 && (
+                            search.brandModel.map((item) => (
+                                <View style={styles.brandModel} key={item.brand}>
                                     <View style={{ flexDirection: "row", gap: 10 }}>
                                         <Text style={{ color: "black" }}>
-                                            {bm}
+                                            {item.brand}
                                         </Text>
                                         <Text style={{ color: Colors.greyPrimary }}>
-                                            {search.brandModel[bm].join(", ")}
+                                            {item.models.join(", ")}
                                         </Text>
                                     </View>
                                     <View style={styles.closeContainer}>
-                                        <Icon name="close" color="white" width={13} onPress={() => removeBrandModel(bm)} />
+                                        <Icon
+                                            name="close"
+                                            color="white"
+                                            width={13}
+                                            onPress={() => dispatch({ type: "remove_brand", payload: item.brand })}
+                                        />
                                     </View>
                                 </View>
                             ))
                         )}
+
                         <TouchableOpacity style={styles.addBrandModel} onPress={() => {
-                            setAddingMode("add")
                             setModal("brandModel")
                             openModal("brand")
                         }}>
@@ -996,7 +997,6 @@ export const FilterSection = () => {
 
 
                     {duration == "short" && <FilterComponent title="Limite di età" icon="seats" description="Età minima richiesta per il noleggio.">
-
                         <TouchableOpacity style={[styles.onlyVerifiedCont, search.noAgeLimit ? styles.onlyVerifiedContActive : {}]} activeOpacity={1} onPress={() => dispatch({ type: "set_no_age_limit", payload: !search.noAgeLimit })}>
                             <Text>
                                 Mostra solo veicoli senza limite di età
@@ -1022,7 +1022,6 @@ export const FilterSection = () => {
                                         value={search.minAge.toString()}
                                     />
                                 </View>
-
                             </View>
                         }
                     </FilterComponent>}
@@ -1186,7 +1185,6 @@ export const FilterSection = () => {
                             </View>
                         </View>
 
-
                         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", marginVertical: 5 }}>
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 15 }}>
                                 <Icon name="clock" color="black" width={20} height={20} />
@@ -1209,12 +1207,9 @@ export const FilterSection = () => {
                                 </TouchableOpacity>
                             </View>
                         </View>
-
-
                     </FilterComponent>
 
                     <FilterComponent title="Veicoli con conducente" icon="distance" description="Servizio di noleggio con conducente incluso.">
-
                         <TouchableOpacity style={[styles.onlyVerifiedCont, search.withDriver ? styles.onlyVerifiedContActive : {}]} activeOpacity={1} onPress={() => dispatch({ type: 'set_with_driver', payload: !search.withDriver })}>
                             <Text>
                                 Mostra solo veicoli con conducente
@@ -1230,33 +1225,38 @@ export const FilterSection = () => {
 
                     <FilterComponentModal title={"Equipaggiamento"} icon="wheel" items={search.optionals} onClick={() => {
                         setModal("equipment")
+                        openModal("equipment")
                     }} />
                     <FilterComponentModal title={"Servizi inclusi con il noleggio"} icon="services" items={[...search.insurances, ...search.otherServices, ...search.maintenance]} onClick={() => {
                         setModal("services")
+                        openModal("services")
                     }} />
                     <FilterComponentModal title={"Colore e interni"} icon="colors" items={[...search.internalColors, ...search.externalColors, ...search.internalMaterials]} onClick={() => {
                         setModal("colors")
+                        openModal("colors")
                     }} />
                     <FilterComponentModal title={"Motore"} icon="engine" items={[...search.traction, ...search.emission]} onClick={() => {
                         setModal("engine")
+                        openModal("engine")
                     }} />
 
 
 
                 </View>
+                {!!modalKey && modals[modalKey].content}
             </ScrollView>
 
             <View style={[styles.fixedButtonsContainer]}>
                 <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={handlePress}>
-                    <Text style={styles.buttonText}>Mostra risultati</Text>
+                    <Text style={styles.buttonText}>{modalKey == null ? "Mostra risultati" : "Conferma"}</Text>
                 </TouchableOpacity>
             </View>
-            {/* <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
-                {!!modalKey && modals[modalKey].content}
-            </ModalSheet> */}
 
-
-
+            {
+                /* <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
+                    {!!modalKey && modals[modalKey].content}
+                </ModalSheet> */
+            }
         </View>
     )
 }
@@ -1543,7 +1543,7 @@ const styles = StyleSheet.create({
         gap: 10,
         borderRadius: 8
     },
-    optional: {
+    option: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
@@ -1552,7 +1552,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         height: 50
     },
-    optionalList: {
+    optionsList: {
         paddingBottom: 170
     },
     modalButtonsContainer: {
@@ -1601,7 +1601,7 @@ interface TabItem {
 
 interface SearchParameters {
     vehicleType: string
-    brandModel: BrandModel[]
+    brandModel: BrandModels[]
     minPrice: number
     maxPrice: number
     minMonths: number
@@ -1675,7 +1675,13 @@ const initialSearchParameters: SearchParameters = {
     emission: [] as string[],
 }
 
-interface BrandModel {
+interface BrandModels {
     brand: string;
     models: string[];
+}
+
+
+interface BrandModel {
+    brand: string;
+    models: string;
 }
