@@ -775,7 +775,7 @@ export const FilterSection = () => {
     }
 
     return (
-        <View >
+        <ModalSheetProvider >
             <ScrollView horizontal={false}>
                 <View style={styles.container}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabContainer} >
@@ -1237,7 +1237,7 @@ export const FilterSection = () => {
                     {!!modalKey && modals[modalKey].content}
                 </ModalSheet>
             }
-        </View>
+        </ModalSheetProvider>
     )
 }
 
