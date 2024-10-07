@@ -313,7 +313,6 @@ export const FilterSection = () => {
     const [searchText, setSearchText] = useState("");
     const [search, dispatch] = useReducer(reducer, initialSearchParameters)
     const ref = useModalSheetRef()
-    const [modal, setModal] = useState("")
     const [selectedBrand, setSelectedBrand] = useState<string>("")
     const router = useRouter()
     const [isHorses, setIsHorses] = useState(false)
@@ -795,10 +794,7 @@ export const FilterSection = () => {
                 </View>
                 <View style={{ paddingBottom: 140 }}>
                     <FilterComponent title="Marca e modello" icon="search">
-                        <Button style={styles.buttonStyle} onPress={() => {
-                            setModal("brandModel")
-                            openModal("brand")
-                        }}>Seleziona marca e modello</Button>
+                        <Button style={styles.buttonStyle} onPress={() => openModal("brand")}>Seleziona marca e modello</Button>
                         {search.brandModel.length > 0 && (
                             search.brandModel.map((item) => (
                                 <View style={styles.brandModel} key={item.brand}>
@@ -822,10 +818,7 @@ export const FilterSection = () => {
                             ))
                         )}
 
-                        <TouchableOpacity style={styles.addBrandModel} onPress={() => {
-                            setModal("brandModel")
-                            openModal("brand")
-                        }}>
+                        <TouchableOpacity style={styles.addBrandModel} onPress={() => openModal("brand")}>
                             <Text style={{ color: Colors.bluePrimary, fontSize: 20 }}>
                                 +
                             </Text>
@@ -1223,27 +1216,14 @@ export const FilterSection = () => {
                         </TouchableOpacity>
                     </FilterComponent>
 
-                    <FilterComponentModal title={"Equipaggiamento"} icon="wheel" items={search.optionals} onClick={() => {
-                        setModal("equipment")
-                        openModal("equipment")
-                    }} />
-                    <FilterComponentModal title={"Servizi inclusi con il noleggio"} icon="services" items={[...search.insurances, ...search.otherServices, ...search.maintenance]} onClick={() => {
-                        setModal("services")
-                        openModal("services")
-                    }} />
-                    <FilterComponentModal title={"Colore e interni"} icon="colors" items={[...search.internalColors, ...search.externalColors, ...search.internalMaterials]} onClick={() => {
-                        setModal("colors")
-                        openModal("colors")
-                    }} />
-                    <FilterComponentModal title={"Motore"} icon="engine" items={[...search.traction, ...search.emission]} onClick={() => {
-                        setModal("engine")
-                        openModal("engine")
-                    }} />
+                    <FilterComponentModal title={"Equipaggiamento"} icon="wheel" items={search.optionals} onClick={() => openModal("equipment")} />
+                    <FilterComponentModal title={"Servizi inclusi con il noleggio"} icon="services" items={[...search.insurances, ...search.otherServices, ...search.maintenance]} onClick={() => openModal("services")} />
+                    <FilterComponentModal title={"Colore e interni"} icon="colors" items={[...search.internalColors, ...search.externalColors, ...search.internalMaterials]} onClick={() => openModal("colors")} />
+                    <FilterComponentModal title={"Motore"} icon="engine" items={[...search.traction, ...search.emission]} onClick={() => openModal("engine")} />
 
 
 
                 </View>
-                {!!modalKey && modals[modalKey].content}
             </ScrollView>
 
             <View style={[styles.fixedButtonsContainer]}>
@@ -1253,9 +1233,9 @@ export const FilterSection = () => {
             </View>
 
             {
-                /* <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
+                <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
                     {!!modalKey && modals[modalKey].content}
-                </ModalSheet> */
+                </ModalSheet>
             }
         </View>
     )
