@@ -3011,6 +3011,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ptomasroos/react-native-multi-slider@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@ptomasroos/react-native-multi-slider@npm:2.2.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/a7fb9baeb24b561720cbc1169ca7d80c790649a1b6dfb6b64c4845c4adaa4611ed61cc0ce5799ce2472890fd4b104ba84ddc31190ad3ba948c766a123416c437
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-compose-refs@npm:1.0.0":
   version: 1.0.0
   resolution: "@radix-ui/react-compose-refs@npm:1.0.0"
@@ -3741,6 +3751,7 @@ __metadata:
   resolution: "@siva/ui@workspace:packages/ui"
   dependencies:
     "@siva/config": "npm:0.0.1"
+    "@siva/entities": "workspace:^"
     "@tamagui/build": "npm:^1.111.10"
     "@tamagui/toast": "npm:^1.111.10"
     react-native-svg: "npm:^15.4.0"
@@ -15835,6 +15846,7 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.24.6"
     "@manypkg/cli": "npm:^0.21.4"
+    "@ptomasroos/react-native-multi-slider": "npm:^2.2.2"
     "@siva/ui": "workspace:^"
     "@supabase/supabase-js": "npm:^2.45.4"
     check-dependency-version-consistency: "npm:^4.1.0"

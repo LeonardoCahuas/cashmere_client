@@ -1,5 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons'
 import { Colors, Icon } from '@siva/ui'
+import { useRouter } from 'expo-router'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
@@ -8,6 +9,11 @@ interface DurationButtonProps {
 }
 
 const DurationCard: React.FC<DurationButtonProps> = ({ duration }) => {
+  const router = useRouter()
+
+  const handlePress = () => {
+    router.push(`/home/filter?duration=${duration}`)
+  }
   return (
     <View style={styles.card}>
       <View style={styles.iconContainer}>
@@ -24,7 +30,7 @@ const DurationCard: React.FC<DurationButtonProps> = ({ duration }) => {
           ? 'È una soluzione pratica per rispondere rapidamente alle esigenze mutevoli senza vincoli duraturi.'
           : 'Offre accesso a beni di qualità senza investimenti iniziali significativi, promuovendo un approccio più sostenibile.'}
       </Text>
-      <TouchableOpacity style={styles.searchButton}>
+      <TouchableOpacity style={styles.searchButton} onPress={() => handlePress()}>
         <Text style={styles.searchText}>Avvia ricerca</Text>
         <FontAwesome name="chevron-right" size={16} color={Colors.greenPrimary} />
       </TouchableOpacity>
