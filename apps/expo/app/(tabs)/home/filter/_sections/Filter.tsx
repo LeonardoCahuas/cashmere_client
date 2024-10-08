@@ -11,9 +11,18 @@ import { useLocalSearchParams, useRouter } from "expo-router"
 
 
 const tabs: Array<TabItem> = [
-    { label: 'Auto', icon: 'car' },
-    { label: 'Moto', icon: 'motorbike' },
-    { label: 'Furgone', icon: 'truck' },
+    {
+        label: 'Auto', icon: 'car',
+        name: "car"
+    },
+    {
+        label: 'Moto', icon: 'motorbike',
+        name: "motorcycle"
+    },
+    {
+        label: 'Furgone', icon: 'truck',
+        name: "van"
+    },
 ]
 const brands = {
     "FIAT": ["Punto", "600", "Spider"],
@@ -151,6 +160,7 @@ const bodies: Array<buttonProps> = [
 function reducer(
     state: SearchParameters,
     action:
+        { type: 'set_vehicle_type'; payload: VehicleType }
         | { type: 'set_min_price'; payload: number }
         | { type: 'set_max_price'; payload: number }
         | { type: 'set_brand_model'; payload: BrandModels }
@@ -168,7 +178,7 @@ function reducer(
         | { type: 'set_gears'; payload: number }
         | { type: 'set_radius'; payload: number }
         | { type: 'set_price_range'; payload: number[] }
-        | { type: 'set_cap'; payload: string }
+        | { type: 'set_cap'; payload: number }
         | { type: 'set_min_months'; payload: number }
         | { type: 'set_max_months'; payload: number }
         | { type: 'set_only_verified'; payload: boolean }
@@ -203,6 +213,8 @@ function reducer(
         | { type: 'remove_brand'; payload: string }
 ): SearchParameters {
     switch (action.type) {
+        case 'set_vehicle_type':
+            return { ...state, vehicleType: action.payload }
         case 'set_min_price':
             return { ...state, minPrice: action.payload }
         case 'set_max_price':
@@ -305,6 +317,8 @@ function reducer(
     }
 }
 
+type NumberActionType = 'set_min_price' | 'set_max_price' | 'set_radius' | 'set_cap' | 'set_max_advance' | 'set_min_age' | 'set_annual_limit' | 'set_min_power' | 'set_max_power' | 'set_min_months' | 'set_max_months';
+
 type ModalKey = 'brand' | 'model' | 'equipment' | 'services' | 'engine' | 'colors' | 'internal' | 'external' | 'materials' | 'traction' | 'emission'
 
 export const FilterSection = () => {
@@ -352,6 +366,11 @@ export const FilterSection = () => {
 
     const closeModal = () => {
         ref?.current?.close()
+    }
+
+    const handleNumberInput = (action: NumberActionType, payload: string) => {
+        const numericText = payload.replace(/[^0-9]/g, '');
+        dispatch({ type: action, payload: numericText ? Number(numericText) : 0 });
     }
 
     const modals: Record<ModalKey, { title: string; content: JSX.Element }> = {
@@ -538,8 +557,17 @@ export const FilterSection = () => {
                                         style={styles.input}
                                         placeholder="Inserisci potenza minima"
                                         keyboardType="numeric"
-                                        onChangeText={text => dispatch({ type: "set_min_power", payload: Number(text) })}
-                                        value={search.minPower.toString()}
+                                        onChangeText={text => {
+                                            const numericValue = text.replace(/[^0-9]/g, '');
+                                            const powerValue = isHorses ?
+                                                Number(numericValue) :
+                                                Math.round(Number(numericValue) / 0.735499);
+                                            dispatch({ type: "set_min_power", payload: powerValue });
+                                        }}
+                                        value={isHorses ?
+                                            search.minPower.toString() :
+                                            Math.round(search.minPower * 0.735499).toString()
+                                        }
                                     />
                                 </View>
                                 <View style={styles.priceContEnd}>
@@ -548,8 +576,17 @@ export const FilterSection = () => {
                                         style={styles.input}
                                         placeholder="Inserisci potenza massima"
                                         keyboardType="numeric"
-                                        onChangeText={text => dispatch({ type: "set_max_power", payload: Number(text) })}
-                                        value={search.maxPower.toString()}
+                                        onChangeText={text => {
+                                            const numericValue = text.replace(/[^0-9]/g, '');
+                                            const powerValue = isHorses ?
+                                                Number(numericValue) :
+                                                Math.round(Number(numericValue) / 0.735499);
+                                            dispatch({ type: "set_max_power", payload: powerValue });
+                                        }}
+                                        value={isHorses ?
+                                            search.maxPower.toString() :
+                                            Math.round(search.maxPower * 0.735499).toString()
+                                        }
                                     />
                                 </View>
                             </View>
@@ -775,19 +812,17 @@ export const FilterSection = () => {
     }
 
     return (
-        <ModalSheetProvider >
-            <ScrollView horizontal={false}>
+        <View >
+            <ScrollView horizontal={false} style={{ marginBottom: 150 }}>
                 <View style={styles.container}>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabContainer} >
-                        {tabs.map(({ label, icon }, i) => (
+                        {tabs.map(({ label, icon, name }, i) => (
                             <VehicleTypeButton
                                 key={label}
-                                icon={<Icon name={icon} color={activeTypes == i ? 'black' : Colors.greyPrimary} />}
+                                icon={<Icon name={icon} color={search.vehicleType == name ? 'black' : Colors.greyPrimary} />}
                                 label={label}
-                                active={activeTypes == i}
-                                onClick={() => {
-                                    setActiveTypes(i)
-                                }}
+                                active={search.vehicleType == name}
+                                onClick={() => dispatch({ type: "set_vehicle_type", payload: name })}
                             />
                         ))}
                     </ScrollView>
@@ -830,7 +865,12 @@ export const FilterSection = () => {
 
                     <FilterComponent title="Posizione" icon="location" description="Indica il luogo in cui vuoi cercare il veicolo">
                         <View style={styles.brandModel}>
-                            <TextInput placeholder="Digita città o CAP" onChangeText={text => dispatch({ type: "set_cap", payload: text })} />
+                            <TextInput
+                                placeholder="Digita città o CAP"
+                                onChangeText={text => handleNumberInput("set_cap", text)}
+                                style={{ flex: 1 }}
+                                value={search.cap.toString()}
+                            />
                         </View>
 
                         <Text style={{ color: Colors.bluePrimary, fontSize: 14 }}>
@@ -844,7 +884,7 @@ export const FilterSection = () => {
                                     style={styles.input}
                                     placeholder="Inserisci raggio massimo"
                                     keyboardType="numeric"
-                                    onChangeText={text => dispatch({ type: "set_radius", payload: Number(text) })}
+                                    onChangeText={text => handleNumberInput("set_radius", text)}
                                     value={search.radius.toString()}
                                 />
                                 <Text>Km</Text>
@@ -873,7 +913,7 @@ export const FilterSection = () => {
                                     style={styles.input}
                                     placeholder="Inserisci prezzo minimo"
                                     keyboardType="numeric"
-                                    onChangeText={text => dispatch({ type: "set_min_price", payload: Number(text) })}
+                                    onChangeText={text => handleNumberInput("set_min_price", text)}
                                     value={search.minPrice.toString()}
                                 />
                             </View>
@@ -883,7 +923,7 @@ export const FilterSection = () => {
                                     style={styles.input}
                                     placeholder="Inserisci prezzo massimo"
                                     keyboardType="numeric"
-                                    onChangeText={text => dispatch({ type: "set_max_price", payload: Number(text) })}
+                                    onChangeText={text => handleNumberInput("set_max_price", text)}
                                     value={search.maxPrice.toString()}
                                 />
                             </View>
@@ -920,8 +960,8 @@ export const FilterSection = () => {
                                             style={styles.inputDuration}
                                             placeholder="Qualsiasi"
                                             keyboardType="numeric"
-                                            onChangeText={text => dispatch({ type: "set_min_months", payload: Number(text) })}
-                                            value={search.maxPrice.toString()}
+                                            onChangeText={text => handleNumberInput("set_min_months", text)}
+                                            value={search.minMonths.toString()}
                                         />
                                     </View>
                                 </View>
@@ -933,8 +973,8 @@ export const FilterSection = () => {
                                             style={styles.inputDuration}
                                             placeholder="Qualsiasi"
                                             keyboardType="numeric"
-                                            onChangeText={text => dispatch({ type: "set_max_months", payload: Number(text) })}
-                                            value={search.maxPrice.toString()}
+                                            onChangeText={text => handleNumberInput("set_max_months", text)}
+                                            value={search.maxMonths.toString()}
                                         />
                                     </View>
                                 </View>
@@ -942,7 +982,6 @@ export const FilterSection = () => {
                         </FilterComponent>}
 
                     <FilterComponent title="Noleggiatori verificati" icon="verified_check" description="Mostra solo annunci da noleggiatori verificati, in modo da avere la sicurezza di noleggiare da professionisti qualificati.">
-
                         <TouchableOpacity style={[styles.onlyVerifiedCont, search.onlyVerified ? styles.onlyVerifiedContActive : {}]} activeOpacity={1} onPress={() => dispatch({ type: 'set_only_verified', payload: !search.onlyVerified })}>
                             <Text>
                                 Mostra solo annunci verificati
@@ -957,7 +996,6 @@ export const FilterSection = () => {
                     </FilterComponent>
 
                     <FilterComponent title={duration == "short" ? "Deposito cauzionario" : "Anticipo"} icon="card_payment" description={duration == "short" ? "Importo temporaneo trattenuto come garanzia." : "Pagamento iniziale richiesto per noleggi a lungo termine."}>
-
                         <TouchableOpacity style={[styles.onlyVerifiedCont, search.noAdvancePayment || search.noSecurityDeposit ? styles.onlyVerifiedContActive : {}]} activeOpacity={1} onPress={() => dispatch({ type: duration == "short" ? "set_no_security_deposit" : "set_no_advance_payment", payload: duration == "short" ? !search.noSecurityDeposit : !search.noAdvancePayment })}>
                             <Text>
                                 {duration == "short" ? "Mostra solo veicoli senza cauzione" : "Mostra solo veicoli senza anticipo"}
@@ -969,17 +1007,17 @@ export const FilterSection = () => {
                                 }
                             </View>
                         </TouchableOpacity>
+
                         {((duration == "long" && !search.noAdvancePayment) || (duration == "short" && !search.noSecurityDeposit)) &&
                             <View style={styles.advanceCont}>
                                 <Text style={styles.labelPrice}>Cifra massima</Text>
-
                                 <View style={styles.anvanceInputCont}>
                                     <Text style={{ paddingHorizontal: 10 }}>€</Text>
                                     <TextInput
                                         style={styles.anvanceInput}
                                         placeholder={duration == "short" ? "Inserisci deposito massimo" : "Inserisci anticipo massimo"}
                                         keyboardType="numeric"
-                                        onChangeText={text => dispatch({ type: "set_max_advance", payload: Number(text) })}
+                                        onChangeText={text => handleNumberInput("set_max_advance", text)}
                                         value={search.maxAdvance.toString()}
                                     />
                                 </View>
@@ -1011,12 +1049,11 @@ export const FilterSection = () => {
                                         style={styles.anvanceInput}
                                         placeholder="Età"
                                         keyboardType="numeric"
-                                        onChangeText={text => dispatch({ type: "set_min_age", payload: Number(text) })}
+                                        onChangeText={text => handleNumberInput("set_min_age", text)}
                                         value={search.minAge.toString()}
                                     />
                                 </View>
-                            </View>
-                        }
+                            </View>}
                     </FilterComponent>}
 
 
@@ -1070,7 +1107,7 @@ export const FilterSection = () => {
                                         style={styles.anvanceInput}
                                         placeholder="Massimo km"
                                         keyboardType="numeric"
-                                        onChangeText={text => dispatch({ type: "set_annual_limit", payload: Number(text) })}
+                                        onChangeText={text => handleNumberInput("set_annual_limit", text)}
                                         value={search.annualLimit.toString()}
                                     />
                                 </View>
@@ -1215,14 +1252,10 @@ export const FilterSection = () => {
                             </View>
                         </TouchableOpacity>
                     </FilterComponent>
-
                     <FilterComponentModal title={"Equipaggiamento"} icon="wheel" items={search.optionals} onClick={() => openModal("equipment")} />
                     <FilterComponentModal title={"Servizi inclusi con il noleggio"} icon="services" items={[...search.insurances, ...search.otherServices, ...search.maintenance]} onClick={() => openModal("services")} />
                     <FilterComponentModal title={"Colore e interni"} icon="colors" items={[...search.internalColors, ...search.externalColors, ...search.internalMaterials]} onClick={() => openModal("colors")} />
                     <FilterComponentModal title={"Motore"} icon="engine" items={[...search.traction, ...search.emission]} onClick={() => openModal("engine")} />
-
-
-
                 </View>
             </ScrollView>
 
@@ -1232,12 +1265,11 @@ export const FilterSection = () => {
                 </TouchableOpacity>
             </View>
 
-            {
-                <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
-                    {!!modalKey && modals[modalKey].content}
-                </ModalSheet>
-            }
-        </ModalSheetProvider>
+
+            <ModalSheet title={modalKey ? modals[modalKey].title : ''} ref={ref}>
+                {!!modalKey && modals[modalKey].content}
+            </ModalSheet>
+        </View>
     )
 }
 
@@ -1577,16 +1609,17 @@ const styles = StyleSheet.create({
 interface TabItem {
     label: string
     icon: IconName
+    name: VehicleType
 }
 
 interface SearchParameters {
-    vehicleType: string
+    vehicleType: VehicleType
     brandModel: BrandModels[]
     minPrice: number
     maxPrice: number
     minMonths: number
     maxMonths: number
-    cap: string
+    cap: number
     radius: number
     onlyVerified: boolean
     noAdvancePayment: boolean
@@ -1618,14 +1651,14 @@ interface SearchParameters {
 }
 
 const initialSearchParameters: SearchParameters = {
-    vehicleType: '',
+    vehicleType: 'car',
     brandModel: [],
     minPrice: 0,
     maxPrice: 1000,
     minMonths: 0,
-    maxMonths: 0,
+    maxMonths: 24,
     radius: 1000,
-    cap: "",
+    cap: 0,
     onlyVerified: false,
     noAdvancePayment: false,
     noSecurityDeposit: false,
@@ -1665,3 +1698,5 @@ interface BrandModel {
     brand: string;
     models: string;
 }
+
+type VehicleType = 'car' | 'van' | 'motorcycle'
