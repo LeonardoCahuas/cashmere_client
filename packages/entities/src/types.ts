@@ -1,3 +1,4 @@
+/** Complete Posting entity from postings view */
 export interface Posting {
   id: string
   created_at: string
@@ -22,4 +23,5 @@ export interface Posting {
   transmission_type: string | null
   vehicle_images: string[] | null
   renter_name: string | null
+  bookmarked: boolean
 }
