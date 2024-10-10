@@ -10,12 +10,14 @@ interface PostingCardProps extends Posting {}
 interface CardProps {
   posting: PostingCardProps
   onCardClick: () => void
+  onClickSave?: () => void
 }
 
 const PostingCardBase = ({
   posting,
   onCardClick,
   size,
+  onClickSave,
 }: CardProps & { size: 'small' | 'medium' | 'large' }) => {
   const isShortTerm = posting.duration === 'short_term'
   return (
@@ -43,14 +45,21 @@ const PostingCardBase = ({
                         style={styles.iconTop}
                       />
                     </View>
-                    <View style={styles.iconCont}>
+                    <TouchableOpacity
+                      style={styles.iconCont}
+                      onPress={() => {
+                        if (onClickSave) {
+                          onClickSave()
+                        }
+                      }}
+                    >
                       <Icon
                         name="heart_filled"
                         width={20}
-                        color={Colors.greenPrimary}
+                        color={posting.bookmarked ? Colors.greenPrimary : Colors.blackPrimary}
                         style={styles.iconTop}
                       />
-                    </View>
+                    </TouchableOpacity>
                   </View>
                   <Image
                     source={{ uri: posting.vehicle_images ? posting.vehicle_images[0] : '' }}

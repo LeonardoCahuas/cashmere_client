@@ -23,7 +23,7 @@ const CardRenderer = ({ item }: CardRendererProps) => {
 
 const Saved = () => {
   const user = useUser()
-  if (!user) return <Text>Fai log in</Text>
+  // if (!user) return <Text>Fai log in</Text>
   const { modalRef: ref, searchText } = useAppStore((state) => state.saved)
   const [sorting, setSorting] = useState<{ key: keyof Posting; direction: 'asc' | 'desc' }>()
   const [filter, setFilter] = useState<(typeof rentalDurations)[number]>('long_term')

@@ -1,6 +1,6 @@
 import { Colors, ScrollView } from '@siva/ui'
-import { ExploreSection } from 'apps/expo/app/(tabs)/home/_sections/ExploreSection'
 import DurationCard from 'apps/expo/app/(tabs)/home/_sections/components/DurationButton'
+import { ExploreSection } from 'apps/expo/app/(tabs)/home/search/_sections/ExploreSection'
 import { Stack } from 'expo-router'
 import { View } from 'react-native'
 

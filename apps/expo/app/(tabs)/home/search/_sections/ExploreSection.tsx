@@ -2,10 +2,9 @@ import { PostingCard } from '@siva/ui'
 import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
 import { useAddBookmark, useRemoveBookmark } from 'apps/expo/app/setup/query/hooks'
 import { useAppStore } from 'apps/expo/app/setup/store'
-import { Stack } from 'expo-router'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
-import { FilterTab } from './components/FilterTab'
+import { SectionTitle } from '../../_sections/components/SectionTitle'
 
 type PostingCard = React.ComponentProps<typeof PostingCard.Large>['posting']
 
@@ -15,9 +14,8 @@ interface CardRendererProps {
 
 const CardRenderer = ({ item }: CardRendererProps) => {
   const { setPosting } = useAppStore((s) => s.detailView)
-  const user = { session: 'd5f0bcb0-2563-403b-9e8c-50d7292ec83a' }
-  const { mutate: addBookmark } = useAddBookmark(user.session)
-  const { mutate: removeBookmark } = useRemoveBookmark(user.session)
+  const { mutate: addBookmark } = useAddBookmark('')
+  const { mutate: removeBookmark } = useRemoveBookmark('')
   return (
     <View style={styles.cardWrapper}>
       <PostingCard.Large
@@ -32,7 +30,7 @@ const CardRenderer = ({ item }: CardRendererProps) => {
   )
 }
 
-const News = () => {
+export const ExploreSection = () => {
   const postings: Array<PostingCard> = [
     {
       id: 'id',
@@ -60,7 +58,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
       ],
-      bookmarked: true,
+      bookmarked: false,
     },
     {
       id: '07788071-75c3-4e44-8eb3-13981ce3f229',
@@ -116,7 +114,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/2024_honda_cr-v_4dr-suv_sport-hybrid_fq_oem_1_815.avif?t=2024-09-25T20%3A14%3A47.707Z',
       ],
-      bookmarked: true,
+      bookmarked: false,
     },
     {
       id: '213ef',
@@ -144,17 +142,15 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/hr-v-00.webp',
       ],
-      bookmarked: true,
+      bookmarked: false,
     },
   ]
+
   return (
-    <View>
-      <Stack.Screen
-        options={{
-          title: 'Per te',
-        }}
-      />
-      <FilterTab />
+    <>
+      <View style={styles.titleRow}>
+        <SectionTitle>Esplora</SectionTitle>
+      </View>
       <FlatList
         horizontal={false}
         data={postings}
@@ -162,17 +158,15 @@ const News = () => {
         renderItem={({ item }) => <CardRenderer item={item} />}
         contentContainerStyle={styles.contentContainerStyle}
       />
-    </View>
+    </>
   )
 }
-
-export default News
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
     paddingBottom: 100,
     paddingHorizontal: 18,
-    paddingTop: 0,
+    paddingTop: 10,
     overflow: 'visible',
   },
   columnWrapperStyle: {
