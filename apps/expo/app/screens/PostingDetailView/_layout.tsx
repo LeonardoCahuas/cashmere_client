@@ -37,7 +37,8 @@ const StackLayout = () => {
                   if (!bookmarked) {
                     addBookmark({ postingId, sessionId: user.session })
                   } else {
-                    removeBookmark({ bookmarkId: posting?.bookmark_id, postingId })
+                    if (!posting?.bookmark_id) return
+                    removeBookmark({ bookmarkId: posting.bookmark_id, postingId })
                   }
                 }}
               >
