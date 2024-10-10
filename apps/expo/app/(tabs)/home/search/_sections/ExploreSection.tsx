@@ -1,4 +1,7 @@
 import { PostingCard } from '@siva/ui'
+import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
+import { useAddBookmark, useRemoveBookmark } from 'apps/expo/app/setup/query/hooks'
+import { useAppStore } from 'apps/expo/app/setup/store'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
 import { SectionTitle } from '../../_sections/components/SectionTitle'
@@ -10,9 +13,19 @@ interface CardRendererProps {
 }
 
 const CardRenderer = ({ item }: CardRendererProps) => {
+  const { setPosting } = useAppStore((s) => s.detailView)
+  const { mutate: addBookmark } = useAddBookmark('')
+  const { mutate: removeBookmark } = useRemoveBookmark('')
   return (
     <View style={styles.cardWrapper}>
-      <PostingCard.Large posting={item} onCardClick={() => {}} />
+      <PostingCard.Large
+        posting={item}
+        onCardClick={() => {
+          setPosting(item)
+          linkToDetail(item)
+        }}
+        onClickSave={() => {}}
+      />
     </View>
   )
 }
@@ -45,6 +58,7 @@ export const ExploreSection = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
       ],
+      bookmarked: false,
     },
     {
       id: '07788071-75c3-4e44-8eb3-13981ce3f229',
@@ -72,6 +86,7 @@ export const ExploreSection = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/cq5dam.thumbnail.1024.680.png?t=2024-09-25T21%3A28%3A09.423Z',
       ],
+      bookmarked: false,
     },
     {
       id: '203fa9f8-d5f3-409d-a286-594a92921206',
@@ -99,6 +114,7 @@ export const ExploreSection = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/2024_honda_cr-v_4dr-suv_sport-hybrid_fq_oem_1_815.avif?t=2024-09-25T20%3A14%3A47.707Z',
       ],
+      bookmarked: false,
     },
     {
       id: '213ef',
@@ -126,6 +142,7 @@ export const ExploreSection = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/hr-v-00.webp',
       ],
+      bookmarked: false,
     },
   ]
 

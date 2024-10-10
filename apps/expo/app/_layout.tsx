@@ -12,7 +12,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-  console.log('that-')
+  console.log('tha-')
   return (
     <Provider>
       <Stack>
@@ -20,22 +20,23 @@ export default function App() {
         <Stack.Screen
           name="screens/PostingDetailView"
           options={{
-            headerShown: true,
+            headerShown: false,
             title: 'Dettaglio Annuncio',
             headerTintColor: '#000',
             headerBackTitle: 'Indietro',
-            headerRight: () => {
-              return (
-                <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-                  <TouchableOpacity>
-                    <Icon name="share" />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Icon name="heart_filled" color={Colors.greenPrimary} />
-                  </TouchableOpacity>
-                </View>
-              )
-            },
+            headerRight: () => (
+              <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
+                <TouchableOpacity onPress={() => {}}>
+                  <Icon name="share" />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Icon
+                    name="heart_filled"
+                    color={!!false ? Colors.greenPrimary : Colors.blackPrimary}
+                  />
+                </TouchableOpacity>
+              </View>
+            ),
           }}
         />
       </Stack>

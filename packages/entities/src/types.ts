@@ -24,4 +24,5 @@ export interface Posting {
   vehicle_images: string[] | null
   renter_name: string | null
   bookmarked: boolean
+  bookmark_id?: string
 }
