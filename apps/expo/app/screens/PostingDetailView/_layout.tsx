@@ -1,7 +1,6 @@
 import { Colors, Icon } from '@siva/ui'
 import { Stack, useRouter } from 'expo-router'
 import { Text, TouchableOpacity, View } from 'react-native'
-import { queryClient } from '../../setup/Provider'
 import { useAddBookmark, useGetPosting, useRemoveBookmark } from '../../setup/query/hooks'
 import { useAppStore } from '../../setup/store'
 
@@ -22,12 +21,7 @@ const StackLayout = () => {
         headerRight: () => {
           return (
             <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  const queryCache = queryClient.getQueryCache()
-                  console.log('Query Cache:', queryCache.getAll())
-                }}
-              >
+              <TouchableOpacity onPress={() => {}}>
                 <Icon name="share" />
               </TouchableOpacity>
               <TouchableOpacity
