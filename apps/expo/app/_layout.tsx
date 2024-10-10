@@ -1,6 +1,4 @@
-import { Colors, Icon } from '@siva/ui'
 import { SplashScreen, Stack } from 'expo-router'
-import { TouchableOpacity, View } from 'react-native'
 import { Provider } from './setup/Provider'
 
 export const unstable_settings = {
@@ -21,22 +19,22 @@ export default function App() {
           name="screens/PostingDetailView"
           options={{
             headerShown: false,
-            title: 'Dettaglio Annuncio',
-            headerTintColor: '#000',
-            headerBackTitle: 'Indietro',
-            headerRight: () => (
-              <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-                <TouchableOpacity onPress={() => {}}>
-                  <Icon name="share" />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Icon
-                    name="heart_filled"
-                    color={!!false ? Colors.greenPrimary : Colors.blackPrimary}
-                  />
-                </TouchableOpacity>
-              </View>
-            ),
+            // title: 'Dettaglio Annuncio',
+            // headerTintColor: '#000',
+            // headerBackTitle: 'Indietro',
+            // headerRight: () => (
+            //   <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
+            //     <TouchableOpacity onPress={() => {}}>
+            //       <Icon name="share" />
+            //     </TouchableOpacity>
+            //     <TouchableOpacity>
+            //       <Icon
+            //         name="heart_filled"
+            //         color={!!false ? Colors.greenPrimary : Colors.blackPrimary}
+            //       />
+            //     </TouchableOpacity>
+            //   </View>
+            // ),
           }}
         />
       </Stack>
