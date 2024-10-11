@@ -5,13 +5,8 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet'
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import { Colors, Icon } from '@siva/ui'
-import React, { ReactNode, forwardRef, useCallback, useRef, useState } from 'react'
+import React, { ReactNode, forwardRef, useCallback, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
-
-export const ModalSheetProvider = GestureHandlerRootView
-
-export const useModalSheetRef = () => useRef<BottomSheet>(null)
 
 interface ModalOption {
   icon?: JSX.Element

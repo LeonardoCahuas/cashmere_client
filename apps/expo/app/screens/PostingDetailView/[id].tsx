@@ -11,9 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { ModalSheet, ModalSheetProvider, useModalSheetRef } from '../../components/ModalSheet'
+import { ModalSheet } from '../../components/ModalSheet/ModalSheet'
 import { useGetPosting } from '../../setup/query/hooks'
 import { RelatedVehiclesSection } from './sections/RelatedSection'
+import { useModalSheetRef, ModalSheetProvider } from '../../components/ModalSheet'
 
 type ModalKey = 'features' | 'engine' | 'equipment' | 'services'
 

@@ -12,7 +12,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-  console.log('g...')
+  console.log('-..')
   return (
     <Provider>
       <Stack>
