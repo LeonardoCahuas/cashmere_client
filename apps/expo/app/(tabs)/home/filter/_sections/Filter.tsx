@@ -6,7 +6,7 @@ import {
   ModalPage,
   MultiStepModalSheet,
 } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { useReducer, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import FilterComponent from './components/FilterComponent'
@@ -456,49 +456,14 @@ type ModalKey =
 
 const FilterSection = () => {
   const { duration } = useLocalSearchParams()
-  const [searchText, setSearchText] = useState('')
   const [searchOLD, dispatchOLD] = useReducer(reducerOLD, initialSearchParameters)
   const [search, dispatch] = useReducer(reducer, initialSearchParams)
   const ref = useModalSheetRef()
-  const [selectedBrand, setSelectedBrand] = useState<string>('')
-  const router = useRouter()
-  const [isHorses, setIsHorses] = useState(false)
   const [modalKey, setModalKey] = useState<ModalKey | null>(null)
-
-  const handlePress = () => {
-    switch (modalKey) {
-      case 'model':
-      case 'equipment':
-      case 'services':
-      case 'colors':
-      case 'engine':
-        closeModal()
-        setModalKey(null)
-        break
-      case 'internal':
-      case 'external':
-      case 'materials':
-        setModalKey('colors')
-        break
-      case 'traction':
-      case 'emission':
-        setModalKey('engine')
-        break
-      default:
-        closeModal()
-        console.log(searchOLD)
-        router.push(`/home/news`)
-        break
-    }
-  }
 
   const openModal = (k: ModalKey) => {
     ref?.current?.expand()
     setModalKey(k)
-  }
-
-  const closeModal = () => {
-    ref?.current?.close()
   }
 
   const handleNumberInput = (action: NumberActionType, payload: string) => {
@@ -1416,7 +1381,7 @@ const FilterSection = () => {
         </ScrollView>
 
         <View style={[styles.fixedButtonsContainer]}>
-          <TouchableOpacity style={styles.button} activeOpacity={0.95} onPress={handlePress}>
+          <TouchableOpacity style={styles.button} activeOpacity={0.95}>
             <Text style={styles.buttonText}>
               {modalKey == null ? 'Mostra risultati' : 'Conferma'}
             </Text>
