@@ -61,15 +61,15 @@ const colors = [
 const traction = ['4x4', 'Anteriore', 'Posteriore']
 const emission = ['Euro 1', 'Euro 2', 'Euro 3', 'Euro 4', 'Euro 5', 'Euro 6', 'Altro']
 const optionals = [
-  'Optional1',
-  'Optional2',
-  'Optional3',
-  'Optional4',
-  'Optional5',
-  'Optional6',
-  'Optional7',
-  'Optional8',
-  'Optional9',
+  { label: 'Optional1', value: 'optional1' },
+  { label: 'Optional2', value: 'optional2' },
+  { label: 'Optional3', value: 'optional3' },
+  { label: 'Optional4', value: 'optional4' },
+  { label: 'Optional5', value: 'optional5' },
+  { label: 'Optional6', value: 'optional6' },
+  { label: 'Optional7', value: 'optional7' },
+  { label: 'Optional8', value: 'optional8' },
+  { label: 'Optional9', value: 'optional9' },
 ]
 
 const materials = [
@@ -734,6 +734,32 @@ const FilterSection = () => {
         onReset: () => dispatch({ type: 'set_internal_material', payload: __RESET_KEY__ }),
       },
     },
+    equipment: {
+      initial: {
+        key: 'equipment',
+        title: 'Equipaggiamento',
+        doneButton: true,
+        content: (
+          <View style={{ width: '100%' }}>
+            <View style={servicesStyles.listContainerEquiment}>
+              {optionals.map((item) => {
+                const checked = search.equipment.includes(item.value)
+                return (
+                  <SelectableRow
+                    checked={checked}
+                    item={item}
+                    onPress={() => dispatch({ type: 'set_equipment', payload: item.value })}
+                  />
+                )
+              })}
+            </View>
+            <View style={{ opacity: 0, width: '100%', height: 200 }}></View>
+          </View>
+        ),
+        onReset: () => dispatch({ type: 'set_equipment', payload: __RESET_KEY__ }),
+        scrollable: true,
+      },
+    },
   }
 
   const openStepModal = (page: string) => {
@@ -745,7 +771,7 @@ const FilterSection = () => {
     <ModalSheetProvider>
       <View>
         <ScrollView horizontal={false} style={{ marginBottom: 150 }}>
-          {['brands', 'interiors', 'services'].map((k) => (
+          {['brands', 'interiors', 'services', 'equipment'].map((k) => (
             <TouchableOpacity key={k} onPress={() => openStepModal(k)}>
               <Text>{k}</Text>
             </TouchableOpacity>
@@ -1851,6 +1877,10 @@ const servicesStyles = StyleSheet.create({
     display: 'flex',
     width: '100%',
     paddingTop: 16,
+  },
+  listContainerEquiment: {
+    display: 'flex',
+    width: '100%',
   },
 })
 

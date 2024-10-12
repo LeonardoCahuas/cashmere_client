@@ -3,8 +3,7 @@ interface SearchParams {
   interiorColor: string
   externalColor: string
   internalMaterials: string[]
-  traction: string[]
-  emission: string[]
+  equipment: string[]
 }
 
 export const initialSearchParams: SearchParams = {
@@ -12,8 +11,7 @@ export const initialSearchParams: SearchParams = {
   interiorColor: '',
   externalColor: '',
   internalMaterials: [],
-  traction: [],
-  emission: [],
+  equipment: [],
 }
 
 export const __RESET_KEY__ = '__reset__'
@@ -28,6 +26,7 @@ export function reducer(
     | { type: 'set_external_color'; payload: string }
     | { type: 'set_internal_color'; payload: string }
     | { type: 'set_internal_material'; payload: string }
+    | { type: 'set_equipment'; payload: string }
 ): SearchParams {
   switch (type) {
     case 'set_included_services':
@@ -49,6 +48,14 @@ export function reducer(
           internalMaterials: state.internalMaterials.filter((s) => s !== payload),
         }
       return { ...state, internalMaterials: [...state.internalMaterials, payload] }
+    case 'set_equipment':
+      if (payload === __RESET_KEY__) return { ...state, equipment: [] }
+      if (state.equipment.includes(payload))
+        return {
+          ...state,
+          equipment: state.equipment.filter((s) => s !== payload),
+        }
+      return { ...state, equipment: [...state.equipment, payload] }
     default:
       return state
   }
