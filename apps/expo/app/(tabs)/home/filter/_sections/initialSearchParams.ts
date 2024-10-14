@@ -4,6 +4,7 @@ interface SearchParams {
   externalColor: string
   internalMaterials: string[]
   equipment: string[]
+  engine: { power: 'HP' | 'kw'; range: number[]; traction: string[]; emissionClass: string[] }
 }
 
 export const initialSearchParams: SearchParams = {
@@ -12,6 +13,7 @@ export const initialSearchParams: SearchParams = {
   externalColor: '',
   internalMaterials: [],
   equipment: [],
+  engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
 }
 
 export const __RESET_KEY__ = '__reset__'
@@ -27,6 +29,10 @@ export function reducer(
     | { type: 'set_internal_color'; payload: string }
     | { type: 'set_internal_material'; payload: string }
     | { type: 'set_equipment'; payload: string }
+    | { type: 'set_engine_power'; payload: 'HP' | 'kw' | '__reset__' }
+    | { type: 'set_engine_range'; payload: number[] | '__reset__' }
+    | { type: 'set_engine_traction'; payload: string | '__reset__' }
+    | { type: 'set_engine_emissionClass'; payload: string | '__reset__' }
 ): SearchParams {
   switch (type) {
     case 'set_included_services':
@@ -56,6 +62,74 @@ export function reducer(
           equipment: state.equipment.filter((s) => s !== payload),
         }
       return { ...state, equipment: [...state.equipment, payload] }
+    case 'set_engine_power':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
+        }
+      return {
+        ...state,
+        engine: {
+          ...state.engine,
+          power: payload,
+        },
+      }
+    case 'set_engine_range':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
+        }
+      return {
+        ...state,
+        engine: {
+          ...state.engine,
+          range: payload,
+        },
+      }
+    case 'set_engine_traction':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
+        }
+      if (state.engine?.traction.includes(payload))
+        return {
+          ...state,
+          engine: {
+            ...state.engine,
+            traction: state.engine?.traction.filter((s) => s !== payload),
+          },
+        }
+      return {
+        ...state,
+        engine: {
+          ...state.engine,
+          traction: [...state.engine?.traction, payload],
+        },
+      }
+    case 'set_engine_emissionClass':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
+        }
+      if (state.engine?.emissionClass.includes(payload))
+        return {
+          ...state,
+          engine: {
+            ...state.engine,
+            emissionClass: state.engine?.emissionClass.filter((s) => s !== payload),
+          },
+        }
+      return {
+        ...state,
+        engine: {
+          ...state.engine,
+          emissionClass: [...state.engine?.emissionClass, payload],
+        },
+      }
     default:
       return state
   }

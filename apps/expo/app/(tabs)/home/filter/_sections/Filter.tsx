@@ -58,8 +58,20 @@ const colors = [
     hex: '#00ff00',
   },
 ]
-const traction = ['4x4', 'Anteriore', 'Posteriore']
-const emission = ['Euro 1', 'Euro 2', 'Euro 3', 'Euro 4', 'Euro 5', 'Euro 6', 'Altro']
+const traction = [
+  { label: '4x4', value: 'full-wheel' },
+  { label: 'Anteriore', value: 'front-wheel' },
+  { label: 'Posteriore', value: 'rear-wheel' },
+]
+const emission = [
+  { label: 'Euro 1', value: 'Euro 1' },
+  { label: 'Euro 2', value: 'Euro 2' },
+  { label: 'Euro 3', value: 'Euro 3' },
+  { label: 'Euro 4', value: 'Euro 4' },
+  { label: 'Euro 5', value: 'Euro 5' },
+  { label: 'Euro 6', value: 'Euro 6' },
+  { label: 'Altro', value: 'other' },
+]
 const optionals = [
   { label: 'Optional1', value: 'optional1' },
   { label: 'Optional2', value: 'optional2' },
@@ -476,6 +488,8 @@ const FilterSection = () => {
 
   const normarlizeKey = (s: string) => s.toLowerCase().replaceAll(' ', '_')
 
+  const powerLabel = { HP: 'Cv', kw: 'kW' }
+
   const pages: { [main: string]: ModalPage } = {
     brands: {
       initial: {
@@ -725,6 +739,155 @@ const FilterSection = () => {
         scrollable: true,
       },
     },
+    engine: {
+      initial: {
+        key: 'engine',
+        title: 'Motore',
+        doneButton: true,
+        content: (
+          <View style={{ width: '100%' }}>
+            <View style={engineStyles.topContainer}>
+              <Text style={engineStyles.itemText}>Potenza</Text>
+              <View style={engineStyles.powerRow}>
+                {[
+                  { value: 'HP', label: 'Cv' },
+                  { value: 'kw', label: 'kW' },
+                ].map(({ value, label }) => (
+                  <TouchableOpacity
+                    key={value}
+                    style={{
+                      ...engineStyles.powerButton,
+                      borderColor:
+                        search.engine.power == value ? Colors.greenPrimary : Colors.greySecondary,
+                      backgroundColor:
+                        search.engine.power == value ? Colors.greenSelection : 'white',
+                    }}
+                    onPress={() =>
+                      dispatch({ type: 'set_engine_power', payload: value as 'HP' | 'kw' })
+                    }
+                  >
+                    <Text>{label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View style={engineStyles.row}>
+                <View style={engineStyles.column}>
+                  <Text style={engineStyles.inputTitle}>Minimo</Text>
+                  <TextInput
+                    style={engineStyles.input}
+                    value={`${search.engine.range[0].toString()} ${powerLabel[search.engine.power]}`}
+                    onChangeText={(text) =>
+                      dispatch({
+                        type: 'set_engine_range',
+                        payload: [Number(text), search.engine.range[1]],
+                      })
+                    }
+                  />
+                </View>
+                <View style={engineStyles.column}>
+                  <Text style={engineStyles.inputTitle}>Massimo</Text>
+                  <TextInput
+                    style={engineStyles.input}
+                    value={`${search.engine.range[1].toString()} ${powerLabel[search.engine.power]}`}
+                    onChangeText={(text) =>
+                      dispatch({
+                        type: 'set_engine_range',
+                        payload: [search.engine.range[0], Number(text)],
+                      })
+                    }
+                  />
+                </View>
+              </View>
+              <View style={engineStyles.sliderContainer}>
+                <MultiSlider
+                  values={search.engine.range}
+                  sliderLength={300}
+                  onValuesChange={(values) =>
+                    dispatch({ type: 'set_engine_range', payload: values })
+                  }
+                  min={0}
+                  max={1000}
+                  step={1}
+                  allowOverlap={false}
+                  snapped
+                  trackStyle={styles.track}
+                  selectedStyle={styles.selectedTrack}
+                  unselectedStyle={styles.unselectedTrack}
+                  markerStyle={styles.marker}
+                  enabledTwo
+                />
+              </View>
+            </View>
+            <View style={engineStyles.container}>
+              {[
+                { label: 'Trazione', value: 'traction' },
+                { label: 'Classe emissioni', value: 'emissions class' },
+              ].map(({ label, value }, i) => (
+                <TouchableOpacity
+                  key={value}
+                  style={engineStyles.item}
+                  onPress={() => setStep(normarlizeKey(value))}
+                >
+                  <Text style={interiorStyles.itemText}>{label}</Text>
+                  <Icon name="chevron-right" color={Colors.greenPrimary} />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        ),
+        containerStyle: { paddingHorizontal: 0 },
+      },
+      traction: {
+        key: 'traction',
+        title: 'Trazione',
+        doneButton: true,
+        scrollable: true,
+        content: (
+          <View style={{ width: '100%' }}>
+            <View style={engineStyles.listContainer}>
+              {traction.map((item) => {
+                const checked = search.engine.traction.includes(item.value)
+                return (
+                  <SelectableRow
+                    checked={checked}
+                    item={item}
+                    onPress={() => dispatch({ type: 'set_engine_traction', payload: item.value })}
+                  />
+                )
+              })}
+            </View>
+            <View style={{ opacity: 0, width: '100%', height: 200 }}></View>
+          </View>
+        ),
+        onReset: () => dispatch({ type: 'set_engine_traction', payload: __RESET_KEY__ }),
+      },
+      emissions_class: {
+        key: 'emissions_class',
+        title: 'Classe emissioni',
+        doneButton: true,
+        scrollable: true,
+        content: (
+          <View style={{ width: '100%' }}>
+            <View style={engineStyles.listContainer}>
+              {emission.map((item) => {
+                const checked = search.engine.emissionClass.includes(item.value)
+                return (
+                  <SelectableRow
+                    checked={checked}
+                    item={item}
+                    onPress={() =>
+                      dispatch({ type: 'set_engine_emissionClass', payload: item.value })
+                    }
+                  />
+                )
+              })}
+            </View>
+            <View style={{ opacity: 0, width: '100%', height: 200 }}></View>
+          </View>
+        ),
+        onReset: () => dispatch({ type: 'set_engine_emissionClass', payload: __RESET_KEY__ }),
+      },
+    },
   }
 
   const openStepModal = (page: string) => {
@@ -736,7 +899,7 @@ const FilterSection = () => {
     <ModalSheetProvider>
       <View>
         <ScrollView horizontal={false} style={{ marginBottom: 150 }}>
-          {['brands', 'interiors', 'services', 'equipment'].map((k) => (
+          {['brands', 'interiors', 'services', 'equipment', 'engine'].map((k) => (
             <TouchableOpacity key={k} onPress={() => openStepModal(k)}>
               <Text>{k}</Text>
             </TouchableOpacity>
@@ -1878,6 +2041,92 @@ const interiorStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 8,
+  },
+})
+
+const engineStyles = StyleSheet.create({
+  topContainer: {
+    width: '100%',
+    display: 'flex',
+    gap: 16,
+    paddingBottom: 32,
+  },
+  row: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  container: {
+    display: 'flex',
+    width: '100%',
+    borderTopWidth: 5,
+    borderTopColor: Colors.lightGray,
+  },
+  item: {
+    width: '100%',
+    paddingVertical: 32,
+    borderBottomWidth: 5,
+    borderBottomColor: Colors.lightGray,
+    paddingHorizontal: 24,
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  powerButton: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: Colors.greySecondary,
+    flexGrow: 1,
+    borderRadius: 8,
+  },
+  powerRow: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    gap: 8,
+  },
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    alignItems: 'flex-start',
+    paddingTop: 8,
+  },
+  itemText: {
+    fontSize: 16,
+    fontWeight: '600',
+    paddingLeft: 24,
+  },
+  inputTitle: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: Colors.greySecondary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
+    width: 80,
+    fontSize: 16,
+  },
+  sliderContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  listContainer: {
+    display: 'flex',
+    width: '100%',
   },
 })
 
