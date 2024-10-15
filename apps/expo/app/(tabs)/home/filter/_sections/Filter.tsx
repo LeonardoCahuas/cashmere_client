@@ -9,7 +9,15 @@ import {
 import * as Haptics from 'expo-haptics'
 import { useLocalSearchParams } from 'expo-router'
 import { useReducer, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import {
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import FilterComponent from './components/FilterComponent'
 import FilterComponentModal from './components/FilterComponentWithModal'
 import VehicleTypeButton from './components/VehicleTypeButton'
@@ -454,6 +462,8 @@ type ModalKey =
   | 'traction'
   | 'emission'
 
+const sliderWidth = Dimensions.get('window').width - 48
+
 const FilterSection = () => {
   const { duration } = useLocalSearchParams()
   const [searchOLD, dispatchOLD] = useReducer(reducerOLD, initialSearchParameters)
@@ -486,39 +496,29 @@ const FilterSection = () => {
         content: (
           <View>
             {['Abarth', 'Alfa'].map((k) => (
-              <TouchableOpacity
-                key={k}
-                onPress={() => {
-                  setStep(normarlizeKey(k))
-                  dispatchOLD({ type: 'add_brand', payload: k })
-                }}
-              >
+              <TouchableOpacity key={k} onPress={() => setStep(normarlizeKey(k))}>
                 <Text>{k}</Text>
               </TouchableOpacity>
             ))}
           </View>
         ),
       },
-      Abarth: {
+      abarth: {
         key: 'Abarth',
         title: 'Seleziona modello',
         doneButton: true,
         content: (
           <View>
-            {['500'].map((k) => (
-              <TouchableOpacity
-                key={k}
+            {[{ label: '500', value: '500' }].map((item) => (
+              <SelectableRow
+                checked={false}
+                item={item}
                 onPress={() => {
-                  dispatchOLD({
-                    type: 'set_brand_model',
-                    payload: { brand: 'Abarth', models: [k] },
-                  })
+                  dispatch({ type: 'set_vehicle', payload: { brand: 'Abarth', model: item.value } })
                   ref.current?.close()
                   setStep('initial')
                 }}
-              >
-                <Text>{k}</Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         ),
@@ -790,13 +790,13 @@ const FilterSection = () => {
               <View style={engineStyles.sliderContainer}>
                 <MultiSlider
                   values={search.engine.range}
-                  sliderLength={300}
+                  sliderLength={sliderWidth}
                   onValuesChange={(values) =>
                     dispatch({ type: 'set_engine_range', payload: values })
                   }
                   min={0}
                   max={1000}
-                  step={1}
+                  step={5}
                   allowOverlap={false}
                   snapped
                   trackStyle={styles.track}
@@ -904,34 +904,39 @@ const FilterSection = () => {
                   icon={
                     <Icon
                       name={icon}
-                      color={searchOLD.vehicleType == name ? 'black' : Colors.greyPrimary}
+                      color={search.vehicleType == name ? 'black' : Colors.greyPrimary}
                     />
                   }
                   label={label}
-                  active={searchOLD.vehicleType == name}
-                  onClick={() => dispatchOLD({ type: 'set_vehicle_type', payload: name })}
+                  active={search.vehicleType == name}
+                  onClick={() => dispatch({ type: 'set_vehicle_type', payload: name })}
                 />
               ))}
             </ScrollView>
           </View>
           <View style={{ paddingBottom: 140 }}>
             <FilterComponent title="Marca e modello" icon="search">
-              <Button style={styles.buttonStyle} onPress={() => openModal('brand')}>
+              <Button style={styles.buttonStyle} onPress={() => openStepModal('brands')}>
                 Seleziona marca e modello
               </Button>
-              {searchOLD.brandModel.length > 0 &&
-                searchOLD.brandModel.map((item) => (
+              {search.vehicles.length > 0 &&
+                search.vehicles.map((item) => (
                   <View style={styles.brandModel} key={item.brand}>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
                       <Text style={{ color: 'black' }}>{item.brand}</Text>
-                      <Text style={{ color: Colors.greyPrimary }}>{item.models.join(', ')}</Text>
+                      <Text style={{ color: Colors.greyPrimary }}>{item.model}</Text>
                     </View>
                     <View style={styles.closeContainer}>
                       <Icon
                         name="close"
                         color="white"
                         width={13}
-                        onPress={() => dispatchOLD({ type: 'remove_brand', payload: item.brand })}
+                        onPress={() =>
+                          dispatch({
+                            type: 'remove_vehicle',
+                            payload: { brand: item.brand, model: item.model },
+                          })
+                        }
                       />
                     </View>
                   </View>
@@ -953,9 +958,11 @@ const FilterSection = () => {
               <View style={styles.brandModel}>
                 <TextInput
                   placeholder="Digita città o CAP"
-                  onChangeText={(text) => handleNumberInput('set_cap', text)}
+                  onChangeText={(text) => {
+                    dispatch({ type: 'set_position_address', payload: text })
+                  }}
                   style={{ flex: 1 }}
-                  value={searchOLD.cap.toString()}
+                  value={search.position.address}
                 />
               </View>
 
@@ -969,20 +976,24 @@ const FilterSection = () => {
                     style={styles.input}
                     placeholder="Inserisci raggio massimo"
                     keyboardType="numeric"
-                    onChangeText={(text) => handleNumberInput('set_radius', text)}
-                    value={searchOLD.radius.toString()}
+                    onChangeText={(text) => {
+                      const n = Number(text)
+                      if (n < 0 || n > 100) return
+                      dispatch({ type: 'set_position_radius', payload: n })
+                    }}
+                    value={search.position.radius.toString()}
                   />
                   <Text>Km</Text>
                 </View>
                 <MultiSlider
-                  values={[searchOLD.radius]}
-                  sliderLength={300}
+                  values={[search.position.radius]}
+                  sliderLength={sliderWidth}
                   onValuesChange={(values) =>
-                    dispatchOLD({ type: 'set_radius', payload: values[0] })
+                    dispatch({ type: 'set_position_radius', payload: values[0] })
                   }
                   min={0}
                   max={100}
-                  step={1}
+                  step={5}
                   allowOverlap={false}
                   snapped
                   trackStyle={styles.track}
@@ -1004,8 +1015,10 @@ const FilterSection = () => {
                     style={styles.input}
                     placeholder="Inserisci prezzo minimo"
                     keyboardType="numeric"
-                    onChangeText={(text) => handleNumberInput('set_min_price', text)}
-                    value={searchOLD.minPrice.toString()}
+                    onChangeText={(text) => {
+                      dispatch({ type: 'set_price', payload: [Number(text), search.price[1]] })
+                    }}
+                    value={search.price[0].toString()}
                   />
                 </View>
                 <View style={styles.priceContEnd}>
@@ -1014,19 +1027,18 @@ const FilterSection = () => {
                     style={styles.input}
                     placeholder="Inserisci prezzo massimo"
                     keyboardType="numeric"
-                    onChangeText={(text) => handleNumberInput('set_max_price', text)}
-                    value={searchOLD.maxPrice.toString()}
+                    onChangeText={(text) => {
+                      dispatch({ type: 'set_price', payload: [search.price[0], Number(text)] })
+                    }}
+                    value={search.price[1].toString()}
                   />
                 </View>
               </View>
               <View style={styles.sliderContainer}>
                 <MultiSlider
-                  values={[searchOLD.minPrice, searchOLD.maxPrice]}
-                  sliderLength={300}
-                  onValuesChange={(values) => {
-                    dispatchOLD({ type: 'set_min_price', payload: values[0] })
-                    dispatchOLD({ type: 'set_max_price', payload: values[1] })
-                  }}
+                  values={[search.price[0], search.price[1]]}
+                  sliderLength={sliderWidth - 24}
+                  onValuesChange={(values) => dispatch({ type: 'set_price', payload: values })}
                   min={0}
                   max={1000}
                   step={1}
@@ -1085,21 +1097,21 @@ const FilterSection = () => {
               <TouchableOpacity
                 style={[
                   styles.onlyVerifiedCont,
-                  searchOLD.onlyVerified ? styles.onlyVerifiedContActive : {},
+                  search.verifiedOnly ? styles.onlyVerifiedContActive : {},
                 ]}
                 activeOpacity={1}
                 onPress={() =>
-                  dispatchOLD({ type: 'set_only_verified', payload: !searchOLD.onlyVerified })
+                  dispatch({ type: 'set_verified_only', payload: !search.verifiedOnly })
                 }
               >
                 <Text>Mostra solo annunci verificati</Text>
                 <View
                   style={[
                     styles.verifiedCheck,
-                    searchOLD.onlyVerified ? styles.verifiedCheckActive : {},
+                    search.verifiedOnly ? styles.verifiedCheckActive : {},
                   ]}
                 >
-                  {searchOLD.onlyVerified && <FontAwesome name="check" color="white" />}
+                  {search.verifiedOnly && <FontAwesome name="check" color="white" />}
                 </View>
               </TouchableOpacity>
             </FilterComponent>
@@ -1264,18 +1276,18 @@ const FilterSection = () => {
               <TouchableOpacity
                 style={[
                   styles.onlyVerifiedCont,
-                  searchOLD.noAnnualLimit ? styles.onlyVerifiedContActive : {},
+                  search.kmLimit != null ? styles.onlyVerifiedContActive : {},
                 ]}
                 activeOpacity={1}
                 onPress={() =>
-                  dispatchOLD({ type: 'set_no_annual_limit', payload: !searchOLD.noAnnualLimit })
+                  dispatch({ type: 'set_km_limit', payload: search.kmLimit != null ? null : 0 })
                 }
               >
                 <Text>Mostra solo veicoli senza limite km</Text>
                 <View
                   style={[
                     styles.verifiedCheck,
-                    searchOLD.noAnnualLimit ? styles.verifiedCheckActive : {},
+                    search.kmLimit != null ? styles.verifiedCheckActive : {},
                   ]}
                 >
                   {searchOLD.noAnnualLimit && <FontAwesome name="check" color="white" />}

@@ -1,6 +1,6 @@
 interface SearchParams {
   vehicleType: 'car' | 'van' | 'motorcycle'
-  vehicle: { brand: string; model: string }
+  vehicles: { brand: string; model: string }[]
   position: { address: string; radius: number }
   price: number[]
   monthsDuration: number[]
@@ -26,9 +26,9 @@ interface SearchParams {
 
 export const initialSearchParams: SearchParams = {
   vehicleType: 'car',
-  vehicle: { brand: '', model: '' },
+  vehicles: [],
   position: { address: '', radius: 0 },
-  price: [],
+  price: [0, 1000],
   monthsDuration: [],
   verifiedOnly: false,
   deposit: null,
@@ -58,6 +58,18 @@ export function reducer(
     type,
     payload,
   }:
+    | { type: 'set_vehicle_type'; payload: 'car' | 'van' | 'motorcycle' | '__reset__' }
+    | { type: 'set_vehicle'; payload: { brand: string; model: string } | '__reset__' }
+    | { type: 'remove_vehicle'; payload: { brand: string; model: string } }
+    | { type: 'set_position_address'; payload: string | '__reset__' }
+    | { type: 'set_position_radius'; payload: number | '__reset__' }
+    | { type: 'set_price'; payload: number[] | '__reset__' }
+    | { type: 'set_months_duration'; payload: number[] | '__reset__' }
+    | { type: 'set_verified_only'; payload: boolean }
+    | { type: 'set_deposit'; payload: number | null | '__reset__' }
+    | { type: 'set_state'; payload: 'new' | 'used' | '__reset__' }
+    | { type: 'set_km_limit'; payload: number | null | '__reset__' }
+    | { type: 'set_details'; payload: Partial<SearchParams['details']> | '__reset__' }
     | { type: 'set_included_services'; payload: string }
     | { type: 'set_external_color'; payload: string }
     | { type: 'set_internal_color'; payload: string }
@@ -69,6 +81,68 @@ export function reducer(
     | { type: 'set_engine_emissionClass'; payload: string | '__reset__' }
 ): SearchParams {
   switch (type) {
+    case 'set_vehicle_type':
+      if (payload === __RESET_KEY__) return { ...state, vehicleType: 'car' }
+      return { ...state, vehicleType: payload }
+
+    case 'set_vehicle':
+      if (payload === __RESET_KEY__) return { ...state, vehicles: [{ brand: '', model: '' }] }
+      return { ...state, vehicles: [...state.vehicles, payload] }
+
+    case 'remove_vehicle':
+      return {
+        ...state,
+        vehicles: state.vehicles.filter(
+          (s) => s.brand !== payload.brand && s.model !== payload.model
+        ),
+      }
+
+    case 'set_position_address':
+      if (payload === __RESET_KEY__) return { ...state, position: { address: '', radius: 0 } }
+      return { ...state, position: { ...state.position, address: payload } }
+
+    case 'set_position_radius':
+      if (payload === __RESET_KEY__) return { ...state, position: { address: '', radius: 0 } }
+      return { ...state, position: { ...state.position, radius: payload } }
+
+    case 'set_price':
+      if (payload === __RESET_KEY__) return { ...state, price: [] }
+      return { ...state, price: payload }
+
+    case 'set_months_duration':
+      if (payload === __RESET_KEY__) return { ...state, monthsDuration: [] }
+      return { ...state, monthsDuration: payload }
+
+    case 'set_verified_only':
+      return { ...state, verifiedOnly: payload }
+
+    case 'set_deposit':
+      if (payload === __RESET_KEY__) return { ...state, deposit: null }
+      return { ...state, deposit: payload }
+
+    case 'set_state':
+      if (payload === __RESET_KEY__) return { ...state, state: 'new' }
+      return { ...state, state: payload }
+
+    case 'set_km_limit':
+      if (payload === __RESET_KEY__) return { ...state, kmLimit: null }
+      return { ...state, kmLimit: payload }
+
+    case 'set_details':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          details: {
+            fuel: [],
+            transmission: [],
+            body: [],
+            seats: 0,
+            doors: 0,
+            gears: 0,
+          },
+        }
+      return { ...state, details: { ...state.details, ...payload } }
+
     case 'set_included_services':
       if (payload === __RESET_KEY__) return { ...state, includedServices: [] }
       if (state.includedServices.includes(payload))
