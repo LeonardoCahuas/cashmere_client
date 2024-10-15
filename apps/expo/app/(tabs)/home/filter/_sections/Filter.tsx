@@ -6,6 +6,7 @@ import {
   ModalPage,
   MultiStepModalSheet,
 } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
+import * as Haptics from 'expo-haptics'
 import { useLocalSearchParams } from 'expo-router'
 import { useReducer, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
@@ -31,11 +32,7 @@ const tabs: Array<TabItem> = [
     name: 'van',
   },
 ]
-const brands = {
-  FIAT: ['Punto', '600', 'Spider'],
-  AUDI: ['A1', 'A6', 'RSQ8'],
-  Mercedes: ['Classe a', 'Classe g', 'GLC'],
-}
+
 const colors = [
   {
     name: 'Bianco',
@@ -58,11 +55,13 @@ const colors = [
     hex: '#00ff00',
   },
 ]
+
 const traction = [
   { label: '4x4', value: 'full-wheel' },
   { label: 'Anteriore', value: 'front-wheel' },
   { label: 'Posteriore', value: 'rear-wheel' },
 ]
+
 const emission = [
   { label: 'Euro 1', value: 'Euro 1' },
   { label: 'Euro 2', value: 'Euro 2' },
@@ -72,6 +71,7 @@ const emission = [
   { label: 'Euro 6', value: 'Euro 6' },
   { label: 'Altro', value: 'other' },
 ]
+
 const optionals = [
   { label: 'Optional1', value: 'optional1' },
   { label: 'Optional2', value: 'optional2' },
@@ -82,18 +82,6 @@ const optionals = [
   { label: 'Optional7', value: 'optional7' },
   { label: 'Optional8', value: 'optional8' },
   { label: 'Optional9', value: 'optional9' },
-]
-
-const materials = [
-  'Material1',
-  'Material2',
-  'Material3',
-  'Material4',
-  'Material5',
-  'Material6',
-  'Material7',
-  'Material8',
-  'Material9',
 ]
 
 const internalMaterials = [
@@ -762,9 +750,10 @@ const FilterSection = () => {
                       backgroundColor:
                         search.engine.power == value ? Colors.greenSelection : 'white',
                     }}
-                    onPress={() =>
+                    onPress={() => {
                       dispatch({ type: 'set_engine_power', payload: value as 'HP' | 'kw' })
-                    }
+                      Haptics.selectionAsync()
+                    }}
                   >
                     <Text>{label}</Text>
                   </TouchableOpacity>
@@ -841,7 +830,6 @@ const FilterSection = () => {
         key: 'traction',
         title: 'Trazione',
         doneButton: true,
-        scrollable: true,
         content: (
           <View style={{ width: '100%' }}>
             <View style={engineStyles.listContainer}>
@@ -1325,7 +1313,10 @@ const FilterSection = () => {
                         searchOLD.fuels.includes(f.name) ? styles.listButtonActive : {},
                       ]}
                       activeOpacity={1}
-                      onPress={() => dispatchOLD({ type: 'set_fuels', payload: f.name })}
+                      onPress={() => {
+                        dispatchOLD({ type: 'set_fuels', payload: f.name })
+                        Haptics.selectionAsync()
+                      }}
                     >
                       <Icon name={f.icon} color="black" />
                       <Text style={styles.listButtonText}>{f.name}</Text>
@@ -2142,7 +2133,10 @@ const SelectableRow = ({ checked, item, children, onPress }: SelectableRowProps)
     <TouchableOpacity
       key={item.value}
       style={selectableRowStyle.actionContainer}
-      onPress={() => onPress()}
+      onPress={() => {
+        onPress()
+        Haptics.selectionAsync()
+      }}
     >
       {!!children ? children : <Text>{item.label}</Text>}
       {checked ? (

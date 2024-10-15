@@ -1,4 +1,21 @@
 interface SearchParams {
+  vehicleType: 'car' | 'van' | 'motorcycle'
+  vehicle: { brand: string; model: string }
+  position: { address: string; radius: number }
+  price: number[]
+  monthsDuration: number[]
+  verifiedOnly: boolean
+  deposit: number | null
+  state: 'new' | 'used'
+  kmLimit: number | null
+  details: {
+    fuel: string[]
+    transmission: string[]
+    body: string[]
+    seats: number
+    doors: number
+    gears: number
+  }
   includedServices: string[]
   interiorColor: string
   externalColor: string
@@ -8,6 +25,23 @@ interface SearchParams {
 }
 
 export const initialSearchParams: SearchParams = {
+  vehicleType: 'car',
+  vehicle: { brand: '', model: '' },
+  position: { address: '', radius: 0 },
+  price: [],
+  monthsDuration: [],
+  verifiedOnly: false,
+  deposit: null,
+  state: 'new',
+  kmLimit: null,
+  details: {
+    fuel: [],
+    transmission: [],
+    body: [],
+    seats: 0,
+    doors: 0,
+    gears: 0,
+  },
   includedServices: [],
   interiorColor: '',
   externalColor: '',

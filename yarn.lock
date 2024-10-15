@@ -3721,7 +3721,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@siva/api@workspace:packages/api"
   dependencies:
-    axios: "npm:^1.7.2"
+    axios: "npm:^1.7.7"
     react-query: "npm:^3.39.3"
   languageName: unknown
   linkType: soft
@@ -6714,17 +6714,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.7.2":
-  version: 1.7.2
-  resolution: "axios@npm:1.7.2"
-  dependencies:
-    follow-redirects: "npm:^1.15.6"
-    form-data: "npm:^4.0.0"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10/6ae80dda9736bb4762ce717f1a26ff997d94672d3a5799ad9941c24d4fb019c1dff45be8272f08d1975d7950bac281f3ba24aff5ecd49ef5a04d872ec428782f
-  languageName: node
-  linkType: hard
-
 "axios@npm:^1.7.7":
   version: 1.7.7
   resolution: "axios@npm:1.7.7"
@@ -9639,6 +9628,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10/2cec21d8def4e0cbc3e7aede4d4b9cef726d83060d703ad39302227e33d9f958b722d36f81addf2a783cbf6db1921e87abba32211ec8b993e7c0aac52224ac42
+  languageName: node
+  linkType: hard
+
+"expo-haptics@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "expo-haptics@npm:13.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/2ed8d292f89208b21fece50c2d21c4272833fd37cb769e382365a9502b844c33f582ceee374ad8d3c184cc75418ca9a6daf54005de281c0a952c7f2a39b026c9
   languageName: node
   linkType: hard
 
@@ -13098,6 +13096,7 @@ __metadata:
     expo-constants: "npm:~16.0.2"
     expo-dev-client: "npm:~4.0.15"
     expo-font: "npm:~12.0.6"
+    expo-haptics: "npm:^13.0.1"
     expo-linear-gradient: "npm:~13.0.2"
     expo-linking: "npm:~6.3.1"
     expo-router: "npm:3.5.15"
