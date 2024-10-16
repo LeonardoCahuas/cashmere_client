@@ -33,6 +33,8 @@ interface DetailViewState {
   setIsBookmarked: (v: boolean) => void
 }
 
+interface AddState {}
+
 interface AppState {
   home: HomeState
   search: SearchState
@@ -40,6 +42,7 @@ interface AppState {
   messages: MessagesState
   profile: ProfileState
   detailView: DetailViewState
+  add: AddState
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -74,4 +77,5 @@ export const useAppStore = create<AppState>((set, get) => ({
       set((state) => ({ ...state, detailView: { ...state.detailView, isBookmarked: updated } }))
     },
   },
+  add: {},
 }))

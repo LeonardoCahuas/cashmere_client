@@ -16,6 +16,12 @@ export default function App() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
+          name="screens/AddPostingView"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="screens/PostingDetailView"
           options={{
             headerShown: false,
