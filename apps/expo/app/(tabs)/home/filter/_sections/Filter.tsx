@@ -211,272 +211,14 @@ const bodies: Array<buttonProps> = [
   },
 ]
 
-function reducerOLD(
-  state: SearchParametersOLD,
-  action:
-    | { type: 'set_vehicle_type'; payload: VehicleType }
-    | { type: 'set_min_price'; payload: number }
-    | { type: 'set_max_price'; payload: number }
-    | { type: 'set_brand_model'; payload: BrandModels }
-    | { type: 'set_min_year'; payload: number }
-    | { type: 'set_max_year'; payload: number }
-    | { type: 'set_min_mileage'; payload: number }
-    | { type: 'set_max_mileage'; payload: number }
-    | { type: 'set_min_power'; payload: number }
-    | { type: 'set_max_power'; payload: number }
-    | { type: 'set_transmission'; payload: string }
-    | { type: 'set_body_type'; payload: string }
-    | { type: 'set_color'; payload: string }
-    | { type: 'set_doors'; payload: number }
-    | { type: 'set_seats'; payload: number }
-    | { type: 'set_gears'; payload: number }
-    | { type: 'set_radius'; payload: number }
-    | { type: 'set_price_range'; payload: number[] }
-    | { type: 'set_cap'; payload: number }
-    | { type: 'set_min_months'; payload: number }
-    | { type: 'set_max_months'; payload: number }
-    | { type: 'set_only_verified'; payload: boolean }
-    | { type: 'set_max_advance'; payload: number }
-    | { type: 'set_min_age'; payload: number }
-    | { type: 'set_is_new'; payload: boolean }
-    | { type: 'set_no_security_deposit'; payload: boolean }
-    | { type: 'set_no_advance_payment'; payload: boolean }
-    | { type: 'set_no_age_limit'; payload: boolean }
-    | { type: 'set_no_annual_limit'; payload: boolean }
-    | { type: 'set_annual_limit'; payload: number }
-    | { type: 'set_fuels'; payload: string }
-    | { type: 'set_with_driver'; payload: boolean }
-    | { type: 'set_optionals'; payload: string }
-    | { type: 'clean_optionals'; payload: null }
-    | { type: 'clean_services'; payload: null }
-    | { type: 'set_maintenance'; payload: string }
-    | { type: 'set_insurances'; payload: string }
-    | { type: 'set_other_services'; payload: string }
-    | { type: 'set_internal_colors'; payload: string }
-    | { type: 'set_external_colors'; payload: string }
-    | { type: 'set_materials'; payload: string }
-    | { type: 'set_traction'; payload: string }
-    | { type: 'set_emission'; payload: string }
-    | { type: 'clean_internal_colors'; payload: null }
-    | { type: 'clean_external_colors'; payload: null }
-    | { type: 'clean_materials'; payload: null }
-    | { type: 'clean_traction'; payload: null }
-    | { type: 'clean_emission'; payload: null }
-    | { type: 'add_brand'; payload: string }
-    | { type: 'set_brands_model'; payload: BrandModel }
-    | { type: 'remove_brand'; payload: string }
-): SearchParametersOLD {
-  switch (action.type) {
-    case 'set_vehicle_type':
-      return { ...state, vehicleType: action.payload }
-    case 'set_min_price':
-      return { ...state, minPrice: action.payload }
-    case 'set_max_price':
-      return { ...state, maxPrice: action.payload }
-    case 'set_doors':
-      return { ...state, doors: action.payload }
-    case 'set_seats':
-      return { ...state, seats: action.payload }
-    case 'set_radius':
-      return { ...state, radius: action.payload }
-    case 'set_cap':
-      return { ...state, cap: action.payload }
-    case 'set_price_range':
-      return { ...state, minPrice: action.payload[0], maxPrice: action.payload[1] }
-    case 'set_min_months':
-      return { ...state, minMonths: action.payload }
-    case 'set_max_months':
-      return { ...state, maxMonths: action.payload }
-    case 'set_only_verified':
-      return { ...state, onlyVerified: action.payload }
-    case 'set_max_advance':
-      return { ...state, maxAdvance: action.payload }
-    case 'set_min_age':
-      return { ...state, minAge: action.payload }
-    case 'set_is_new':
-      return { ...state, isNew: action.payload }
-    case 'set_no_security_deposit':
-      return { ...state, noSecurityDeposit: action.payload }
-    case 'set_no_advance_payment':
-      return { ...state, noAdvancePayment: action.payload }
-    case 'set_no_age_limit':
-      return { ...state, noAgeLimit: action.payload }
-    case 'set_no_annual_limit':
-      return { ...state, noAnnualLimit: action.payload }
-    case 'set_annual_limit':
-      return { ...state, annualLimit: action.payload }
-    case 'set_fuels':
-      return {
-        ...state,
-        fuels: state.fuels.includes(action.payload)
-          ? state.fuels.filter((f) => f != action.payload)
-          : [...state.fuels, action.payload],
-      }
-    case 'set_transmission':
-      return {
-        ...state,
-        transmissions: state.transmissions.includes(action.payload)
-          ? state.transmissions.filter((f) => f != action.payload)
-          : [...state.transmissions, action.payload],
-      }
-    case 'set_body_type':
-      return {
-        ...state,
-        bodies: state.bodies.includes(action.payload)
-          ? state.bodies.filter((f) => f != action.payload)
-          : [...state.bodies, action.payload],
-      }
-    case 'set_seats':
-      return { ...state, seats: action.payload }
-    case 'set_doors':
-      return { ...state, doors: action.payload }
-    case 'set_gears':
-      return { ...state, gears: action.payload }
-    case 'set_with_driver':
-      return { ...state, withDriver: action.payload }
-    case 'set_optionals':
-      return {
-        ...state,
-        optionals: state.optionals.includes(action.payload)
-          ? state.optionals.filter((f) => f != action.payload)
-          : [...state.optionals, action.payload],
-      }
-    case 'clean_optionals':
-      return { ...state, optionals: [] }
-    case 'clean_services':
-      return { ...state, maintenance: [], insurances: [], otherServices: [] }
-    case 'set_maintenance':
-      return {
-        ...state,
-        maintenance: state.maintenance.includes(action.payload)
-          ? state.maintenance.filter((f) => f != action.payload)
-          : [...state.maintenance, action.payload],
-      }
-    case 'set_insurances':
-      return {
-        ...state,
-        insurances: state.insurances.includes(action.payload)
-          ? state.insurances.filter((f) => f != action.payload)
-          : [...state.insurances, action.payload],
-      }
-    case 'set_other_services':
-      return {
-        ...state,
-        otherServices: state.otherServices.includes(action.payload)
-          ? state.otherServices.filter((f) => f != action.payload)
-          : [...state.otherServices, action.payload],
-      }
-    case 'set_min_power':
-      return { ...state, minPower: action.payload }
-    case 'set_max_power':
-      return { ...state, maxPower: action.payload }
-    case 'set_internal_colors':
-      return {
-        ...state,
-        internalColors: state.internalColors.includes(action.payload)
-          ? state.internalColors.filter((f) => f != action.payload)
-          : [...state.internalColors, action.payload],
-      }
-    case 'set_external_colors':
-      return {
-        ...state,
-        externalColors: state.externalColors.includes(action.payload)
-          ? state.externalColors.filter((f) => f != action.payload)
-          : [...state.externalColors, action.payload],
-      }
-    case 'set_materials':
-      return {
-        ...state,
-        internalMaterials: state.internalMaterials.includes(action.payload)
-          ? state.internalMaterials.filter((f) => f != action.payload)
-          : [...state.internalMaterials, action.payload],
-      }
-    case 'set_traction':
-      return {
-        ...state,
-        traction: state.traction.includes(action.payload)
-          ? state.traction.filter((f) => f != action.payload)
-          : [...state.traction, action.payload],
-      }
-    case 'set_emission':
-      return {
-        ...state,
-        emission: state.emission.includes(action.payload)
-          ? state.emission.filter((f) => f != action.payload)
-          : [...state.emission, action.payload],
-      }
-    case 'clean_internal_colors':
-      return { ...state, internalColors: [] }
-    case 'clean_external_colors':
-      return { ...state, externalColors: [] }
-    case 'clean_materials':
-      return { ...state, internalMaterials: [] }
-    case 'clean_traction':
-      return { ...state, traction: [] }
-    case 'add_brand':
-      return { ...state, brandModel: [...state.brandModel, { brand: action.payload, models: [] }] }
-    case 'set_brands_model':
-      return {
-        ...state,
-        brandModel: state.brandModel.map((item) =>
-          item.brand === action.payload.brand
-            ? {
-                ...item,
-                models: item.models.includes(action.payload.models)
-                  ? item.models.filter((m) => m != action.payload.models)
-                  : [...item.models, action.payload.models],
-              }
-            : item
-        ),
-      }
-    case 'remove_brand':
-      return { ...state, brandModel: state.brandModel.filter((bm) => bm.brand != action.payload) }
-    default:
-      return state
-  }
-}
-
-type NumberActionType =
-  | 'set_min_price'
-  | 'set_max_price'
-  | 'set_radius'
-  | 'set_cap'
-  | 'set_max_advance'
-  | 'set_min_age'
-  | 'set_annual_limit'
-  | 'set_min_power'
-  | 'set_max_power'
-  | 'set_min_months'
-  | 'set_max_months'
-
-type ModalKey =
-  | 'brand'
-  | 'model'
-  | 'equipment'
-  | 'services'
-  | 'engine'
-  | 'colors'
-  | 'internal'
-  | 'external'
-  | 'materials'
-  | 'traction'
-  | 'emission'
-
 const sliderWidth = Dimensions.get('window').width - 48
 
 type PageKey = 'brands' | 'interiors' | 'services' | 'equipment' | 'engine'
 
 const FilterSection = () => {
   const { duration } = useLocalSearchParams()
-  const [searchOLD, dispatchOLD] = useReducer(reducerOLD, initialSearchParameters)
   const [search, dispatch] = useReducer(reducer, initialSearchParams)
   const ref = useModalSheetRef()
-  const [modalKey, setModalKey] = useState<ModalKey | null>(null)
-
-  const handleNumberInput = (action: NumberActionType, payload: string) => {
-    const numericText = payload.replace(/[^0-9]/g, '')
-    dispatchOLD({ type: action, payload: numericText ? Number(numericText) : 0 })
-  }
 
   const [page, setPage] = useState('brands')
   const [step, setStep] = useState('initial')
@@ -1065,8 +807,13 @@ const FilterSection = () => {
                         style={styles.inputDuration}
                         placeholder="Qualsiasi"
                         keyboardType="numeric"
-                        onChangeText={(text) => handleNumberInput('set_min_months', text)}
-                        value={searchOLD.minMonths.toString()}
+                        onChangeText={(text) =>
+                          dispatch({
+                            type: 'set_months_range',
+                            payload: [Number(text), search.monthsRange[1]],
+                          })
+                        }
+                        value={search.monthsRange[0].toString()}
                       />
                     </View>
                   </View>
@@ -1078,8 +825,13 @@ const FilterSection = () => {
                         style={styles.inputDuration}
                         placeholder="Qualsiasi"
                         keyboardType="numeric"
-                        onChangeText={(text) => handleNumberInput('set_max_months', text)}
-                        value={searchOLD.maxMonths.toString()}
+                        onChangeText={(text) =>
+                          dispatch({
+                            type: 'set_months_range',
+                            payload: [search.monthsRange[0], Number(text)],
+                          })
+                        }
+                        value={search.monthsRange[1].toString()}
                       />
                     </View>
                   </View>
@@ -1538,14 +1290,6 @@ const FilterSection = () => {
             />
           </View>
         </ScrollView>
-
-        <View style={[styles.fixedButtonsContainer]}>
-          <TouchableOpacity style={styles.button} activeOpacity={0.95}>
-            <Text style={styles.buttonText}>
-              {modalKey == null ? 'Mostra risultati' : 'Conferma'}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
       <MultiStepModalSheet
         ref={ref}
@@ -1896,82 +1640,6 @@ interface TabItem {
   label: string
   icon: IconName
   name: VehicleType
-}
-
-interface SearchParametersOLD {
-  vehicleType: VehicleType
-  brandModel: BrandModels[]
-  minPrice: number
-  maxPrice: number
-  minMonths: number
-  maxMonths: number
-  cap: number
-  radius: number
-  onlyVerified: boolean
-  noAdvancePayment: boolean
-  noSecurityDeposit: boolean
-  maxAdvance: number
-  isNew: boolean
-  noAnnualLimit: boolean
-  annualLimit: number
-  fuels: string[]
-  transmissions: string[]
-  bodies: string[]
-  seats: number
-  doors: number
-  gears: number
-  withDriver: boolean
-  noAgeLimit: boolean
-  minAge: number
-  optionals: string[]
-  maintenance: string[]
-  insurances: string[]
-  otherServices: string[]
-  internalColors: string[]
-  externalColors: string[]
-  internalMaterials: string[]
-  minPower: number
-  maxPower: number
-  traction: string[]
-  emission: string[]
-}
-
-const initialSearchParameters: SearchParametersOLD = {
-  vehicleType: 'car',
-  brandModel: [],
-  minPrice: 0,
-  maxPrice: 1000,
-  minMonths: 0,
-  maxMonths: 24,
-  radius: 1000,
-  cap: 0,
-  onlyVerified: false,
-  noAdvancePayment: false,
-  noSecurityDeposit: false,
-  maxAdvance: 0,
-  isNew: false,
-  noAnnualLimit: false,
-  annualLimit: 0,
-  fuels: [] as Array<string>,
-  transmissions: [] as Array<string>,
-  bodies: [] as Array<string>,
-  seats: 0,
-  doors: 0,
-  gears: 0,
-  withDriver: false,
-  noAgeLimit: false,
-  minAge: 0,
-  optionals: [] as string[],
-  maintenance: [] as string[],
-  insurances: [] as string[],
-  otherServices: [] as string[],
-  internalColors: [] as string[],
-  externalColors: [] as string[],
-  internalMaterials: [] as string[],
-  minPower: 0,
-  maxPower: 1000,
-  traction: [] as string[],
-  emission: [] as string[],
 }
 
 interface BrandModels {

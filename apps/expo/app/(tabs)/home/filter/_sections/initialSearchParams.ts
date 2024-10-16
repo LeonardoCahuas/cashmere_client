@@ -24,6 +24,7 @@ interface SearchParams {
   internalMaterials: string[]
   equipment: string[]
   engine: { power: 'HP' | 'kw'; range: number[]; traction: string[]; emissionClass: string[] }
+  monthsRange: number[]
 }
 
 export const initialSearchParams: SearchParams = {
@@ -52,6 +53,7 @@ export const initialSearchParams: SearchParams = {
   internalMaterials: [],
   equipment: [],
   engine: { power: 'HP', range: [0, 1000], traction: [], emissionClass: [] },
+  monthsRange: [0, 1],
 }
 
 export const __RESET_KEY__ = '__reset__'
@@ -91,6 +93,7 @@ export function reducer(
     | { type: 'set_details_doors'; payload: number | '__reset__' }
     | { type: 'set_details_gears'; payload: number | '__reset__' }
     | { type: 'set_with_driver'; payload: boolean | '__reset__' }
+    | { type: 'set_months_range'; payload: number[] | '__reset__' }
 ): SearchParams {
   switch (type) {
     case 'set_vehicle_type':
@@ -330,6 +333,10 @@ export function reducer(
           emissionClass: [...state.engine?.emissionClass, payload],
         },
       }
+
+    case 'set_months_range':
+      if (payload === __RESET_KEY__) return { ...state, monthsRange: [] }
+      return { ...state, monthsRange: payload }
     default:
       return state
   }
