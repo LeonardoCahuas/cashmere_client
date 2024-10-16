@@ -629,7 +629,7 @@ const FilterSection = () => {
   return (
     <ModalSheetProvider>
       <View>
-        <ScrollView horizontal={false} style={{ marginBottom: 150 }}>
+        <ScrollView horizontal={false}>
           <View style={styles.container}>
             <ScrollView
               horizontal
