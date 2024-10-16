@@ -3011,6 +3011,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ptomasroos/react-native-multi-slider@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@ptomasroos/react-native-multi-slider@npm:2.2.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/a7fb9baeb24b561720cbc1169ca7d80c790649a1b6dfb6b64c4845c4adaa4611ed61cc0ce5799ce2472890fd4b104ba84ddc31190ad3ba948c766a123416c437
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-compose-refs@npm:1.0.0":
   version: 1.0.0
   resolution: "@radix-ui/react-compose-refs@npm:1.0.0"
@@ -9621,6 +9631,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-haptics@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "expo-haptics@npm:13.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/2ed8d292f89208b21fece50c2d21c4272833fd37cb769e382365a9502b844c33f582ceee374ad8d3c184cc75418ca9a6daf54005de281c0a952c7f2a39b026c9
+  languageName: node
+  linkType: hard
+
 "expo-json-utils@npm:~0.13.0":
   version: 0.13.1
   resolution: "expo-json-utils@npm:0.13.1"
@@ -13077,6 +13096,7 @@ __metadata:
     expo-constants: "npm:~16.0.2"
     expo-dev-client: "npm:~4.0.15"
     expo-font: "npm:~12.0.6"
+    expo-haptics: "npm:^13.0.1"
     expo-linear-gradient: "npm:~13.0.2"
     expo-linking: "npm:~6.3.1"
     expo-router: "npm:3.5.15"
@@ -15825,6 +15845,7 @@ __metadata:
   dependencies:
     "@babel/runtime": "npm:^7.24.6"
     "@manypkg/cli": "npm:^0.21.4"
+    "@ptomasroos/react-native-multi-slider": "npm:^2.2.2"
     "@siva/ui": "workspace:^"
     "@supabase/supabase-js": "npm:^2.45.4"
     check-dependency-version-consistency: "npm:^4.1.0"

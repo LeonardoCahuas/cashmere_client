@@ -42,6 +42,23 @@ import TransmissionIcon from './transmission.icon'
 import { TruckIcon } from './truck.icon'
 import { VerifiedCheckIcon } from './verified-check.icon'
 import WheelIcon from './wheel.icon'
+import { AutomaticIcon } from './automatic.icon'
+import { CabrioIcon } from './cabrio.icon'
+import { CityCarIcon } from './citycar.icon'
+import { ColorsIcon } from './colors.icon'
+import { CoupeIcon } from './coupe.icon'
+import { DropIcon } from './drop.icon'
+import DropFlashIcon from './dropflash.icon'
+import FireIcon from './fire.icon'
+import { FlashIcon } from './flash.icon'
+import ManualIcon from './manual.icon'
+import { OtherIcon } from './other.icon'
+import { PlateIcon } from './plate.icon'
+import SedanIcon from './sedan.icon'
+import SemiAutomaticIcon from './semi.automatic.icon'
+import { StationWagonIcon } from './stationwagon.icon'
+import { StatusIcon } from './status.icon'
+import { SuvIcon } from './suv.icon'
 
 export enum Icons {
   car = 'car',
@@ -86,6 +103,23 @@ export enum Icons {
   chevron_right = 'chevron-right',
   check = 'check',
   star = 'star',
+  automatic = 'automatic',
+  cabrio = 'cabrio',
+  citycar = 'citycar',
+  colors = 'colors',
+  coupe = 'coupe',
+  drop = 'drop',
+  dropflash = 'dropflash',
+  fire = 'fire',
+  flash = 'flash',
+  manual = 'manual',
+  other = 'other',
+  plate = 'plate',
+  sedan = 'sedan',
+  semi_automatic = 'semi_automatic',
+  station_wagon = 'station_wagon',
+  status = 'status',
+  suv = 'suv'
 }
 
 export type IconName = `${Icons}`
@@ -185,6 +219,41 @@ export const Icon = ({ ...props }: IconProps) => {
       return <CheckmarkIcon {...p} />
     case 'star':
       return <StarIcon {...p} />
+
+    case 'automatic':
+      return <AutomaticIcon {...p} />
+    case 'cabrio':
+      return <CabrioIcon {...p} />
+    case 'citycar':
+      return <CityCarIcon {...p} />
+    case 'colors':
+      return <ColorsIcon {...p} />
+    case 'coupe':
+      return <CoupeIcon {...p} />
+    case 'drop':
+      return <DropIcon {...p} />
+    case 'dropflash':
+      return <DropFlashIcon {...p} />
+    case 'fire':
+      return <FireIcon {...p} />
+    case 'flash':
+      return <FlashIcon {...p} />
+    case 'manual':
+      return <ManualIcon {...p} />
+    case 'other':
+      return <OtherIcon {...p} />
+    case 'plate':
+      return <PlateIcon {...p} />
+    case 'sedan':
+      return <SedanIcon {...p} />
+    case 'semi_automatic':
+      return <SemiAutomaticIcon {...p} />
+    case 'station_wagon':
+      return <StationWagonIcon {...p} />
+    case 'status':
+      return <StatusIcon {...p} />
+    case 'suv':
+      return <SuvIcon {...p} />
     default:
       return <></>
   }

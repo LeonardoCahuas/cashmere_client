@@ -60,7 +60,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
       ],
-      bookmarked: true,
+      bookmarked: false,
     },
     {
       id: '07788071-75c3-4e44-8eb3-13981ce3f229',
