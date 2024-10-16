@@ -1,13 +1,13 @@
 import { FontAwesome } from '@expo/vector-icons'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
-import { Button, Colors, Icon, IconName } from '@siva/ui'
+import { Button, Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
 import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
 import {
   ModalPage,
   MultiStepModalSheet,
 } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
 import * as Haptics from 'expo-haptics'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { useReducer, useState } from 'react'
 import {
   Dimensions,
@@ -626,9 +626,13 @@ const FilterSection = () => {
     setPage(page)
   }
 
+  const goToResults = () => {
+    router.push('/home/news')
+  }
+
   return (
     <ModalSheetProvider>
-      <View>
+      <View style={styles.outerContainer}>
         <ScrollView horizontal={false}>
           <View style={styles.container}>
             <ScrollView
@@ -1291,6 +1295,11 @@ const FilterSection = () => {
             />
           </View>
         </ScrollView>
+        <TouchableOpacity style={styles.ctaContainer}>
+          <PrimaryButton style={styles.cta} onPress={goToResults}>
+            Mostra risultati
+          </PrimaryButton>
+        </TouchableOpacity>
       </View>
       <MultiStepModalSheet
         ref={ref}
@@ -1306,6 +1315,20 @@ const FilterSection = () => {
 export default FilterSection
 
 const styles = StyleSheet.create({
+  outerContainer: {
+    position: 'relative',
+  },
+  ctaContainer: {
+    position: 'absolute',
+    bottom: 104,
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cta: {
+    width: sliderWidth + 8,
+  },
   tabContainer: {
     display: 'flex',
     flexDirection: 'row',
