@@ -1,4 +1,3 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
 import { Colors, Icon, IconName } from '@siva/ui'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -6,7 +5,6 @@ import { SectionTitle } from './SectionTitle'
 
 const Add = () => {
   const insets = useSafeAreaInsets()
-  const tabBarHeight = useBottomTabBarHeight()
   const setter = (val: string) => console.log('set to', val)
   const selectedType = 'car'
 
@@ -41,8 +39,8 @@ const Add = () => {
       icon: 'car',
     },
   ]
-  const height = Dimensions.get('screen').height - insets.top - insets.bottom - tabBarHeight - 64
-  console.log(Dimensions.get('screen').height, tabBarHeight, insets.top, insets.bottom, height)
+  const height = Dimensions.get('screen').height - insets.top - insets.bottom - 0
+  console.log(Dimensions.get('screen').height, insets.top, insets.bottom, height)
 
   return (
     <View style={styles.container}>

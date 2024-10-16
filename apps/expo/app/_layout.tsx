@@ -10,7 +10,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync()
 
 export default function App() {
-  console.log('-.-')
+  console.log('-.,-')
   return (
     <Provider>
       <Stack>
@@ -19,6 +19,7 @@ export default function App() {
           name="screens/AddPostingView"
           options={{
             headerShown: false,
+            animation: 'slide_from_bottom',
           }}
         />
         <Stack.Screen

@@ -1,11 +1,22 @@
-import { Stack } from 'expo-router'
+import { Colors, Icon } from '@siva/ui'
+import { Stack, router } from 'expo-router'
+import { TouchableOpacity } from 'react-native'
 
 const StackLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
-        title: 'Inserisci annuncioooo',
+        headerShown: true,
+        title: 'Inserisci annuncio',
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => {
+              router.back()
+            }}
+          >
+            <Icon name="close" color={Colors.blackPrimary} />
+          </TouchableOpacity>
+        ),
       }}
     ></Stack>
   )
