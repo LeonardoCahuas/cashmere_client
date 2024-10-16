@@ -1,4 +1,5 @@
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
+import { Posting } from '@siva/entities'
 import { createRef } from 'react'
 import { create } from 'zustand'
 
@@ -25,12 +26,20 @@ interface MessagesState {}
 
 interface ProfileState {}
 
+interface DetailViewState {
+  posting: Posting | null
+  setPosting: (posting: Posting | null) => void
+  isBookmarked: boolean
+  setIsBookmarked: (v: boolean) => void
+}
+
 interface AppState {
   home: HomeState
   search: SearchState
   saved: SavedState
   messages: MessagesState
   profile: ProfileState
+  detailView: DetailViewState
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -55,4 +64,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   messages: {},
   profile: {},
+  detailView: {
+    posting: null,
+    setPosting: (id) => {
+      set((state) => ({ ...state, detailView: { ...state.detailView, posting: id } }))
+    },
+    isBookmarked: false,
+    setIsBookmarked: (updated) => {
+      set((state) => ({ ...state, detailView: { ...state.detailView, isBookmarked: updated } }))
+    },
+  },
 }))

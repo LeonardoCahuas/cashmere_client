@@ -1,38 +1,37 @@
-import { Colors, PostingCard } from '@siva/ui'
+import { PostingCard } from '@siva/ui'
 import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
+import { useAddBookmark, useRemoveBookmark } from 'apps/expo/app/setup/query/hooks'
 import { useAppStore } from 'apps/expo/app/setup/store'
-import { useRouter } from 'expo-router'
 import React from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SectionTitle } from './components/SectionTitle'
+import { FlatList, StyleSheet, View } from 'react-native'
+import { SectionTitle } from '../../_sections/components/SectionTitle'
 
-type ForYouPosting = React.ComponentProps<typeof PostingCard.Small>['posting']
+type PostingCard = React.ComponentProps<typeof PostingCard.Large>['posting']
 
 interface CardRendererProps {
-  item: ForYouPosting
+  item: PostingCard
 }
 
 const CardRenderer = ({ item }: CardRendererProps) => {
   const { setPosting } = useAppStore((s) => s.detailView)
+  const { mutate: addBookmark } = useAddBookmark('')
+  const { mutate: removeBookmark } = useRemoveBookmark('')
   return (
     <View style={styles.cardWrapper}>
-      <PostingCard.Small
+      <PostingCard.Large
         posting={item}
         onCardClick={() => {
           setPosting(item)
           linkToDetail(item)
         }}
+        onClickSave={() => {}}
       />
     </View>
   )
 }
 
-export const ForYouSection = () => {
-  const router = useRouter()
-
-  const handlePress = () => router.push('/home/news')
-
-  const postings: Array<ForYouPosting> = [
+export const ExploreSection = () => {
+  const postings: Array<PostingCard> = [
     {
       id: 'id',
       posting_id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
@@ -118,7 +117,7 @@ export const ForYouSection = () => {
       bookmarked: false,
     },
     {
-      id: '5f1f15b2-905b-41cd-b114-747b8330ba9d',
+      id: '213ef',
       posting_id: '5f1f15b2-905b-41cd-b114-747b8330ba9d',
       created_at: '2024-09-28T01:14:52.789Z',
       duration: 'short_term',
@@ -150,19 +149,13 @@ export const ForYouSection = () => {
   return (
     <>
       <View style={styles.titleRow}>
-        <SectionTitle>Novità</SectionTitle>
-        <TouchableOpacity onPress={handlePress}>
-          <Text style={{ color: Colors.greenPrimary, fontSize: 14, fontWeight: '600' }}>
-            Vedi Tutto
-          </Text>
-        </TouchableOpacity>
+        <SectionTitle>Esplora</SectionTitle>
       </View>
       <FlatList
+        horizontal={false}
         data={postings}
         keyExtractor={(item) => item.model}
         renderItem={({ item }) => <CardRenderer item={item} />}
-        numColumns={2}
-        columnWrapperStyle={styles.columnWrapperStyle}
         contentContainerStyle={styles.contentContainerStyle}
       />
     </>
@@ -171,14 +164,16 @@ export const ForYouSection = () => {
 
 const styles = StyleSheet.create({
   contentContainerStyle: {
-    paddingBottom: 40,
-    paddingHorizontal: 8,
+    paddingBottom: 100,
+    paddingHorizontal: 18,
+    paddingTop: 10,
+    overflow: 'visible',
   },
   columnWrapperStyle: {
     justifyContent: 'space-between',
   },
   cardWrapper: {
-    width: '50%',
+    width: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -190,6 +185,6 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingRight: 16,
+    paddingTop: 16,
   },
 })

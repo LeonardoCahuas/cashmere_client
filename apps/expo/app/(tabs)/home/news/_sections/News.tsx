@@ -1,5 +1,7 @@
 import { PostingCard } from '@siva/ui'
 import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
+import { useAddBookmark, useRemoveBookmark } from 'apps/expo/app/setup/query/hooks'
+import { useAppStore } from 'apps/expo/app/setup/store'
 import { Stack } from 'expo-router'
 import React from 'react'
 import { FlatList, StyleSheet, View } from 'react-native'
@@ -12,9 +14,20 @@ interface CardRendererProps {
 }
 
 const CardRenderer = ({ item }: CardRendererProps) => {
+  const { setPosting } = useAppStore((s) => s.detailView)
+  const user = { session: 'd5f0bcb0-2563-403b-9e8c-50d7292ec83a' }
+  const { mutate: addBookmark } = useAddBookmark(user.session)
+  const { mutate: removeBookmark } = useRemoveBookmark(user.session)
   return (
     <View style={styles.cardWrapper}>
-      <PostingCard.Large posting={item} onCardClick={() => linkToDetail(item)} />
+      <PostingCard.Large
+        posting={item}
+        onCardClick={() => {
+          setPosting(item)
+          linkToDetail(item)
+        }}
+        onClickSave={() => {}}
+      />
     </View>
   )
 }
@@ -103,7 +116,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/2024_honda_cr-v_4dr-suv_sport-hybrid_fq_oem_1_815.avif?t=2024-09-25T20%3A14%3A47.707Z',
       ],
-      bookmarked: false,
+      bookmarked: true,
     },
     {
       id: '213ef',
@@ -131,7 +144,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/hr-v-00.webp',
       ],
-      bookmarked: false,
+      bookmarked: true,
     },
   ]
   return (
