@@ -20,6 +20,7 @@ import {
 } from 'react-native'
 import FilterComponent from './components/FilterComponent'
 import FilterComponentModal from './components/FilterComponentWithModal'
+import { SelectableRow } from './components/SelectableRow'
 import VehicleTypeButton from './components/VehicleTypeButton'
 import { __RESET_KEY__, initialSearchParams, reducer } from './initialSearchParams'
 
@@ -1642,16 +1643,6 @@ interface TabItem {
   name: VehicleType
 }
 
-interface BrandModels {
-  brand: string
-  models: string[]
-}
-
-interface BrandModel {
-  brand: string
-  models: string
-}
-
 type VehicleType = 'car' | 'van' | 'motorcycle'
 
 const servicesStyles = StyleSheet.create({
@@ -1791,66 +1782,5 @@ const engineStyles = StyleSheet.create({
   listContainer: {
     display: 'flex',
     width: '100%',
-  },
-})
-
-interface SelectableRowProps {
-  checked: boolean
-  onPress: () => void
-  item: { label: string; value: string }
-  children?: JSX.Element
-}
-
-const SelectableRow = ({ checked, item, children, onPress }: SelectableRowProps) => {
-  return (
-    <TouchableOpacity
-      key={item.value}
-      style={selectableRowStyle.actionContainer}
-      onPress={() => {
-        onPress()
-        Haptics.selectionAsync()
-      }}
-    >
-      {!!children ? children : <Text>{item.label}</Text>}
-      {checked ? (
-        <View style={selectableRowStyle.checkContainerFull}>
-          <Icon name="check" color="#fff" />
-        </View>
-      ) : (
-        <View style={selectableRowStyle.checkContainerEmpty}></View>
-      )}
-    </TouchableOpacity>
-  )
-}
-
-const selectableRowStyle = StyleSheet.create({
-  actionContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.tertiaryGray,
-    paddingVertical: 12,
-  },
-  checkContainerFull: {
-    width: 24,
-    height: 24,
-    borderRadius: 24,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.greenPrimary,
-  },
-  checkContainerEmpty: {
-    width: 24,
-    height: 24,
-    borderRadius: 24,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.greySecondary,
   },
 })
