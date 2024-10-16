@@ -464,17 +464,14 @@ type ModalKey =
 
 const sliderWidth = Dimensions.get('window').width - 48
 
+type PageKey = 'brands' | 'interiors' | 'services' | 'equipment' | 'engine'
+
 const FilterSection = () => {
   const { duration } = useLocalSearchParams()
   const [searchOLD, dispatchOLD] = useReducer(reducerOLD, initialSearchParameters)
   const [search, dispatch] = useReducer(reducer, initialSearchParams)
   const ref = useModalSheetRef()
   const [modalKey, setModalKey] = useState<ModalKey | null>(null)
-
-  const openModal = (k: ModalKey) => {
-    ref?.current?.expand()
-    setModalKey(k)
-  }
 
   const handleNumberInput = (action: NumberActionType, payload: string) => {
     const numericText = payload.replace(/[^0-9]/g, '')
@@ -509,7 +506,10 @@ const FilterSection = () => {
         doneButton: true,
         content: (
           <View>
-            {[{ label: '500', value: '500' }].map((item) => (
+            {[
+              { label: '500', value: '500' },
+              { label: '600', value: '600' },
+            ].map((item) => (
               <SelectableRow
                 checked={false}
                 item={item}
@@ -878,7 +878,7 @@ const FilterSection = () => {
     },
   }
 
-  const openStepModal = (page: string) => {
+  const openStepModal = (page: PageKey) => {
     ref.current?.expand()
     setPage(page)
   }
@@ -887,11 +887,6 @@ const FilterSection = () => {
     <ModalSheetProvider>
       <View>
         <ScrollView horizontal={false} style={{ marginBottom: 150 }}>
-          {['brands', 'interiors', 'services', 'equipment', 'engine'].map((k) => (
-            <TouchableOpacity key={k} onPress={() => openStepModal(k)}>
-              <Text>{k}</Text>
-            </TouchableOpacity>
-          ))}
           <View style={styles.container}>
             <ScrollView
               horizontal
@@ -942,7 +937,10 @@ const FilterSection = () => {
                   </View>
                 ))}
 
-              <TouchableOpacity style={styles.addBrandModel} onPress={() => openModal('brand')}>
+              <TouchableOpacity
+                style={styles.addBrandModel}
+                onPress={() => openStepModal('brands')}
+              >
                 <Text style={{ color: Colors.bluePrimary, fontSize: 20 }}>+</Text>
                 <Text style={{ color: Colors.bluePrimary, fontSize: 14 }}>
                   Aggiungi altre marche e modelli
@@ -1128,20 +1126,11 @@ const FilterSection = () => {
               <TouchableOpacity
                 style={[
                   styles.onlyVerifiedCont,
-                  searchOLD.noAdvancePayment || searchOLD.noSecurityDeposit
-                    ? styles.onlyVerifiedContActive
-                    : {},
+                  search.deposit != null ? styles.onlyVerifiedContActive : {},
                 ]}
                 activeOpacity={1}
                 onPress={() =>
-                  dispatchOLD({
-                    type:
-                      duration == 'short' ? 'set_no_security_deposit' : 'set_no_advance_payment',
-                    payload:
-                      duration == 'short'
-                        ? !searchOLD.noSecurityDeposit
-                        : !searchOLD.noAdvancePayment,
-                  })
+                  dispatch({ type: 'set_deposit', payload: search.deposit != null ? null : 0 })
                 }
               >
                 <Text>
@@ -1152,33 +1141,26 @@ const FilterSection = () => {
                 <View
                   style={[
                     styles.verifiedCheck,
-                    searchOLD.noAdvancePayment || searchOLD.noSecurityDeposit
-                      ? styles.verifiedCheckActive
-                      : {},
+                    search.deposit != null ? styles.verifiedCheckActive : {},
                   ]}
                 >
-                  {(searchOLD.noAdvancePayment || searchOLD.noSecurityDeposit) && (
-                    <FontAwesome name="check" color="white" />
-                  )}
+                  {search.deposit != null && <FontAwesome name="check" color="white" />}
                 </View>
               </TouchableOpacity>
 
-              {((duration == 'long' && !searchOLD.noAdvancePayment) ||
-                (duration == 'short' && !searchOLD.noSecurityDeposit)) && (
+              {search.deposit != null && (
                 <View style={styles.advanceCont}>
                   <Text style={styles.labelPrice}>Cifra massima</Text>
                   <View style={styles.anvanceInputCont}>
                     <Text style={{ paddingHorizontal: 10 }}>€</Text>
                     <TextInput
                       style={styles.anvanceInput}
-                      placeholder={
-                        duration == 'short'
-                          ? 'Inserisci deposito massimo'
-                          : 'Inserisci anticipo massimo'
-                      }
+                      placeholder={'Inserisci deposito massimo'}
                       keyboardType="numeric"
-                      onChangeText={(text) => handleNumberInput('set_max_advance', text)}
-                      value={searchOLD.maxAdvance.toString()}
+                      onChangeText={(text) =>
+                        dispatch({ type: 'set_deposit', payload: Number(text) })
+                      }
+                      value={search.deposit.toString()}
                     />
                   </View>
                 </View>
@@ -1194,24 +1176,27 @@ const FilterSection = () => {
                 <TouchableOpacity
                   style={[
                     styles.onlyVerifiedCont,
-                    searchOLD.noAgeLimit ? styles.onlyVerifiedContActive : {},
+                    search.ageRequirement != null ? styles.onlyVerifiedContActive : {},
                   ]}
                   activeOpacity={1}
                   onPress={() =>
-                    dispatchOLD({ type: 'set_no_age_limit', payload: !searchOLD.noAgeLimit })
+                    dispatch({
+                      type: 'set_age_requirement',
+                      payload: search.ageRequirement != null ? null : 0,
+                    })
                   }
                 >
                   <Text>Mostra solo veicoli senza limite di età</Text>
                   <View
                     style={[
                       styles.verifiedCheck,
-                      searchOLD.noAgeLimit ? styles.verifiedCheckActive : {},
+                      search.ageRequirement != null ? styles.verifiedCheckActive : {},
                     ]}
                   >
-                    {searchOLD.noAgeLimit && <FontAwesome name="check" color="white" />}
+                    {search.ageRequirement != null && <FontAwesome name="check" color="white" />}
                   </View>
                 </TouchableOpacity>
-                {!searchOLD.noAgeLimit && (
+                {search.ageRequirement != null && (
                   <View style={styles.advanceCont}>
                     <Text style={styles.labelPrice}>Età minima</Text>
 
@@ -1221,8 +1206,10 @@ const FilterSection = () => {
                         style={styles.anvanceInput}
                         placeholder="Età"
                         keyboardType="numeric"
-                        onChangeText={(text) => handleNumberInput('set_min_age', text)}
-                        value={searchOLD.minAge.toString()}
+                        onChangeText={(text) =>
+                          dispatch({ type: 'set_age_requirement', payload: Number(text) })
+                        }
+                        value={search.ageRequirement.toString()}
                       />
                     </View>
                   </View>
@@ -1235,37 +1222,38 @@ const FilterSection = () => {
               icon="status"
               description="Stato del veicolo al momento del noleggio."
             >
-              <TouchableOpacity
-                style={[
-                  styles.onlyVerifiedCont,
-                  searchOLD.isNew ? styles.onlyVerifiedContActive : {},
-                ]}
-                activeOpacity={1}
-                onPress={() => dispatchOLD({ type: 'set_is_new', payload: true })}
-              >
-                <Text>Nuovo</Text>
-                <View
-                  style={[styles.verifiedCheck, searchOLD.isNew ? styles.verifiedCheckActive : {}]}
-                >
-                  {searchOLD.isNew && <FontAwesome name="check" color="white" />}
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.onlyVerifiedCont,
-                  !searchOLD.isNew ? styles.onlyVerifiedContActive : {},
-                ]}
-                activeOpacity={1}
-                onPress={() => dispatchOLD({ type: 'set_is_new', payload: false })}
-              >
-                <Text>Usato</Text>
-                <View
-                  style={[styles.verifiedCheck, !searchOLD.isNew ? styles.verifiedCheckActive : {}]}
-                >
-                  {!searchOLD.isNew && <FontAwesome name="check" color="white" />}
-                </View>
-              </TouchableOpacity>
+              {(
+                [
+                  { label: 'Nuovo', value: 'new' },
+                  { label: 'Usato', value: 'used' },
+                ] as Array<{ label: string; value: 'new' | 'used' }>
+              ).map((item) => (
+                <>
+                  <TouchableOpacity
+                    style={[
+                      styles.onlyVerifiedCont,
+                      search.state == item.value ? styles.onlyVerifiedContActive : {},
+                    ]}
+                    activeOpacity={1}
+                    onPress={() =>
+                      dispatch({
+                        type: 'set_state',
+                        payload: item.value,
+                      })
+                    }
+                  >
+                    <Text>{item.label}</Text>
+                    <View
+                      style={[
+                        styles.verifiedCheck,
+                        search.state == item.value ? styles.verifiedCheckActive : {},
+                      ]}
+                    >
+                      {search.state == item.value && <FontAwesome name="check" color="white" />}
+                    </View>
+                  </TouchableOpacity>
+                </>
+              ))}
             </FilterComponent>
 
             <FilterComponent
@@ -1290,10 +1278,10 @@ const FilterSection = () => {
                     search.kmLimit != null ? styles.verifiedCheckActive : {},
                   ]}
                 >
-                  {searchOLD.noAnnualLimit && <FontAwesome name="check" color="white" />}
+                  {search.kmLimit != null && <FontAwesome name="check" color="white" />}
                 </View>
               </TouchableOpacity>
-              {!searchOLD.noAnnualLimit && (
+              {search.kmLimit != null && (
                 <View style={styles.advanceCont}>
                   <Text style={styles.labelPrice}>Percorrenza massima</Text>
 
@@ -1303,8 +1291,10 @@ const FilterSection = () => {
                       style={styles.anvanceInput}
                       placeholder="Massimo km"
                       keyboardType="numeric"
-                      onChangeText={(text) => handleNumberInput('set_annual_limit', text)}
-                      value={searchOLD.annualLimit.toString()}
+                      onChangeText={(text) =>
+                        dispatch({ type: 'set_km_limit', payload: Number(text) })
+                      }
+                      value={search.kmLimit.toString()}
                     />
                   </View>
                 </View>
@@ -1322,11 +1312,11 @@ const FilterSection = () => {
                     <TouchableOpacity
                       style={[
                         styles.listButton,
-                        searchOLD.fuels.includes(f.name) ? styles.listButtonActive : {},
+                        search.details.fuel.includes(f.name) ? styles.listButtonActive : {},
                       ]}
                       activeOpacity={1}
                       onPress={() => {
-                        dispatchOLD({ type: 'set_fuels', payload: f.name })
+                        dispatch({ type: 'set_details_fuel', payload: f.name })
                         Haptics.selectionAsync()
                       }}
                     >
@@ -1344,10 +1334,12 @@ const FilterSection = () => {
                     <TouchableOpacity
                       style={[
                         styles.listButton,
-                        searchOLD.transmissions.includes(f.name) ? styles.listButtonActive : {},
+                        search.details.transmission.includes(f.name) ? styles.listButtonActive : {},
                       ]}
                       activeOpacity={1}
-                      onPress={() => dispatchOLD({ type: 'set_transmission', payload: f.name })}
+                      onPress={() =>
+                        dispatch({ type: 'set_details_transmission', payload: f.name })
+                      }
                     >
                       <Icon name={f.icon} color="black" />
                       <Text style={styles.listButtonText}>{f.name}</Text>
@@ -1363,10 +1355,10 @@ const FilterSection = () => {
                     <TouchableOpacity
                       style={[
                         styles.listButton,
-                        searchOLD.bodies.includes(f.name) ? styles.listButtonActive : {},
+                        search.details.body.includes(f.name) ? styles.listButtonActive : {},
                       ]}
                       activeOpacity={1}
-                      onPress={() => dispatchOLD({ type: 'set_body_type', payload: f.name })}
+                      onPress={() => dispatch({ type: 'set_details_body', payload: f.name })}
                     >
                       <Icon name={f.icon} color="black" />
                       <Text style={styles.listButtonText}>{f.name}</Text>
@@ -1395,18 +1387,23 @@ const FilterSection = () => {
                   <TouchableOpacity
                     style={styles.quantityIconCont}
                     onPress={() =>
-                      dispatchOLD({
-                        type: 'set_seats',
-                        payload: searchOLD.seats > 0 ? searchOLD.seats - 1 : 0,
+                      dispatch({
+                        type: 'set_details_seats',
+                        payload: search.details.seats > 0 ? search.details.seats - 1 : 0,
                       })
                     }
                   >
                     <Text style={styles.quantityIcon}>-</Text>
                   </TouchableOpacity>
-                  <Text style={{ width: 30, textAlign: 'center' }}>{searchOLD.seats}</Text>
+                  <Text style={{ width: 30, textAlign: 'center' }}>{search.details.seats}</Text>
                   <TouchableOpacity
                     style={styles.quantityIconCont}
-                    onPress={() => dispatchOLD({ type: 'set_seats', payload: searchOLD.seats + 1 })}
+                    onPress={() =>
+                      dispatch({
+                        type: 'set_details_seats',
+                        payload: search.details.seats < 8 ? search.details.seats + 1 : 0,
+                      })
+                    }
                   >
                     <Text style={styles.quantityIcon}>+</Text>
                   </TouchableOpacity>
@@ -1430,18 +1427,23 @@ const FilterSection = () => {
                   <TouchableOpacity
                     style={styles.quantityIconCont}
                     onPress={() =>
-                      dispatchOLD({
-                        type: 'set_doors',
-                        payload: searchOLD.doors > 3 ? searchOLD.doors - 1 : 3,
+                      dispatch({
+                        type: 'set_details_doors',
+                        payload: search.details.doors > 2 ? search.details.doors - 1 : 2,
                       })
                     }
                   >
                     <Text style={styles.quantityIcon}>-</Text>
                   </TouchableOpacity>
-                  <Text style={{ width: 30, textAlign: 'center' }}>{searchOLD.doors}+</Text>
+                  <Text style={{ width: 30, textAlign: 'center' }}>{search.details.doors}+</Text>
                   <TouchableOpacity
                     style={styles.quantityIconCont}
-                    onPress={() => dispatchOLD({ type: 'set_doors', payload: searchOLD.doors + 1 })}
+                    onPress={() =>
+                      dispatch({
+                        type: 'set_details_doors',
+                        payload: search.details.doors < 6 ? search.details.doors + 1 : 2,
+                      })
+                    }
                   >
                     <Text style={styles.quantityIcon}>+</Text>
                   </TouchableOpacity>
@@ -1466,18 +1468,23 @@ const FilterSection = () => {
                   <TouchableOpacity
                     style={styles.quantityIconCont}
                     onPress={() =>
-                      dispatchOLD({
-                        type: 'set_gears',
-                        payload: searchOLD.gears > 1 ? searchOLD.gears - 1 : 1,
+                      dispatch({
+                        type: 'set_details_gears',
+                        payload: search.details.gears > 1 ? search.details.gears - 1 : 1,
                       })
                     }
                   >
                     <Text style={styles.quantityIcon}>-</Text>
                   </TouchableOpacity>
-                  <Text style={{ width: 30, textAlign: 'center' }}>{searchOLD.gears}+</Text>
+                  <Text style={{ width: 30, textAlign: 'center' }}>{search.details.gears}+</Text>
                   <TouchableOpacity
                     style={styles.quantityIconCont}
-                    onPress={() => dispatchOLD({ type: 'set_gears', payload: searchOLD.gears + 1 })}
+                    onPress={() =>
+                      dispatch({
+                        type: 'set_details_gears',
+                        payload: search.details.gears < 8 ? search.details.gears + 1 : 1,
+                      })
+                    }
                   >
                     <Text style={styles.quantityIcon}>+</Text>
                   </TouchableOpacity>
@@ -1493,55 +1500,41 @@ const FilterSection = () => {
               <TouchableOpacity
                 style={[
                   styles.onlyVerifiedCont,
-                  searchOLD.withDriver ? styles.onlyVerifiedContActive : {},
+                  search.withDriver ? styles.onlyVerifiedContActive : {},
                 ]}
                 activeOpacity={1}
-                onPress={() =>
-                  dispatchOLD({ type: 'set_with_driver', payload: !searchOLD.withDriver })
-                }
+                onPress={() => dispatch({ type: 'set_with_driver', payload: !search.withDriver })}
               >
                 <Text>Mostra solo veicoli con conducente</Text>
                 <View
                   style={[
                     styles.verifiedCheck,
-                    searchOLD.withDriver ? styles.verifiedCheckActive : {},
+                    search.withDriver ? styles.verifiedCheckActive : {},
                   ]}
                 >
-                  {searchOLD.withDriver && <FontAwesome name="check" color="white" />}
+                  {search.withDriver && <FontAwesome name="check" color="white" />}
                 </View>
               </TouchableOpacity>
             </FilterComponent>
             <FilterComponentModal
               title={'Equipaggiamento'}
               icon="wheel"
-              items={searchOLD.optionals}
-              onClick={() => openModal('equipment')}
+              onClick={() => openStepModal('equipment')}
             />
             <FilterComponentModal
               title={'Servizi inclusi con il noleggio'}
               icon="services"
-              items={[
-                ...searchOLD.insurances,
-                ...searchOLD.otherServices,
-                ...searchOLD.maintenance,
-              ]}
-              onClick={() => openModal('services')}
+              onClick={() => openStepModal('services')}
             />
             <FilterComponentModal
               title={'Colore e interni'}
               icon="colors"
-              items={[
-                ...searchOLD.internalColors,
-                ...searchOLD.externalColors,
-                ...searchOLD.internalMaterials,
-              ]}
-              onClick={() => openModal('colors')}
+              onClick={() => openStepModal('interiors')}
             />
             <FilterComponentModal
               title={'Motore'}
               icon="engine"
-              items={[...searchOLD.traction, ...searchOLD.emission]}
-              onClick={() => openModal('engine')}
+              onClick={() => openStepModal('engine')}
             />
           </View>
         </ScrollView>

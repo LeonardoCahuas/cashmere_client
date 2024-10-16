@@ -6,11 +6,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 interface FilterComponentProps {
   title: string
   icon?: IconName
-  items: string[]
   onClick: () => void
 }
 
-const FilterComponentModal: React.FC<FilterComponentProps> = ({ title, icon, items, onClick }) => {
+const FilterComponentModal: React.FC<FilterComponentProps> = ({ title, icon, onClick }) => {
   return (
     <TouchableOpacity style={styles.card} activeOpacity={1} onPress={onClick}>
       <View style={styles.cardLeft}>
@@ -18,12 +17,6 @@ const FilterComponentModal: React.FC<FilterComponentProps> = ({ title, icon, ite
           {icon && <Icon name={icon} color="black" width={20} height={20} />}
           <Text style={styles.title}>{title}</Text>
         </View>
-
-        {items?.length > 0 && (
-          <Text style={styles.description} numberOfLines={1} ellipsizeMode="tail">
-            {items.join(', ')}
-          </Text>
-        )}
       </View>
       <View>
         <FontAwesome name="chevron-right" size={13} color={Colors.greenPrimary} />

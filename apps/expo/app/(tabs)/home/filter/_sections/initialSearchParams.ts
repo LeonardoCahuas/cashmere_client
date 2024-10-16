@@ -16,6 +16,8 @@ interface SearchParams {
     doors: number
     gears: number
   }
+  ageRequirement: number | null
+  withDriver: boolean
   includedServices: string[]
   interiorColor: string
   externalColor: string
@@ -42,6 +44,8 @@ export const initialSearchParams: SearchParams = {
     doors: 0,
     gears: 0,
   },
+  ageRequirement: null,
+  withDriver: false,
   includedServices: [],
   interiorColor: '',
   externalColor: '',
@@ -79,6 +83,14 @@ export function reducer(
     | { type: 'set_engine_range'; payload: number[] | '__reset__' }
     | { type: 'set_engine_traction'; payload: string | '__reset__' }
     | { type: 'set_engine_emissionClass'; payload: string | '__reset__' }
+    | { type: 'set_age_requirement'; payload: number | null | '__reset__' }
+    | { type: 'set_details_fuel'; payload: string | '__reset__' }
+    | { type: 'set_details_transmission'; payload: string | '__reset__' }
+    | { type: 'set_details_body'; payload: string | '__reset__' }
+    | { type: 'set_details_seats'; payload: number | '__reset__' }
+    | { type: 'set_details_doors'; payload: number | '__reset__' }
+    | { type: 'set_details_gears'; payload: number | '__reset__' }
+    | { type: 'set_with_driver'; payload: boolean | '__reset__' }
 ): SearchParams {
   switch (type) {
     case 'set_vehicle_type':
@@ -93,9 +105,13 @@ export function reducer(
       return {
         ...state,
         vehicles: state.vehicles.filter(
-          (s) => s.brand !== payload.brand && s.model !== payload.model
+          (s) => !(s.brand === payload.brand && s.model === payload.model)
         ),
       }
+
+    case 'set_age_requirement':
+      if (payload === __RESET_KEY__) return { ...state, ageRequirement: null }
+      return { ...state, ageRequirement: payload }
 
     case 'set_position_address':
       if (payload === __RESET_KEY__) return { ...state, position: { address: '', radius: 0 } }
@@ -142,6 +158,82 @@ export function reducer(
           },
         }
       return { ...state, details: { ...state.details, ...payload } }
+
+    case 'set_details_fuel':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            fuel: [],
+          },
+        }
+      if (state.details.fuel.includes(payload))
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            fuel: state.details.fuel.filter((s) => s !== payload),
+          },
+        }
+      return { ...state, details: { ...state.details, fuel: [...state.details.fuel, payload] } }
+
+    case 'set_details_transmission':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            transmission: [],
+          },
+        }
+      if (state.details.transmission.includes(payload))
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            transmission: state.details.transmission.filter((s) => s !== payload),
+          },
+        }
+      return {
+        ...state,
+        details: { ...state.details, transmission: [...state.details.transmission, payload] },
+      }
+
+    case 'set_details_body':
+      if (payload === __RESET_KEY__)
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            body: [],
+          },
+        }
+      if (state.details.body.includes(payload))
+        return {
+          ...state,
+          details: {
+            ...state.details,
+            body: state.details.body.filter((s) => s !== payload),
+          },
+        }
+      return { ...state, details: { ...state.details, body: [...state.details.body, payload] } }
+
+    case 'set_details_seats':
+      if (payload === __RESET_KEY__) return { ...state, details: { ...state.details, seats: 0 } }
+      return { ...state, details: { ...state.details, seats: payload } }
+
+    case 'set_details_doors':
+      if (payload === __RESET_KEY__) return { ...state, details: { ...state.details, doors: 0 } }
+      return { ...state, details: { ...state.details, doors: payload } }
+
+    case 'set_details_gears':
+      if (payload === __RESET_KEY__) return { ...state, details: { ...state.details, gears: 0 } }
+      return { ...state, details: { ...state.details, gears: payload } }
+
+    case 'set_with_driver':
+      if (payload === __RESET_KEY__) return { ...state, withDriver: false }
+      return { ...state, withDriver: payload }
 
     case 'set_included_services':
       if (payload === __RESET_KEY__) return { ...state, includedServices: [] }
