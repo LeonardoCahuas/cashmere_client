@@ -1,5 +1,6 @@
 import { Colors, Icon } from '@siva/ui'
-import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import * as Haptics from 'expo-haptics'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface SelectableRowProps {
   checked: boolean
