@@ -47,6 +47,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
       ],
+      bookmarked: false,
     },
     {
       id: '07788071-75c3-4e44-8eb3-13981ce3f229',
@@ -74,6 +75,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/cq5dam.thumbnail.1024.680.png?t=2024-09-25T21%3A28%3A09.423Z',
       ],
+      bookmarked: false,
     },
     {
       id: '203fa9f8-d5f3-409d-a286-594a92921206',
@@ -101,6 +103,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/2024_honda_cr-v_4dr-suv_sport-hybrid_fq_oem_1_815.avif?t=2024-09-25T20%3A14%3A47.707Z',
       ],
+      bookmarked: false,
     },
     {
       id: '213ef',
@@ -128,6 +131,7 @@ const News = () => {
       vehicle_images: [
         'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/hr-v-00.webp',
       ],
+      bookmarked: false,
     },
   ]
   return (
