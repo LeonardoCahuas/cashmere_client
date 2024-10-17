@@ -1,5 +1,5 @@
 import { Colors, Icon } from '@siva/ui'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export interface ModalInputProps {
   title: string
@@ -10,18 +10,16 @@ export interface ModalInputProps {
 
 export const ModalInput = ({ title, placeholder, note, onPress }: ModalInputProps) => {
   return (
-    <>
-      <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
-        <View style={styles.box}>
-          <View style={styles.boxContent}>
-            {placeholder && <Text style={styles.placeholder}>{placeholder}</Text>}
-          </View>
-          <Icon name="chevron-right" color={Colors.textSecondary} width={12} height={12} />
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <Text style={styles.title}>{title}</Text>
+      <View style={styles.box}>
+        <View style={styles.boxContent}>
+          {placeholder && <Text style={styles.placeholder}>{placeholder}</Text>}
         </View>
-        <Text style={styles.noteText}>{note}</Text>
+        <Icon name="chevron-right" color={Colors.textSecondary} width={12} height={12} />
       </View>
-    </>
+      <Text style={styles.noteText}>{note}</Text>
+    </TouchableOpacity>
   )
 }
 
