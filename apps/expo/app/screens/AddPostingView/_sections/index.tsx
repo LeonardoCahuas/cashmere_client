@@ -1,13 +1,12 @@
-import { Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
+import { Colors, Icon, IconName } from '@siva/ui'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import { router } from 'expo-router'
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { PageLayout } from '../_components/PageLayout'
 import { SectionTitle } from './SectionTitle'
 
 const Add = () => {
   const { posting, setPosting } = useAppStore((s) => s.add)
-  const insets = useSafeAreaInsets()
   const selectedType = posting?.vehicle_type || 'car'
   const selectedDuration = posting?.duration || 'long_term'
 
@@ -46,95 +45,71 @@ const Add = () => {
   ]
 
   const screenWidth = Dimensions.get('screen').width
-  const height = Dimensions.get('screen').height - insets.top - insets.bottom - 84
   const gridItemWidth = (screenWidth - 48 - 8) / 2
 
   const periodSetter = (val: string) => setPosting({ duration: val })
   const typeSetter = (val: string) => setPosting({ vehicle_type: val })
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.scrollableArea, { height }]}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} contentInset={{ bottom: 120 }}>
-          <View style={styles.content}>
-            <View style={styles.titleSection}>
-              <Text style={styles.tabTitle}>Noleggia con Siva</Text>
-              <Text style={styles.subtitle}>
-                Inserisci tutte le informazioni del tuo veicolo e inizia a noleggiare.{' '}
-              </Text>
-            </View>
-            <View style={styles.section}>
-              <SectionTitle>Tipo di annuncio</SectionTitle>
-              <View style={styles.list}>
-                {periods.map((item) => (
-                  <PeriodSelector
-                    key={item.value}
-                    item={item}
-                    icon={item.icon as IconName}
-                    selected={selectedDuration}
-                    onPress={periodSetter}
-                  />
-                ))}
-              </View>
-            </View>
-            <View style={styles.section}>
-              <SectionTitle>Categoria</SectionTitle>
-              <View style={styles.grid}>
-                {vehicleTypes.map(({ label, value, icon }) => (
-                  <TouchableOpacity
-                    key={value}
-                    onPress={() => typeSetter(value)}
-                    style={[
-                      styles.gridItem,
-                      {
-                        width: gridItemWidth,
-                        borderWidth: selectedType === value ? 2 : 1,
-                        backgroundColor: selectedType === value ? Colors.greenSelection : 'white',
-                        borderColor:
-                          selectedType === value ? Colors.greenPrimary : Colors.greySecondary,
-                      },
-                    ]}
-                  >
-                    <Icon
-                      name={icon}
-                      color={selectedType === value ? Colors.blackPrimary : Colors.textSecondary}
-                      width={36}
-                      height={36}
-                    />
-                    <Text style={styles.gridItemText}>{label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
+    <PageLayout onButtonPress={() => router.push('/screens/AddPostingView/vehicle')}>
+      <View style={styles.content}>
+        <View style={styles.titleSection}>
+          <Text style={styles.tabTitle}>Noleggia con Siva</Text>
+          <Text style={styles.subtitle}>
+            Inserisci tutte le informazioni del tuo veicolo e inizia a noleggiare.{' '}
+          </Text>
+        </View>
+        <View style={styles.section}>
+          <SectionTitle>Tipo di annuncio</SectionTitle>
+          <View style={styles.list}>
+            {periods.map((item) => (
+              <PeriodSelector
+                key={item.value}
+                item={item}
+                icon={item.icon as IconName}
+                selected={selectedDuration}
+                onPress={periodSetter}
+              />
+            ))}
           </View>
-        </ScrollView>
+        </View>
+        <View style={styles.section}>
+          <SectionTitle>Categoria</SectionTitle>
+          <View style={styles.grid}>
+            {vehicleTypes.map(({ label, value, icon }) => (
+              <TouchableOpacity
+                key={value}
+                onPress={() => typeSetter(value)}
+                style={[
+                  styles.gridItem,
+                  {
+                    width: gridItemWidth,
+                    borderWidth: selectedType === value ? 2 : 1,
+                    backgroundColor: selectedType === value ? Colors.greenSelection : 'white',
+                    borderColor:
+                      selectedType === value ? Colors.greenPrimary : Colors.greySecondary,
+                  },
+                ]}
+              >
+                <Icon
+                  name={icon}
+                  color={selectedType === value ? Colors.blackPrimary : Colors.textSecondary}
+                  width={36}
+                  height={36}
+                />
+                <Text style={styles.gridItemText}>{label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
       </View>
-      <View style={styles.fixedButtonsContainer}>
-        <PrimaryButton
-          style={{ width: screenWidth - 48 }}
-          onPress={() => {
-            router.push('/screens/AddPostingView/vehicle')
-          }}
-        >
-          Avanti
-        </PrimaryButton>
-      </View>
-    </View>
+    </PageLayout>
   )
 }
 
 export default Add
 
 const styles = StyleSheet.create({
-  fixedButtonsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '100%',
-    paddingTop: 8,
-    paddingBottom: 40,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-  },
   grid: {
     display: 'flex',
     flexDirection: 'row',
@@ -152,17 +127,6 @@ const styles = StyleSheet.create({
   gridItemText: {
     fontSize: 14,
     fontWeight: '600',
-  },
-  container: {
-    width: '100%',
-    height: '100%',
-  },
-  scrollableArea: {
-    width: '100%',
-  },
-  scrollContainer: {
-    width: '100%',
-    paddingTop: 24,
   },
   content: {
     width: '100%',
