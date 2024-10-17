@@ -1,4 +1,4 @@
-import { Colors, Icon, IconName } from '@siva/ui'
+import { Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SectionTitle } from './SectionTitle'
@@ -39,8 +39,10 @@ const Add = () => {
       icon: 'car',
     },
   ]
-  const height = Dimensions.get('screen').height - insets.top - insets.bottom - 0
-  console.log(Dimensions.get('screen').height, insets.top, insets.bottom, height)
+
+  const screenWidth = Dimensions.get('screen').width
+  const height = Dimensions.get('screen').height - insets.top - insets.bottom - 84
+  const gridItemWidth = (screenWidth - 48 - 8) / 2
 
   return (
     <View style={styles.container}>
@@ -70,7 +72,19 @@ const Add = () => {
               <SectionTitle>Categoria</SectionTitle>
               <View style={styles.grid}>
                 {vehicleTypes.map(({ label, value, icon }) => (
-                  <TouchableOpacity key={value} style={styles.gridItem}>
+                  <TouchableOpacity
+                    key={value}
+                    style={[
+                      styles.gridItem,
+                      {
+                        width: gridItemWidth,
+                        borderWidth: selectedType === value ? 2 : 1,
+                        backgroundColor: selectedType === value ? Colors.greenSelection : 'white',
+                        borderColor:
+                          selectedType === value ? Colors.greenPrimary : Colors.greySecondary,
+                      },
+                    ]}
+                  >
                     <Icon
                       name={icon}
                       color={selectedType === value ? Colors.blackPrimary : Colors.textSecondary}
@@ -83,6 +97,11 @@ const Add = () => {
           </View>
         </ScrollView>
       </View>
+      <View style={styles.fixedButtonsContainer}>
+        <PrimaryButton style={{ width: screenWidth - 48 }} onPress={() => {}}>
+          Avanti
+        </PrimaryButton>
+      </View>
     </View>
   )
 }
@@ -90,22 +109,28 @@ const Add = () => {
 export default Add
 
 const styles = StyleSheet.create({
+  fixedButtonsContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    paddingTop: 8,
+    paddingBottom: 40,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
   grid: {
     display: 'flex',
     flexDirection: 'row',
     gap: 8,
-    flexWrap: 'wrap',
     paddingTop: 16,
+    flexWrap: 'wrap',
   },
   gridItem: {
-    width: 140,
     height: 140,
     borderRadius: 8,
-    backgroundColor: '#fff',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
   },
   gridItemText: {
     fontSize: 14,
@@ -152,7 +177,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    marginTop: 20,
+    marginTop: 16,
   },
 })
 
