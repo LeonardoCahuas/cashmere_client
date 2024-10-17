@@ -1,5 +1,6 @@
 import { Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
 import { useAppStore } from 'apps/expo/app/setup/store'
+import { router } from 'expo-router'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SectionTitle } from './SectionTitle'
@@ -109,7 +110,12 @@ const Add = () => {
         </ScrollView>
       </View>
       <View style={styles.fixedButtonsContainer}>
-        <PrimaryButton style={{ width: screenWidth - 48 }} onPress={() => {}}>
+        <PrimaryButton
+          style={{ width: screenWidth - 48 }}
+          onPress={() => {
+            router.push('/screens/AddPostingView/vehicle')
+          }}
+        >
           Avanti
         </PrimaryButton>
       </View>
