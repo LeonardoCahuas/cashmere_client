@@ -33,7 +33,10 @@ interface DetailViewState {
   setIsBookmarked: (v: boolean) => void
 }
 
-interface AddState {}
+interface AddState {
+  posting: Partial<Posting>
+  setPosting: (posting: Partial<Posting>) => void
+}
 
 interface AppState {
   home: HomeState
@@ -77,5 +80,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       set((state) => ({ ...state, detailView: { ...state.detailView, isBookmarked: updated } }))
     },
   },
-  add: {},
+  add: {
+    posting: { duration: 'long_term', vehicle_type: 'car' },
+    setPosting: (posting) => {
+      set((state) => ({
+        ...state,
+        add: { ...state.add, posting: { ...state.add.posting, ...posting } },
+      }))
+    },
+  },
 }))

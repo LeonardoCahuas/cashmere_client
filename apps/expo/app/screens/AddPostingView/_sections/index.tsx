@@ -1,24 +1,28 @@
 import { Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
+import { useAppStore } from 'apps/expo/app/setup/store'
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { SectionTitle } from './SectionTitle'
 
 const Add = () => {
+  const { posting, setPosting } = useAppStore((s) => s.add)
   const insets = useSafeAreaInsets()
-  const setter = (val: string) => console.log('set to', val)
-  const selectedType = 'car'
+  const selectedType = posting?.vehicle_type || 'car'
+  const selectedDuration = posting?.duration || 'long_term'
 
   const periods = [
     {
       label: 'Breve Termine',
       value: 'short_term',
       description: 'Offre accesso a beni di qualità senza investimenti iniziali significativi.',
+      icon: 'lightning',
     },
     {
       label: 'Lungo Termine',
       value: 'long_term',
       description:
         'È una soluzione pratica per rispondere rapidamente alle esigenze mutevoli senza vincoli duraturi.',
+      icon: 'clock',
     },
   ]
 
@@ -31,18 +35,21 @@ const Add = () => {
     {
       label: 'Moto',
       value: 'motorcycle',
-      icon: 'truck',
+      icon: 'motorbike',
     },
     {
       label: 'Furgone',
       value: 'van',
-      icon: 'car',
+      icon: 'truck',
     },
   ]
 
   const screenWidth = Dimensions.get('screen').width
   const height = Dimensions.get('screen').height - insets.top - insets.bottom - 84
   const gridItemWidth = (screenWidth - 48 - 8) / 2
+
+  const periodSetter = (val: string) => setPosting({ duration: val })
+  const typeSetter = (val: string) => setPosting({ vehicle_type: val })
 
   return (
     <View style={styles.container}>
@@ -62,8 +69,9 @@ const Add = () => {
                   <PeriodSelector
                     key={item.value}
                     item={item}
-                    selected={'long_term'}
-                    onPress={setter}
+                    icon={item.icon as IconName}
+                    selected={selectedDuration}
+                    onPress={periodSetter}
                   />
                 ))}
               </View>
@@ -74,6 +82,7 @@ const Add = () => {
                 {vehicleTypes.map(({ label, value, icon }) => (
                   <TouchableOpacity
                     key={value}
+                    onPress={() => typeSetter(value)}
                     style={[
                       styles.gridItem,
                       {
@@ -88,6 +97,8 @@ const Add = () => {
                     <Icon
                       name={icon}
                       color={selectedType === value ? Colors.blackPrimary : Colors.textSecondary}
+                      width={36}
+                      height={36}
                     />
                     <Text style={styles.gridItemText}>{label}</Text>
                   </TouchableOpacity>
@@ -185,10 +196,12 @@ const PeriodSelector = ({
   item,
   selected,
   onPress,
+  icon,
 }: {
   item: { label: string; value: string; description: string }
   selected: string
   onPress: (val: string) => void
+  icon: IconName
 }) => {
   return (
     <TouchableOpacity
@@ -196,14 +209,15 @@ const PeriodSelector = ({
         ...selectorStyle.container,
         borderColor: selected === item.value ? Colors.greenPrimary : Colors.tertiaryGray,
         backgroundColor: selected === item.value ? Colors.greenSelection : 'white',
+        borderWidth: selected === item.value ? 2 : 1,
       }}
       onPress={() => onPress(item.value)}
     >
       <View style={selectorStyle.titleRow}>
-        <Icon name="cabrio" />
+        <Icon name={icon} color={Colors.blackPrimary} width={20} height={20} />
         <Text style={selectorStyle.title}>{item.label}</Text>
       </View>
-      <Text>{item.description}</Text>
+      <Text style={selectorStyle.description}>{item.description}</Text>
     </TouchableOpacity>
   )
 }
@@ -215,7 +229,6 @@ const selectorStyle = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    borderWidth: 1,
     padding: 16,
     borderRadius: 8,
   },
@@ -228,13 +241,14 @@ const selectorStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    gap: 12,
+    gap: 10,
     width: '100%',
     marginBottom: 8,
   },
   description: {
     fontSize: 13,
-    color: Colors.greySecondary,
+    color: Colors.greyPrimary,
     width: '100%',
+    lineHeight: 16,
   },
 })

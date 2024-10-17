@@ -25,4 +25,5 @@ export interface Posting {
   renter_name: string | null
   bookmarked: boolean
   bookmark_id?: string
+  vehicle_type: string
 }
