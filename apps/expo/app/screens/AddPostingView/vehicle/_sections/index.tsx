@@ -32,9 +32,7 @@ const Vehicle = () => {
       type: 'single',
       content: {
         title: 'Dettaglio veicolo',
-        options: {
-          options: [],
-        },
+        options: [],
       },
     },
   ]

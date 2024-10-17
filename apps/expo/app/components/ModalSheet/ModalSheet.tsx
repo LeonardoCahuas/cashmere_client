@@ -15,9 +15,7 @@ interface ModalOption {
 }
 
 /** Options for a single-step Modal Sheet */
-export interface ModalOptions {
-  options: Array<ModalOption>
-}
+export type ModalOptions = Array<ModalOption>
 
 export interface ModalSheetProps {
   title: string
@@ -80,7 +78,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
           >
             {!hasChildren &&
               !!options &&
-              options.options.map(({ icon, label, action }) => (
+              options.map(({ icon, label, action }) => (
                 <TouchableOpacity
                   key={label}
                   style={modalStyles.action}

@@ -30,58 +30,56 @@ const Saved = () => {
   const [filter, setFilter] = useState<(typeof rentalDurations)[number]>('long_term')
   const { data: postings, isLoading } = useGetBookmarksByUser(userId)
 
-  const modalOptions: ModalOptions = {
-    options: [
-      {
-        icon: <Icon name="up_down_arrows" color="#000" />,
-        label: 'Ultimo salvato',
-        action: () => {
-          const key: keyof Posting = 'created_at'
-          setSorting({ key, direction: 'desc' })
-          ref.current?.close()
-        },
+  const modalOptions: ModalOptions = [
+    {
+      icon: <Icon name="up_down_arrows" color="#000" />,
+      label: 'Ultimo salvato',
+      action: () => {
+        const key: keyof Posting = 'created_at'
+        setSorting({ key, direction: 'desc' })
+        ref.current?.close()
       },
-      {
-        icon: <Icon name="percentage" color="#000" />,
-        label: 'Veicoli scontati',
-        action: () => {
-          ref.current?.close()
-        },
+    },
+    {
+      icon: <Icon name="percentage" color="#000" />,
+      label: 'Veicoli scontati',
+      action: () => {
+        ref.current?.close()
       },
-      {
-        icon: <Icon name="increasing_value" color="#000" />,
-        label: 'Prezzo crescente',
-        action: () => {
-          const key: keyof Posting = 'price'
-          setSorting({ key, direction: 'asc' })
-          ref.current?.close()
-        },
+    },
+    {
+      icon: <Icon name="increasing_value" color="#000" />,
+      label: 'Prezzo crescente',
+      action: () => {
+        const key: keyof Posting = 'price'
+        setSorting({ key, direction: 'asc' })
+        ref.current?.close()
       },
-      {
-        icon: <Icon name="decreasing_value" color="#000" />,
-        label: 'Prezzo decrescente',
-        action: () => {
-          const key: keyof Posting = 'price'
-          setSorting({ key, direction: 'desc' })
-          ref.current?.close()
-        },
+    },
+    {
+      icon: <Icon name="decreasing_value" color="#000" />,
+      label: 'Prezzo decrescente',
+      action: () => {
+        const key: keyof Posting = 'price'
+        setSorting({ key, direction: 'desc' })
+        ref.current?.close()
       },
-      {
-        icon: <Icon name="sorting_plus" color="#000" />,
-        label: 'Prezzo IVA Incl.',
-        action: () => {
-          ref.current?.close()
-        },
+    },
+    {
+      icon: <Icon name="sorting_plus" color="#000" />,
+      label: 'Prezzo IVA Incl.',
+      action: () => {
+        ref.current?.close()
       },
-      {
-        icon: <Icon name="sorting_minus" color="#000" />,
-        label: 'Prezzo IVA Escl.',
-        action: () => {
-          ref.current?.close()
-        },
+    },
+    {
+      icon: <Icon name="sorting_minus" color="#000" />,
+      label: 'Prezzo IVA Escl.',
+      action: () => {
+        ref.current?.close()
       },
-    ],
-  }
+    },
+  ]
 
   const tabs = [
     {
