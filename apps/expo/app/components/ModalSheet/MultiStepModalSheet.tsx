@@ -4,6 +4,7 @@ import { Colors, Icon } from '@siva/ui'
 import React, { forwardRef, useCallback, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+/** Page in a Multi-Step Modal */
 export type ModalPage = { [key: string]: ModalStep }
 
 export interface ModalStep {
@@ -16,7 +17,7 @@ export interface ModalStep {
   containerStyle?: any
 }
 
-interface MultiModalSheetProps {
+export interface MultiModalSheetProps {
   onChange?: (index: number) => void
   onClose?: () => void
   pages: { [key: string]: ModalStep }

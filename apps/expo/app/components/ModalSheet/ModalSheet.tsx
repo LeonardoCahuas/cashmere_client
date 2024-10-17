@@ -14,6 +14,7 @@ interface ModalOption {
   action: () => void
 }
 
+/** Options for a single-step Modal Sheet */
 export interface ModalOptions {
   options: Array<ModalOption>
 }

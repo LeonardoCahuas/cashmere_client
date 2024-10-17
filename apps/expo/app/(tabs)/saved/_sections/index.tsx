@@ -1,5 +1,6 @@
 import { AnimatedSwitch, Icon, PostingCard } from '@siva/ui'
-import { ModalOptions, ModalSheet, ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
+import { ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
+import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
 import { linkToDetail } from 'apps/expo/app/screens/PostingDetailView/_link'
 import { useUser } from 'apps/expo/app/setup/auth/hooks'
 import { useGetBookmarksByUser } from 'apps/expo/app/setup/query/hooks'

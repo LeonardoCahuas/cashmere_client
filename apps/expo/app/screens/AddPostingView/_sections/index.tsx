@@ -3,7 +3,7 @@ import { useAppStore } from 'apps/expo/app/setup/store'
 import { router } from 'expo-router'
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { PageLayout } from '../_components/PageLayout'
-import { SectionTitle } from './SectionTitle'
+import { SectionTitle } from '../_components/SectionTitle'
 
 const Add = () => {
   const { posting, setPosting } = useAppStore((s) => s.add)
