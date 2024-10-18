@@ -49,10 +49,10 @@ export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalShee
         index={-1}
         snapPoints={[size.height + padding]}
         onChange={onChange}
-        onClose={onClose}
-        handleComponent={null}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
+        handleComponent={null}
+        onClose={onClose}
         backgroundStyle={{ borderRadius: 0 }}
       >
         <BottomSheetView style={modalStyles.contentContainer}>

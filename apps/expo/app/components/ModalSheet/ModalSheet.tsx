@@ -52,11 +52,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
         handleComponent={null}
-        onClose={() => {
-          if (onClose) {
-            onClose()
-          }
-        }}
+        onClose={onClose}
       >
         <BottomSheetView style={modalStyles.contentContainer}>
           <View style={modalStyles.titleContainer}>
