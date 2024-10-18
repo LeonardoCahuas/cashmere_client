@@ -28,7 +28,7 @@ export const ModalInput = ({ title, placeholder, note, index, type, onPress }: M
         </View>
         <Icon name="chevron-right" color={Colors.textSecondary} width={12} height={12} />
       </TouchableOpacity>
-      <Text style={styles.noteText}>{note}</Text>
+      {note && <Text style={styles.noteText}>{note}</Text>}
     </View>
   )
 }

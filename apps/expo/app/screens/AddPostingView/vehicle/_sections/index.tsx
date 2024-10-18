@@ -18,14 +18,17 @@ const Vehicle = () => {
   const ref2 = useModalSheetRef()
   const [input, setInput] = useState(0)
   const [key, setKey] = useState<string>('main_details')
+  const [type, setType] = useState<'single' | 'multi'>('single')
 
   const openModal = ({ type, index }: InputObject) => {
+    setType(type)
     setInput(index)
     if (type === 'single') {
       ref2.current?.close()
       ref.current?.expand()
     } else {
-      ref2.current?.expand()
+      ref.current?.close()
+      setTimeout(() => ref2.current?.expand(), 60)
     }
   }
 
@@ -42,7 +45,6 @@ const Vehicle = () => {
         {
           title: 'Marca e modello',
           placeholder: 'Seleziona marca e modello',
-          note: 'Seleziona l’area geografica in cui vuoi noleggiare il tuo veicolo.',
           onPress: (n) => {
             openModal(n)
           },
@@ -72,7 +74,7 @@ const Vehicle = () => {
           },
         },
         {
-          title: 'Single example',
+          title: 'Posizione',
           placeholder: 'Seleziona marca e modello',
           note: 'Seleziona l’area geografica in cui vuoi noleggiare il tuo veicolo.',
           onPress: (n) => {
@@ -99,7 +101,6 @@ const Vehicle = () => {
   return (
     <ModalSheetProvider>
       <PageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
-        <Text>{input}</Text>
         {Object.values(sections).map((section) => (
           <Section key={section.title} {...section}>
             {section.inputs.map((input, i) => (
@@ -109,8 +110,10 @@ const Vehicle = () => {
         ))}
       </PageLayout>
       <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
-      {/* @ts-ignore */}
-      <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
+      {type === 'multi' && (
+        // @ts-ignore
+        <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
+      )}
     </ModalSheetProvider>
   )
 }
