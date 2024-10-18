@@ -216,7 +216,7 @@ const selectorStyle = StyleSheet.create({
     marginBottom: 8,
   },
   description: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.greyPrimary,
     width: '100%',
     lineHeight: 16,

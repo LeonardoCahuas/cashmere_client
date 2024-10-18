@@ -27,6 +27,7 @@ export interface MultiModalSheetProps {
 
 export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalSheetProps>(
   ({ onClose, onChange, pages, step, setStep }, ref) => {
+    const padding = 164
     const renderBackdrop = useCallback(
       (props) => (
         <BottomSheetBackdrop
@@ -38,8 +39,9 @@ export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalShee
       ),
       [ref]
     )
-    const padding = 164
     const [size, setSize] = useState({ width: 0, height: 0 })
+
+    if (pages == undefined || step == undefined) return null
 
     return (
       <BottomSheet

@@ -1,18 +1,27 @@
 import { Colors, Icon } from '@siva/ui'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export type InputObject = { index: number; type: 'single' | 'multi' }
+export type InputObject = { mapKey: string; index: number; type: 'single' | 'multi' }
 
 export interface ModalInputProps {
   title: string
   placeholder?: string
   note?: string
+  mapKey: string
   index: number
   type: 'single' | 'multi'
   onPress?: (obj: InputObject) => void
 }
 
-export const ModalInput = ({ title, placeholder, note, index, type, onPress }: ModalInputProps) => {
+export const ModalInput = ({
+  title,
+  placeholder,
+  note,
+  mapKey,
+  index,
+  type,
+  onPress,
+}: ModalInputProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -20,7 +29,7 @@ export const ModalInput = ({ title, placeholder, note, index, type, onPress }: M
         style={styles.box}
         onPress={() => {
           if (!onPress) return
-          onPress({ index, type })
+          onPress({ mapKey, index, type })
         }}
       >
         <View style={styles.boxContent}>

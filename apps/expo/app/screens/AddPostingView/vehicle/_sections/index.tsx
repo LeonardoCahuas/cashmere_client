@@ -10,7 +10,7 @@ import { PageLayout } from '../../_components/PageLayout'
 import { Section } from '../../_components/Section'
 
 interface SectionProps extends ComponentProps<typeof Section> {
-  inputs: Array<Omit<ModalInputProps, 'index'> & DynamicModalProps>
+  inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
 }
 
 const Vehicle = () => {
@@ -20,7 +20,8 @@ const Vehicle = () => {
   const [key, setKey] = useState<string>('main_details')
   const [type, setType] = useState<'single' | 'multi'>('single')
 
-  const openModal = ({ type, index }: InputObject) => {
+  const openModal = ({ mapKey, type, index }: InputObject) => {
+    setKey(mapKey)
     setType(type)
     setInput(index)
     if (type === 'single') {
@@ -28,7 +29,7 @@ const Vehicle = () => {
       ref.current?.expand()
     } else {
       ref.current?.close()
-      setTimeout(() => ref2.current?.expand(), 60)
+      setTimeout(() => ref2.current?.expand(), 65)
     }
   }
 
@@ -82,7 +83,7 @@ const Vehicle = () => {
           },
           type: 'single',
           content: {
-            title: 'Single!!',
+            title: 'Posizione',
             options: [
               {
                 label: 'Abarth',
@@ -96,18 +97,44 @@ const Vehicle = () => {
         },
       ],
     },
+    state: {
+      title: 'Stato veicolo',
+      subtitile: 'Comunica lo stato del veicolo*',
+      icon: 'status',
+      inputs: [
+        {
+          title: 'Anno di immatricolazione',
+          placeholder: 'Seleziona l’anno di immatricolazione',
+          onPress: (n) => openModal(n),
+          type: 'single',
+          content: {
+            title: 'Anno di immatricolazione',
+            options: [
+              {
+                label: '2024',
+                action: () => {
+                  closeModal()
+                },
+              },
+            ],
+          },
+        },
+      ],
+    },
   }
 
   return (
     <ModalSheetProvider>
       <PageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
-        {Object.values(sections).map((section) => (
-          <Section key={section.title} {...section}>
-            {section.inputs.map((input, i) => (
-              <ModalInput key={input.title} {...input} index={i} />
-            ))}
-          </Section>
-        ))}
+        <View style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {Object.entries(sections).map(([key, section]) => (
+            <Section key={section.title} {...section}>
+              {section.inputs.map((input, i) => (
+                <ModalInput key={input.title} {...input} index={i} mapKey={key} />
+              ))}
+            </Section>
+          ))}
+        </View>
       </PageLayout>
       <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
       {type === 'multi' && (
