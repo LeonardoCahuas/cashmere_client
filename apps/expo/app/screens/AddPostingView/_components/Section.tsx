@@ -3,12 +3,12 @@ import { StyleSheet, Text, View } from 'react-native'
 
 interface SectionProps {
   title: string
-  subtitile?: string
+  subtitle?: string
   icon?: IconName
   children?: React.ReactNode
 }
 
-export const Section = ({ title, subtitile, icon, children }: SectionProps) => {
+export const Section = ({ title, subtitle: subtitile, icon, children }: SectionProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>

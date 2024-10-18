@@ -17,14 +17,3 @@ export const SectionComponent = ({ type, content }: SectionComponentProps) => {
   }
   return <ModalInput title={''} mapKey={''} index={0} type={'single'} {...content} />
 }
-
-/* 
-
-state: {
-      title: 'Stato veicolo',
-      subtitile: 'Comunica lo stato del veicolo*',
-      icon: 'status',
-      inputs: [],
-    },
-
-*/
