@@ -1,4 +1,4 @@
-import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
+import { useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
 import { ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
 import { MultiStepModalSheet } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
 import { router } from 'expo-router'
@@ -6,8 +6,8 @@ import { ComponentProps, useState } from 'react'
 import { Text, View } from 'react-native'
 import { DynamicModalProps } from '../../_components/DynamicModal'
 import { InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
-import { PageLayout } from '../../_components/PageLayout'
 import { Section } from '../../_components/Section'
+import { VehiclePageLayout } from './VehiclePageLayout'
 
 interface SectionProps extends ComponentProps<typeof Section> {
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
@@ -115,20 +115,6 @@ const Vehicle = () => {
         <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
       )}
     </VehiclePageLayout>
-  )
-}
-
-interface VehiclePageLayoutProps {
-  onButtonPress: () => void
-  children: React.ReactNode
-}
-const VehiclePageLayout = ({ onButtonPress, children }: VehiclePageLayoutProps) => {
-  return (
-    <ModalSheetProvider>
-      <PageLayout onButtonPress={onButtonPress}>
-        <View style={{ width: '100%', display: 'flex', gap: 6 }}>{children}</View>
-      </PageLayout>
-    </ModalSheetProvider>
   )
 }
 
