@@ -10,9 +10,16 @@ export type DynamicModalProps =
   | { type: 'single'; content: ModalSheetProps }
   | { type: 'multi'; content: MultiModalSheetProps }
 
-export const DynamicModal = forwardRef<BottomSheet, DynamicModalProps>(({ type, content }, ref) => {
-  if (type === 'single') {
-    return <ModalSheet ref={ref} {...content} />
+export const DynamicModalSheet = forwardRef<BottomSheet, DynamicModalProps>(
+  ({ type, content }, ref) => {
+    if (type === 'multi') {
+      console.log('rendering multi', { type, content })
+      return <MultiStepModalSheet ref={ref} {...content} />
+    }
+    if (type === 'single') {
+      console.log('rendering single', { type, content })
+      return <ModalSheet ref={ref} {...content} />
+    }
+    return null
   }
-  return <MultiStepModalSheet ref={ref} {...content} />
-})
+)

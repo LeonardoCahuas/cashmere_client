@@ -1,25 +1,35 @@
 import { Colors, Icon } from '@siva/ui'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+export type InputObject = { index: number; type: 'single' | 'multi' }
+
 export interface ModalInputProps {
   title: string
   placeholder?: string
   note?: string
-  onPress?: () => void
+  index: number
+  type: 'single' | 'multi'
+  onPress?: (obj: InputObject) => void
 }
 
-export const ModalInput = ({ title, placeholder, note, onPress }: ModalInputProps) => {
+export const ModalInput = ({ title, placeholder, note, index, type, onPress }: ModalInputProps) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <View style={styles.box}>
+      <TouchableOpacity
+        style={styles.box}
+        onPress={() => {
+          if (!onPress) return
+          onPress({ index, type })
+        }}
+      >
         <View style={styles.boxContent}>
           {placeholder && <Text style={styles.placeholder}>{placeholder}</Text>}
         </View>
         <Icon name="chevron-right" color={Colors.textSecondary} width={12} height={12} />
-      </View>
+      </TouchableOpacity>
       <Text style={styles.noteText}>{note}</Text>
-    </TouchableOpacity>
+    </View>
   )
 }
 

@@ -18,7 +18,7 @@ interface ModalOption {
 export type ModalOptions = Array<ModalOption>
 
 export interface ModalSheetProps {
-  title: string
+  title?: string
   options?: ModalOptions
   onChange?: (index: number) => void
   onClose?: () => void
@@ -61,7 +61,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
         <BottomSheetView style={modalStyles.contentContainer}>
           <View style={modalStyles.titleContainer}>
             <View style={modalStyles.leftIconContainer}></View>
-            <Text style={modalStyles.title}>{title}</Text>
+            <Text style={modalStyles.title}>{title ?? 'No title'}</Text>
             <TouchableOpacity
               style={modalStyles.rightIconContainer}
               onPress={() => (ref as React.RefObject<BottomSheetMethods>).current?.close()}

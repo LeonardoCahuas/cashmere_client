@@ -18,7 +18,7 @@ export const Section = ({ title, subtitile, icon, children }: SectionProps) => {
         </View>
         {!!subtitile && <Text style={styles.subtitle}>{subtitile}</Text>}
       </View>
-      {children}
+      <View style={styles.childrenContainer}>{children}</View>
     </View>
   )
 }
@@ -53,5 +53,11 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 8,
     paddingBottom: 24,
+  },
+  childrenContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 24,
   },
 })

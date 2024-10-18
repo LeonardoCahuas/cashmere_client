@@ -1,23 +1,40 @@
 import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
+import { ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
+import { MultiStepModalSheet } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
 import { router } from 'expo-router'
 import { ComponentProps, useState } from 'react'
-import { DynamicModal, DynamicModalProps } from '../../_components/DynamicModal'
-import { ModalInput, ModalInputProps } from '../../_components/ModalInput'
+import { Text, View } from 'react-native'
+import { DynamicModalProps } from '../../_components/DynamicModal'
+import { InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
 import { PageLayout } from '../../_components/PageLayout'
 import { Section } from '../../_components/Section'
 
-interface SectionPropsBase extends ComponentProps<typeof Section> {
-  inputs: Array<ModalInputProps>
+interface SectionProps extends ComponentProps<typeof Section> {
+  inputs: Array<Omit<ModalInputProps, 'index'> & DynamicModalProps>
 }
-
-type SectionProps = SectionPropsBase & DynamicModalProps
 
 const Vehicle = () => {
   const ref = useModalSheetRef()
-  const [sel, setSel] = useState<SectionProps | null>(null)
+  const ref2 = useModalSheetRef()
+  const [input, setInput] = useState(0)
+  const [key, setKey] = useState<string>('main_details')
 
-  const sections: Array<SectionProps> = [
-    {
+  const openModal = ({ type, index }: InputObject) => {
+    setInput(index)
+    if (type === 'single') {
+      ref2.current?.close()
+      ref.current?.expand()
+    } else {
+      ref2.current?.expand()
+    }
+  }
+
+  const closeModal = () => {
+    ref.current?.close()
+  }
+
+  const sections: Record<string, SectionProps> = {
+    main_details: {
       title: 'Dati principali',
       subtitile: 'Inserisci i dati principali del veicolo*',
       icon: 'coupe',
@@ -26,29 +43,74 @@ const Vehicle = () => {
           title: 'Marca e modello',
           placeholder: 'Seleziona marca e modello',
           note: 'Seleziona l’area geografica in cui vuoi noleggiare il tuo veicolo.',
-          onPress: () => {},
+          onPress: (n) => {
+            openModal(n)
+          },
+          type: 'multi',
+          content: {
+            pages: {
+              initial: {
+                key: 'initial',
+                title: 'Seleziona marca e modello',
+                content: (
+                  <View>
+                    {[
+                      { label: 'Abarth', value: 'abarth', icon: 'car' },
+                      { label: 'Alfa Romeo', value: 'alfa_romeo', icon: 'car' },
+                      { label: 'Altro', value: 'altro', icon: 'car' },
+                    ].map((item) => (
+                      <Text>{item.label}</Text>
+                    ))}
+                  </View>
+                ),
+              },
+            },
+            step: 'initial',
+            setStep: (s) => {
+              console.log(s)
+            },
+          },
+        },
+        {
+          title: 'Single example',
+          placeholder: 'Seleziona marca e modello',
+          note: 'Seleziona l’area geografica in cui vuoi noleggiare il tuo veicolo.',
+          onPress: (n) => {
+            openModal(n)
+          },
+          type: 'single',
+          content: {
+            title: 'Single!!',
+            options: [
+              {
+                label: 'Abarth',
+                action: () => {
+                  console.log('abarth')
+                  closeModal()
+                },
+              },
+            ],
+          },
         },
       ],
-      type: 'single',
-      content: {
-        title: 'Dettaglio veicolo',
-        options: [],
-      },
     },
-  ]
+  }
 
   return (
     <ModalSheetProvider>
       <PageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
-        {sections.map((section) => (
+        <Text>{input}</Text>
+        {Object.values(sections).map((section) => (
           <Section key={section.title} {...section}>
-            {section.inputs.map((input) => (
-              <ModalInput key={input.title} {...input} />
+            {section.inputs.map((input, i) => (
+              <ModalInput key={input.title} {...input} index={i} />
             ))}
           </Section>
         ))}
       </PageLayout>
-      <DynamicModal ref={ref} type="single" content={{ title: 'Dettaglio veicolo' }} />
+      <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
+      {/* @ts-ignore */}
+      <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
     </ModalSheetProvider>
   )
 }
