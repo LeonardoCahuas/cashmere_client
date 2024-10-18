@@ -97,50 +97,37 @@ const Vehicle = () => {
         },
       ],
     },
-    state: {
-      title: 'Stato veicolo',
-      subtitile: 'Comunica lo stato del veicolo*',
-      icon: 'status',
-      inputs: [
-        {
-          title: 'Anno di immatricolazione',
-          placeholder: 'Seleziona l’anno di immatricolazione',
-          onPress: (n) => openModal(n),
-          type: 'single',
-          content: {
-            title: 'Anno di immatricolazione',
-            options: [
-              {
-                label: '2024',
-                action: () => {
-                  closeModal()
-                },
-              },
-            ],
-          },
-        },
-      ],
-    },
   }
 
   return (
-    <ModalSheetProvider>
-      <PageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
-        <View style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {Object.entries(sections).map(([key, section]) => (
-            <Section key={section.title} {...section}>
-              {section.inputs.map((input, i) => (
-                <ModalInput key={input.title} {...input} index={i} mapKey={key} />
-              ))}
-            </Section>
+    <VehiclePageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
+      {Object.entries(sections).map(([key, section]) => (
+        <Section key={section.title} {...section}>
+          {section.inputs.map((input, i) => (
+            <ModalInput key={input.title} {...input} index={i} mapKey={key} />
           ))}
-        </View>
-      </PageLayout>
+        </Section>
+      ))}
+
       <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
       {type === 'multi' && (
         // @ts-ignore
         <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
       )}
+    </VehiclePageLayout>
+  )
+}
+
+interface VehiclePageLayoutProps {
+  onButtonPress: () => void
+  children: React.ReactNode
+}
+const VehiclePageLayout = ({ onButtonPress, children }: VehiclePageLayoutProps) => {
+  return (
+    <ModalSheetProvider>
+      <PageLayout onButtonPress={onButtonPress}>
+        <View style={{ width: '100%', display: 'flex', gap: 6 }}>{children}</View>
+      </PageLayout>
     </ModalSheetProvider>
   )
 }
