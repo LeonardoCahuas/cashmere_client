@@ -26,4 +26,5 @@ export interface Posting {
   bookmarked: boolean
   bookmark_id?: string
   vehicle_type: string
+  state?: "new" | "used"
 }

@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 8,
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
   childrenContainer: {
     width: '100%',

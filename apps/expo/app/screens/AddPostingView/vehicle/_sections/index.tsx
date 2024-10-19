@@ -1,12 +1,14 @@
 import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
 import { ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
 import { MultiStepModalSheet } from 'apps/expo/app/components/ModalSheet/MultiStepModalSheet'
+import { useAppStore } from 'apps/expo/app/setup/store'
 import { router } from 'expo-router'
 import { ComponentProps, useState } from 'react'
 import { Text, View } from 'react-native'
 import { DynamicModalProps } from '../../_components/DynamicModal'
 import { InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
 import { Section } from '../../_components/Section'
+import { StateButtons } from './StateButton'
 import { VehiclePageLayout } from './VehiclePageLayout'
 
 interface SectionProps extends ComponentProps<typeof Section> {
@@ -16,9 +18,11 @@ interface SectionProps extends ComponentProps<typeof Section> {
 interface SectionData {
   index: number
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
+  [key: string]: any
 }
 
 const Vehicle = () => {
+  const { posting, setPosting } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
   const ref2 = useModalSheetRef()
   const [input, setInput] = useState(0)
@@ -187,6 +191,10 @@ const Vehicle = () => {
         },
       },
     ],
+    states: [
+      { label: 'Nuovo', value: 'new' },
+      { label: 'Usato', value: 'used' },
+    ],
   }
 
   return (
@@ -203,6 +211,11 @@ const Vehicle = () => {
         </Section>
 
         <Section title="Stato veicolo" subtitle="Comunica lo stato del veicolo*" icon="status">
+          <StateButtons
+            selected={posting?.state}
+            items={vehicle_state.states}
+            onPress={(state) => setPosting({ ...posting, state })}
+          />
           {vehicle_state.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={vehicle_state.index + i} mapKey={key} />
           ))}
