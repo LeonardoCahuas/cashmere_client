@@ -8,6 +8,7 @@ import { Text, View } from 'react-native'
 import { DynamicModalProps } from '../../_components/DynamicModal'
 import { InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
 import { Section } from '../../_components/Section'
+import { TextInput } from '../../_components/TextInput'
 import { StateButtons } from './StateButton'
 import { VehiclePageLayout } from './VehiclePageLayout'
 
@@ -172,7 +173,6 @@ const Vehicle = () => {
       {
         title: 'Anno di immatricolazione',
         placeholder: 'Anno di immatricolazione del veicolo',
-        note: 'Seleziona l’area geografica in cui vuoi noleggiare il tuo veicolo.',
         onPress: (n) => {
           openModal(n)
         },
@@ -219,6 +219,13 @@ const Vehicle = () => {
           {vehicle_state.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={vehicle_state.index + i} mapKey={key} />
           ))}
+          <TextInput
+            value=""
+            onChange={(km) => setPosting({ distance_limit_in_km: km })}
+            title="Kilometraggio"
+            placeholder="Inserisci kilometraggio"
+            note="Inserisci il numero di kilometri percorsi del veicolo, assicurandoti che siano autentici."
+          />
         </Section>
       </VehiclePageLayout>
       <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
