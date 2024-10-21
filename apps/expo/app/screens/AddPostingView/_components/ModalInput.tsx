@@ -1,13 +1,15 @@
 import { Colors, Icon } from '@siva/ui'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export type InputObject = { mapKey: string; index: number; type: 'single' | 'multi' }
+export type AddModalKey = 'main_details' | 'vehicle_state' | 'vehicle_features'
+
+export type InputObject = { mapKey: AddModalKey; index: number; type: 'single' | 'multi' }
 
 export interface ModalInputProps {
   title: string
   placeholder?: string
   note?: string
-  mapKey: string
+  mapKey: AddModalKey
   index: number
   type: 'single' | 'multi'
   onPress?: (obj: InputObject) => void
