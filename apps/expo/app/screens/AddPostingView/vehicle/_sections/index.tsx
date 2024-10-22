@@ -13,8 +13,8 @@ import { StateButtons } from './StateButton'
 import { VehiclePageLayout } from './VehiclePageLayout'
 
 interface SectionData {
-  index: number
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
+  key: AddModalKey
   [key: string]: any
 }
 
@@ -44,7 +44,7 @@ const Vehicle = () => {
   }
 
   const main_details: SectionData = {
-    index: 0,
+    key: 'main_details',
     inputs: [
       {
         title: 'Marca e modello',
@@ -102,7 +102,7 @@ const Vehicle = () => {
   }
 
   const vehicle_state: SectionData = {
-    index: 1,
+    key: 'vehicle_state',
     inputs: [
       {
         title: 'Anno di immatricolazione',
@@ -132,7 +132,7 @@ const Vehicle = () => {
   }
 
   const vehicle_features: SectionData = {
-    index: 2,
+    key: 'vehicle_features',
     inputs: [
       {
         title: 'Carrozzeria',
@@ -174,7 +174,7 @@ const Vehicle = () => {
           icon="coupe"
         >
           {main_details.inputs.map((input, i) => (
-            <ModalInput key={input.title} {...input} index={main_details.index + i} mapKey={key} />
+            <ModalInput key={input.title} {...input} index={i} mapKey={main_details.key} />
           ))}
         </Section>
 
@@ -185,7 +185,7 @@ const Vehicle = () => {
             onPress={(state) => setPosting({ ...posting, state })}
           />
           {vehicle_state.inputs.map((input, i) => (
-            <ModalInput key={input.title} {...input} index={vehicle_state.index + i} mapKey={key} />
+            <ModalInput key={input.title} {...input} index={i} mapKey={vehicle_state.key} />
           ))}
           <TextInput
             value=""
@@ -202,12 +202,7 @@ const Vehicle = () => {
           icon="door"
         >
           {vehicle_features.inputs.map((input, i) => (
-            <ModalInput
-              key={input.title}
-              index={vehicle_features.index + i}
-              mapKey={key}
-              {...input}
-            />
+            <ModalInput key={input.title} {...input} index={i} mapKey={vehicle_features.key} />
           ))}
         </Section>
       </VehiclePageLayout>
