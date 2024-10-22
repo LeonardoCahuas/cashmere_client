@@ -1,5 +1,5 @@
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import { Posting } from '@siva/entities'
+import { Posting, Vehicle } from '@siva/entities'
 import { createRef } from 'react'
 import { create } from 'zustand'
 
@@ -36,6 +36,7 @@ interface DetailViewState {
 interface AddState {
   posting: Partial<Posting>
   setPosting: (posting: Partial<Posting>) => void
+  setVehicle: (vehicle: Partial<Vehicle>) => void
 }
 
 interface AppState {
@@ -86,6 +87,15 @@ export const useAppStore = create<AppState>((set, get) => ({
       set((state) => ({
         ...state,
         add: { ...state.add, posting: { ...state.add.posting, ...posting } },
+      }))
+    },
+    setVehicle: (vehicle) => {
+      set((state) => ({
+        ...state,
+        add: {
+          ...state.add,
+          posting: { ...state.add.posting, vehicle: { ...state.add.posting.vehicle, ...vehicle } },
+        },
       }))
     },
   },

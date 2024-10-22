@@ -26,5 +26,26 @@ export interface Posting {
   bookmarked: boolean
   bookmark_id?: string
   vehicle_type: string
-  state?: "new" | "used"
+  state?: 'new' | 'used'
+  vehicle?: Partial<Vehicle>
+}
+
+export interface Vehicle {
+  id: string
+  created_at: string
+  renter_id: string
+  brand: string
+  model: string
+  year: number
+  seats: number
+  doors: string
+  body_type: string
+  fuel_type: string
+  transmission_type: string
+  exterior_color: string
+  interior_color: string
+  interior_material: string
+  vehicle_type: string
+  state: 'new' | 'used'
+  distance_limit_in_km: string
 }

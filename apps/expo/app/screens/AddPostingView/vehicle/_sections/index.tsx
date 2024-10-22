@@ -19,7 +19,7 @@ interface SectionData {
 }
 
 const Vehicle = () => {
-  const { posting, setPosting } = useAppStore((s) => s.add)
+  const { posting, setPosting, setVehicle } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
   const ref2 = useModalSheetRef()
   const [input, setInput] = useState(0)
@@ -150,7 +150,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ body_type: value })
               closeModal()
             },
           })),
@@ -176,7 +176,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ seats: value })
               closeModal()
             },
           })),
@@ -197,7 +197,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ doors: value })
               closeModal()
             },
           })),
@@ -219,7 +219,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ exterior_color: value })
               closeModal()
             },
           })),
@@ -241,7 +241,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ interior_color: value })
               closeModal()
             },
           })),
@@ -264,7 +264,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              console.log(value)
+              setVehicle({ interior_material: value })
               closeModal()
             },
           })),
