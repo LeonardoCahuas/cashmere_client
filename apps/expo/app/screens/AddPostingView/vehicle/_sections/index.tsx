@@ -273,10 +273,49 @@ const Vehicle = () => {
     ],
   }
 
+  const engine: SectionData = {
+    key: 'engine',
+    inputs: [
+      {
+        title: 'Alimentazione',
+        placeholder: 'Tipo di motore',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Alimentazione',
+          options: [
+            { label: 'Benzina', value: 'petrol' },
+            { label: 'Diesel', value: 'diesel' },
+            { label: 'Elettrico', value: 'electric' },
+            { label: 'GPL', value: 'lpg' },
+            { label: 'Metano', value: 'methane' },
+            { label: 'Idrogeno', value: 'hydrogen' },
+            { label: 'Ibrida', value: 'hybrid' },
+            { label: 'Ibrida Diesel/Elettrico', value: 'hybrid-diesel/electric' },
+            { label: 'Altro', value: 'other' },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              setVehicle({ fuel_type: value })
+              closeModal()
+            },
+          })),
+        },
+      },
+    ],
+  }
+
+  const equipment: SectionData = {
+    key: 'equipment',
+    inputs: [],
+  }
+
   const sections: Record<AddModalKey, SectionData> = {
     main_details,
     vehicle_state,
     vehicle_features,
+    engine,
+    equipment,
   }
 
   return (
@@ -317,6 +356,12 @@ const Vehicle = () => {
         >
           {vehicle_features.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={i} mapKey={vehicle_features.key} />
+          ))}
+        </Section>
+
+        <Section title="Motore" subtitle="Indica i dettagli sul motore del veicolo" icon="engine">
+          {engine.inputs.map((input, i) => (
+            <ModalInput key={input.title} {...input} index={i} mapKey={engine.key} />
           ))}
         </Section>
       </VehiclePageLayout>

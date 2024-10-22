@@ -1,7 +1,12 @@
 import { Colors, Icon } from '@siva/ui'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export type AddModalKey = 'main_details' | 'vehicle_state' | 'vehicle_features'
+export type AddModalKey =
+  | 'main_details'
+  | 'vehicle_state'
+  | 'vehicle_features'
+  | 'engine'
+  | 'equipment'
 
 export type InputObject = { mapKey: AddModalKey; index: number; type: 'single' | 'multi' }
 
