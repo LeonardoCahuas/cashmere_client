@@ -156,6 +156,120 @@ const Vehicle = () => {
           })),
         },
       },
+      {
+        title: 'Posti',
+        placeholder: 'Numero di posti',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Posti',
+          options: [
+            { label: '2', value: 2 },
+            { label: '3', value: 3 },
+            { label: '4', value: 4 },
+            { label: '5', value: 5 },
+            { label: '6', value: 6 },
+            { label: '7', value: 7 },
+            { label: '8', value: 8 },
+            { label: '9', value: 9 },
+            { label: '10', value: 10 },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              console.log(value)
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Porte',
+        placeholder: 'Numero di porte',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Porte',
+          options: [
+            { label: '2/3', value: '2/3' },
+            { label: '4/5', value: '4/5' },
+            { label: '6/7', value: '6/7' },
+            { label: '8/9', value: '8/9' },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              console.log(value)
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Colore esterni',
+        placeholder: 'Colore degli esterni',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Colore esterni',
+          options: [
+            { label: 'Bianco', value: 'white' },
+            { label: 'Grigrio', value: 'grey' },
+            { label: 'Nero', value: 'black' },
+            { label: 'Giallo', value: 'yellow' },
+            { label: 'Verde', value: 'green' },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              console.log(value)
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Colore interni',
+        placeholder: 'Colore degli interni',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Colore interni',
+          options: [
+            { label: 'Bianco', value: 'white' },
+            { label: 'Grigrio', value: 'grey' },
+            { label: 'Nero', value: 'black' },
+            { label: 'Giallo', value: 'yellow' },
+            { label: 'Verde', value: 'green' },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              console.log(value)
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Materiale interni',
+        placeholder: 'Materiale interni',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        content: {
+          title: 'Materiale interni',
+          options: [
+            { label: 'Stoffa', value: 'cloth' },
+            { label: 'Alcantara', value: 'alcantara' },
+            { label: 'Pelle Totale', value: 'full leather' },
+            { label: 'Pelle Parziale', value: 'partial leather' },
+            { label: 'Pelle Scamosciata', value: 'suede leather' },
+            { label: 'Altro', value: 'other' },
+          ].map(({ label, value }) => ({
+            label,
+            action: () => {
+              console.log(value)
+              closeModal()
+            },
+          })),
+        },
+      },
     ],
   }
 
