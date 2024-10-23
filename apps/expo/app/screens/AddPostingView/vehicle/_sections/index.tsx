@@ -22,14 +22,18 @@ const Vehicle = () => {
   const { posting, setPosting, setVehicle } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
   const ref2 = useModalSheetRef()
-  const [input, setInput] = useState(0)
-  const [key, setKey] = useState<AddModalKey>('main_details')
-  const [type, setType] = useState<'single' | 'multi'>('single')
+  const [config, setConfig] = useState<{
+    key: AddModalKey
+    type: 'single' | 'multi'
+    input: number
+  }>({
+    key: 'main_details',
+    type: 'multi',
+    input: 0,
+  })
 
   const openModal = ({ mapKey, type, index }: InputObject) => {
-    setKey(mapKey)
-    setType(type)
-    setInput(index)
+    setConfig({ key: mapKey, type, input: index })
     if (type === 'single') {
       ref2.current?.close()
       ref.current?.expand()
@@ -367,10 +371,10 @@ const Vehicle = () => {
           ))}
         </Section>
       </VehiclePageLayout>
-      <ModalSheet ref={ref} {...sections[key].inputs[input].content} />
-      {type === 'multi' && (
+      <ModalSheet ref={ref} {...sections[config.key].inputs[config.input].content} />
+      {config.type === 'multi' && (
         // @ts-ignore
-        <MultiStepModalSheet ref={ref2} {...sections[key].inputs[input].content} />
+        <MultiStepModalSheet ref={ref2} {...sections[config.key].inputs[config.input].content} />
       )}
     </ModalSheetProvider>
   )
