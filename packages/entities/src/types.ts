@@ -48,4 +48,7 @@ export interface Vehicle {
   vehicle_type: string
   state: 'new' | 'used'
   distance_limit_in_km: string
+  pollution_class: string
+  traction: string
+  gears: string
 }

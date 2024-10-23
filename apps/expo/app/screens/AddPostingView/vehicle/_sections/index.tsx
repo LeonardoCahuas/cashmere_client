@@ -58,6 +58,53 @@ const fuelTypes = [
 
 const fuelTypeMap = fuelTypes.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
 
+const pollutionClasses = [
+  { label: 'Euro 1', value: 'euro_1' },
+  { label: 'Euro 2', value: 'euro_2' },
+  { label: 'Euro 3', value: 'euro_3' },
+  { label: 'Euro 4', value: 'euro_4' },
+  { label: 'Euro 5', value: 'euro_5' },
+  { label: 'Euro 6', value: 'euro_6' },
+  { label: 'Altro', value: 'other' },
+]
+
+const pollutionClassesMap = pollutionClasses.reduce(
+  (acc, curr) => ({ ...acc, [curr.value]: curr.label }),
+  {}
+)
+
+const traction = [
+  { label: '4x4', value: 'full-wheel' },
+  { label: 'Anteriore', value: 'front-wheel' },
+  { label: 'Posteriore', value: 'rear-wheel' },
+]
+
+const tractionMap = traction.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
+const transmissionTypes = [
+  { label: 'Automatico', value: 'automatic' },
+  { label: 'Manuale', value: 'manual' },
+  { label: 'Semi Automatico', value: 'semi-automatic' },
+  { label: 'Altro', value: 'other' },
+]
+
+const transmissionMap = transmissionTypes.reduce(
+  (acc, curr) => ({ ...acc, [curr.value]: curr.label }),
+  {}
+)
+
+const gears = [
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3', value: '3' },
+  { label: '4', value: '4' },
+  { label: '5', value: '5' },
+  { label: '6', value: '6' },
+  { label: '7', value: '7' },
+]
+
+const gearsMap = gears.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
 interface SectionData {
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
   key: AddModalKey
@@ -347,6 +394,79 @@ const Vehicle = () => {
             label,
             action: () => {
               setPosting({ fuel_type: value })
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Classe inquinamento',
+        placeholder: 'Classe ambientale del veicolo',
+        note: 'Indica la classe ambientale del veicolo (Categoria Euro)',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        value: posting?.vehicle?.pollution_class
+          ? pollutionClassesMap[posting?.vehicle?.pollution_class]
+          : '',
+        content: {
+          title: 'Classe inquinamento',
+          options: pollutionClasses.map(({ label, value }) => ({
+            label,
+            action: () => {
+              setVehicle({ pollution_class: value })
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Trazione',
+        placeholder: 'Tipologia di trazione',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        value: posting?.vehicle?.traction ? tractionMap[posting?.vehicle?.traction] : '',
+        content: {
+          title: 'Trazione',
+          options: traction.map(({ label, value }) => ({
+            label,
+            action: () => {
+              setVehicle({ traction: value })
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Cambio',
+        placeholder: 'Tipo di cambio',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        value: posting.vehicle?.transmission_type
+          ? transmissionMap[posting?.vehicle?.transmission_type]
+          : '',
+        content: {
+          title: 'Cambio',
+          options: transmissionTypes.map(({ label, value }) => ({
+            label,
+            action: () => {
+              setVehicle({ transmission_type: value })
+              closeModal()
+            },
+          })),
+        },
+      },
+      {
+        title: 'Marce',
+        placeholder: 'Numero marce',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        value: posting?.vehicle?.gears ? gearsMap[posting?.vehicle?.gears] : '',
+        content: {
+          title: 'Marce',
+          options: transmissionTypes.map(({ label, value }) => ({
+            label,
+            action: () => {
+              setVehicle({ gears: value })
               closeModal()
             },
           })),
