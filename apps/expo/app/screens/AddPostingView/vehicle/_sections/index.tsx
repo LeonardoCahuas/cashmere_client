@@ -142,9 +142,9 @@ const Vehicle = () => {
           title: 'Anno di immatricolazione',
           options: ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'].map(
             (year) => ({
-              label: year.toString(),
+              label: year,
               action: () => {
-                setVehicle({ year: year.toString() })
+                setVehicle({ year })
                 closeModal()
               },
             })
