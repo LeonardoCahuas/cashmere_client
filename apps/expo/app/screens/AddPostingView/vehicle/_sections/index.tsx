@@ -21,7 +21,6 @@ interface SectionData {
 const Vehicle = () => {
   const { posting, setPosting, setVehicle } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
-  const ref2 = useModalSheetRef()
   const [config, setConfig] = useState<{
     key: AddModalKey
     type: 'single' | 'multi'
@@ -34,17 +33,11 @@ const Vehicle = () => {
 
   const openModal = ({ mapKey, type, index }: InputObject) => {
     setConfig({ key: mapKey, type, input: index })
-    if (type === 'single') {
-      ref2.current?.close()
-      ref.current?.expand()
-    } else {
-      ref.current?.close()
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          ref2.current?.expand()
-        })
+        ref.current?.expand()
       })
-    }
+    })
   }
 
   const closeModal = () => {
@@ -371,10 +364,12 @@ const Vehicle = () => {
           ))}
         </Section>
       </VehiclePageLayout>
-      <ModalSheet ref={ref} {...sections[config.key].inputs[config.input].content} />
+      {config.type === 'single' && (
+        <ModalSheet ref={ref} {...sections[config.key].inputs[config.input].content} />
+      )}
       {config.type === 'multi' && (
         // @ts-ignore
-        <MultiStepModalSheet ref={ref2} {...sections[config.key].inputs[config.input].content} />
+        <MultiStepModalSheet ref={ref} {...sections[config.key].inputs[config.input].content} />
       )}
     </ModalSheetProvider>
   )
