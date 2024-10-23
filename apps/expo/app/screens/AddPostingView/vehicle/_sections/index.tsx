@@ -135,22 +135,20 @@ const Vehicle = () => {
       {
         title: 'Anno di immatricolazione',
         placeholder: 'Anno di immatricolazione del veicolo',
-        onPress: (n) => {
-          openModal(n)
-        },
+        onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.vehicle?.state,
+        value: posting?.vehicle?.year,
         content: {
           title: 'Anno di immatricolazione',
-          options: [
-            {
-              label: '2024',
+          options: ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'].map(
+            (year) => ({
+              label: year.toString(),
               action: () => {
-                console.log('2024')
+                setVehicle({ year: year.toString() })
                 closeModal()
               },
-            },
-          ],
+            })
+          ),
         },
       },
     ],
