@@ -13,6 +13,7 @@ export type InputObject = { mapKey: AddModalKey; index: number; type: 'single' |
 export interface ModalInputProps {
   title: string
   placeholder?: string
+  value: string | undefined
   note?: string
   mapKey: AddModalKey
   index: number
@@ -24,11 +25,13 @@ export const ModalInput = ({
   title,
   placeholder,
   note,
+  value,
   mapKey,
   index,
   type,
   onPress,
 }: ModalInputProps) => {
+  console.log(value)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
@@ -40,7 +43,8 @@ export const ModalInput = ({
         }}
       >
         <View style={styles.boxContent}>
-          {placeholder && <Text style={styles.placeholder}>{placeholder}</Text>}
+          {value && <Text style={styles.value}>{value}</Text>}
+          {!value && placeholder && <Text style={styles.placeholder}>{placeholder}</Text>}
         </View>
         <Icon name="chevron-right" color={Colors.textSecondary} width={12} height={12} />
       </TouchableOpacity>
@@ -89,5 +93,10 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     width: '90%',
     paddingLeft: 4,
+  },
+  value: {
+    fontSize: 14,
+    color: Colors.blackPrimary,
+    fontWeight: '500',
   },
 })

@@ -5,6 +5,7 @@ import { useAppStore } from 'apps/expo/app/setup/store'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { Text, View } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DynamicModalProps } from '../../_components/DynamicModal'
 import { AddModalKey, InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
 import { Section } from '../../_components/Section'
@@ -21,6 +22,7 @@ interface SectionData {
 const Vehicle = () => {
   const { posting, setPosting, setVehicle } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
+  const [step, setStep] = useState('initial')
   const [config, setConfig] = useState<{
     key: AddModalKey
     type: 'single' | 'multi'
@@ -42,6 +44,7 @@ const Vehicle = () => {
 
   const closeModal = () => {
     ref.current?.close()
+    setTimeout(() => setStep('initial'), 100)
   }
 
   const main_details: SectionData = {
@@ -52,6 +55,7 @@ const Vehicle = () => {
         placeholder: 'Seleziona marca e modello',
         onPress: (n) => openModal(n),
         type: 'multi',
+        value: `${posting?.brand && posting?.model ? posting?.brand + ' ' + posting?.model : ''}`,
         content: {
           pages: {
             initial: {
@@ -64,8 +68,32 @@ const Vehicle = () => {
                     { label: 'Alfa Romeo', value: 'alfa_romeo', icon: 'car' },
                     { label: 'Altro', value: 'altro', icon: 'car' },
                   ].map((item) => (
-                    <Text>{item.label}</Text>
+                    <TouchableOpacity
+                      key={item.value}
+                      onPress={() => {
+                        setPosting({ brand: item.value })
+                        setStep(item.value)
+                      }}
+                    >
+                      <Text>{item.label}</Text>
+                    </TouchableOpacity>
                   ))}
+                </View>
+              ),
+            },
+            abarth: {
+              key: 'abarth',
+              title: 'Abarth',
+              content: (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setPosting({ model: '500' })
+                      closeModal()
+                    }}
+                  >
+                    <Text>{'Abarth'}</Text>
+                  </TouchableOpacity>
                 </View>
               ),
             },
@@ -84,13 +112,14 @@ const Vehicle = () => {
           openModal(n)
         },
         type: 'single',
+        value: posting?.pickup_location_plain,
         content: {
           title: 'Posizione',
           options: [
             {
-              label: 'Abarth',
+              label: 'Milano',
               action: () => {
-                console.log('abarth')
+                console.log('Milano')
                 closeModal()
               },
             },
@@ -110,6 +139,7 @@ const Vehicle = () => {
           openModal(n)
         },
         type: 'single',
+        value: posting?.vehicle?.state,
         content: {
           title: 'Anno di immatricolazione',
           options: [
@@ -138,6 +168,7 @@ const Vehicle = () => {
         placeholder: 'Tipo di carrozzeria del veicolo',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.body_type,
         content: {
           title: 'Carrozzeria',
           options: [
@@ -160,6 +191,7 @@ const Vehicle = () => {
         placeholder: 'Numero di posti',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.seats,
         content: {
           title: 'Posti',
           options: [
@@ -175,7 +207,7 @@ const Vehicle = () => {
           ].map(({ label, value }) => ({
             label,
             action: () => {
-              setVehicle({ seats: value })
+              setVehicle({ seats: value.toString() })
               closeModal()
             },
           })),
@@ -186,6 +218,7 @@ const Vehicle = () => {
         placeholder: 'Numero di porte',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.doors,
         content: {
           title: 'Porte',
           options: [
@@ -207,6 +240,7 @@ const Vehicle = () => {
         placeholder: 'Colore degli esterni',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.exterior_color,
         content: {
           title: 'Colore esterni',
           options: [
@@ -229,6 +263,7 @@ const Vehicle = () => {
         placeholder: 'Colore degli interni',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.interior_color,
         content: {
           title: 'Colore interni',
           options: [
@@ -251,6 +286,7 @@ const Vehicle = () => {
         placeholder: 'Materiale interni',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.vehicle?.interior_material,
         content: {
           title: 'Materiale interni',
           options: [
@@ -280,6 +316,7 @@ const Vehicle = () => {
         placeholder: 'Tipo di motore',
         onPress: (n) => openModal(n),
         type: 'single',
+        value: posting?.fuel_type,
         content: {
           title: 'Alimentazione',
           options: [
@@ -320,6 +357,12 @@ const Vehicle = () => {
   return (
     <ModalSheetProvider>
       <VehiclePageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
+        <TouchableOpacity
+          style={{ width: '100%', height: 40, backgroundColor: '#ededed' }}
+          onPress={() => {
+            console.log(posting)
+          }}
+        ></TouchableOpacity>
         <Section
           title="Dati principali"
           subtitle="Inserisci i dati principali del veicolo*"
@@ -369,7 +412,12 @@ const Vehicle = () => {
       )}
       {config.type === 'multi' && (
         // @ts-ignore
-        <MultiStepModalSheet ref={ref} {...sections[config.key].inputs[config.input].content} />
+        <MultiStepModalSheet
+          ref={ref}
+          {...sections[config.key].inputs[config.input].content}
+          step={step}
+          setStep={setStep}
+        />
       )}
     </ModalSheetProvider>
   )

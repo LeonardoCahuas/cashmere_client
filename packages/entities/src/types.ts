@@ -36,8 +36,8 @@ export interface Vehicle {
   renter_id: string
   brand: string
   model: string
-  year: number
-  seats: number
+  year: string
+  seats: string
   doors: string
   body_type: string
   fuel_type: string
