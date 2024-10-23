@@ -35,7 +35,11 @@ const Vehicle = () => {
       ref.current?.expand()
     } else {
       ref.current?.close()
-      setTimeout(() => ref2.current?.expand(), 65)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          ref2.current?.expand()
+        })
+      })
     }
   }
 
@@ -49,9 +53,7 @@ const Vehicle = () => {
       {
         title: 'Marca e modello',
         placeholder: 'Seleziona marca e modello',
-        onPress: (n) => {
-          openModal(n)
-        },
+        onPress: (n) => openModal(n),
         type: 'multi',
         content: {
           pages: {

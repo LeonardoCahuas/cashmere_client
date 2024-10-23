@@ -41,7 +41,7 @@ export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalShee
     )
     const [size, setSize] = useState({ width: 0, height: 0 })
 
-    if (pages == undefined || step == undefined) return null
+    if (pages == undefined || step == undefined || !setStep || !pages[step]) return null
 
     return (
       <BottomSheet
