@@ -13,6 +13,51 @@ import { TextInput } from '../../_components/TextInput'
 import { StateButtons } from './StateButton'
 import { VehiclePageLayout } from './VehiclePageLayout'
 
+const bodyTypes = [
+  { label: 'City Car', value: 'city_car' },
+  { label: 'Berlina', value: 'sedan' },
+  { label: 'Station Wagon', value: 'station_wagon' },
+  { label: 'Coupe', value: 'coupe' },
+  { label: 'Cabrio', value: 'cabrio' },
+]
+
+const bodyTypeValueMap = bodyTypes.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
+const colors = [
+  { label: 'Bianco', value: 'white' },
+  { label: 'Grigrio', value: 'grey' },
+  { label: 'Nero', value: 'black' },
+  { label: 'Giallo', value: 'yellow' },
+  { label: 'Verde', value: 'green' },
+]
+
+const colorValueMap = colors.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
+const materials = [
+  { label: 'Stoffa', value: 'cloth' },
+  { label: 'Alcantara', value: 'alcantara' },
+  { label: 'Pelle Totale', value: 'full leather' },
+  { label: 'Pelle Parziale', value: 'partial leather' },
+  { label: 'Pelle Scamosciata', value: 'suede leather' },
+  { label: 'Altro', value: 'other' },
+]
+
+const materialsMap = materials.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
+const fuelTypes = [
+  { label: 'Benzina', value: 'petrol' },
+  { label: 'Diesel', value: 'diesel' },
+  { label: 'Elettrico', value: 'electric' },
+  { label: 'GPL', value: 'lpg' },
+  { label: 'Metano', value: 'methane' },
+  { label: 'Idrogeno', value: 'hydrogen' },
+  { label: 'Ibrida', value: 'hybrid' },
+  { label: 'Ibrida Diesel/Elettrico', value: 'hybrid-diesel/electric' },
+  { label: 'Altro', value: 'other' },
+]
+
+const fuelTypeMap = fuelTypes.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
 interface SectionData {
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
   key: AddModalKey
@@ -166,16 +211,10 @@ const Vehicle = () => {
         placeholder: 'Tipo di carrozzeria del veicolo',
         onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.vehicle?.body_type,
+        value: posting?.vehicle?.body_type ? bodyTypeValueMap[posting?.vehicle?.body_type] : '',
         content: {
           title: 'Carrozzeria',
-          options: [
-            { label: 'City Car', value: 'city_car' },
-            { label: 'Berlina', value: 'sedan' },
-            { label: 'Station Wagon', value: 'station_wagon' },
-            { label: 'Coupe', value: 'coupe' },
-            { label: 'Cabrio', value: 'cabrio' },
-          ].map(({ label, value }) => ({
+          options: bodyTypes.map(({ label, value }) => ({
             label,
             action: () => {
               setVehicle({ body_type: value })
@@ -238,16 +277,12 @@ const Vehicle = () => {
         placeholder: 'Colore degli esterni',
         onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.vehicle?.exterior_color,
+        value: posting?.vehicle?.exterior_color
+          ? colorValueMap[posting?.vehicle?.exterior_color]
+          : '',
         content: {
           title: 'Colore esterni',
-          options: [
-            { label: 'Bianco', value: 'white' },
-            { label: 'Grigrio', value: 'grey' },
-            { label: 'Nero', value: 'black' },
-            { label: 'Giallo', value: 'yellow' },
-            { label: 'Verde', value: 'green' },
-          ].map(({ label, value }) => ({
+          options: [].map(({ label, value }) => ({
             label,
             action: () => {
               setVehicle({ exterior_color: value })
@@ -261,16 +296,12 @@ const Vehicle = () => {
         placeholder: 'Colore degli interni',
         onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.vehicle?.interior_color,
+        value: posting?.vehicle?.interior_color
+          ? colorValueMap[posting?.vehicle?.interior_color]
+          : '',
         content: {
           title: 'Colore interni',
-          options: [
-            { label: 'Bianco', value: 'white' },
-            { label: 'Grigrio', value: 'grey' },
-            { label: 'Nero', value: 'black' },
-            { label: 'Giallo', value: 'yellow' },
-            { label: 'Verde', value: 'green' },
-          ].map(({ label, value }) => ({
+          options: colors.map(({ label, value }) => ({
             label,
             action: () => {
               setVehicle({ interior_color: value })
@@ -284,17 +315,12 @@ const Vehicle = () => {
         placeholder: 'Materiale interni',
         onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.vehicle?.interior_material,
+        value: posting?.vehicle?.interior_material
+          ? materialsMap[posting?.vehicle?.interior_material]
+          : '',
         content: {
           title: 'Materiale interni',
-          options: [
-            { label: 'Stoffa', value: 'cloth' },
-            { label: 'Alcantara', value: 'alcantara' },
-            { label: 'Pelle Totale', value: 'full leather' },
-            { label: 'Pelle Parziale', value: 'partial leather' },
-            { label: 'Pelle Scamosciata', value: 'suede leather' },
-            { label: 'Altro', value: 'other' },
-          ].map(({ label, value }) => ({
+          options: materials.map(({ label, value }) => ({
             label,
             action: () => {
               setVehicle({ interior_material: value })
@@ -314,23 +340,13 @@ const Vehicle = () => {
         placeholder: 'Tipo di motore',
         onPress: (n) => openModal(n),
         type: 'single',
-        value: posting?.fuel_type,
+        value: posting?.fuel_type ? fuelTypeMap[posting?.fuel_type] : '',
         content: {
           title: 'Alimentazione',
-          options: [
-            { label: 'Benzina', value: 'petrol' },
-            { label: 'Diesel', value: 'diesel' },
-            { label: 'Elettrico', value: 'electric' },
-            { label: 'GPL', value: 'lpg' },
-            { label: 'Metano', value: 'methane' },
-            { label: 'Idrogeno', value: 'hydrogen' },
-            { label: 'Ibrida', value: 'hybrid' },
-            { label: 'Ibrida Diesel/Elettrico', value: 'hybrid-diesel/electric' },
-            { label: 'Altro', value: 'other' },
-          ].map(({ label, value }) => ({
+          options: fuelTypes.map(({ label, value }) => ({
             label,
             action: () => {
-              setVehicle({ fuel_type: value })
+              setPosting({ fuel_type: value })
               closeModal()
             },
           })),
@@ -381,7 +397,7 @@ const Vehicle = () => {
             <ModalInput key={input.title} {...input} index={i} mapKey={vehicle_state.key} />
           ))}
           <TextInput
-            value=""
+            value={posting?.distance_limit_in_km ?? ''}
             onChange={(km) => setPosting({ distance_limit_in_km: km })}
             title="Kilometraggio"
             placeholder="Inserisci kilometraggio"
