@@ -28,6 +28,9 @@ export interface Posting {
   vehicle_type: string
   state?: 'new' | 'used'
   vehicle?: Partial<Vehicle>
+  services: string[]
+  insurancePolicies: string[]
+  otherServices: string[]
 }
 
 export interface Vehicle {
