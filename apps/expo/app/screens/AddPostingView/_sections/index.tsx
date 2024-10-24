@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 32,
+    paddingTop: 24,
   },
   titleSection: {
     width: '100%',

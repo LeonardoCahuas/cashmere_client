@@ -31,7 +31,6 @@ export const ModalInput = ({
   type,
   onPress,
 }: ModalInputProps) => {
-  console.log(value)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>

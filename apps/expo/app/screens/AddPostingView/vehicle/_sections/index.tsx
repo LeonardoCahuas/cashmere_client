@@ -105,6 +105,19 @@ const gears = [
 
 const gearsMap = gears.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
 
+const optionals = [
+  { label: 'Optional 1', value: 'optional1' },
+  { label: 'Optional 2', value: 'optional2' },
+  { label: 'Optional 3', value: 'optional3' },
+  { label: 'Optional 4', value: 'optional4' },
+  { label: 'Optional 5', value: 'optional5' },
+  { label: 'Optional 6', value: 'optional6' },
+  { label: 'Optional 7', value: 'optional7' },
+  { label: 'Altro', value: 'other' },
+]
+
+const optionalsMap = optionals.reduce((acc, curr) => ({ ...acc, [curr.value]: curr.label }), {})
+
 interface SectionData {
   inputs: Array<Omit<ModalInputProps, 'index' | 'mapKey'> & DynamicModalProps>
   key: AddModalKey
@@ -463,7 +476,7 @@ const Vehicle = () => {
         value: posting?.vehicle?.gears ? gearsMap[posting?.vehicle?.gears] : '',
         content: {
           title: 'Marce',
-          options: transmissionTypes.map(({ label, value }) => ({
+          options: gears.map(({ label, value }) => ({
             label,
             action: () => {
               setVehicle({ gears: value })
@@ -477,7 +490,31 @@ const Vehicle = () => {
 
   const equipment: SectionData = {
     key: 'equipment',
-    inputs: [],
+    inputs: [
+      {
+        title: 'Optional',
+        placeholder: 'Seleziona equipaggiamento',
+        onPress: (n) => openModal(n),
+        type: 'single',
+        value:
+          posting?.vehicle?.optionals?.length && posting?.vehicle?.optionals?.length > 0
+            ? posting?.vehicle?.optionals?.map((item) => optionalsMap[item]).join(', ')
+            : '',
+        content: {
+          title: 'Optional',
+          options: optionals.map(({ label, value }) => ({
+            label,
+            action: () => {
+              let optionals = posting?.vehicle?.optionals ?? []
+              const set = new Set(optionals)
+              set.add(value)
+              optionals = Array.from(set)
+              setVehicle({ optionals })
+            },
+          })),
+        },
+      },
+    ],
   }
 
   const sections: Record<AddModalKey, SectionData> = {
@@ -491,12 +528,6 @@ const Vehicle = () => {
   return (
     <ModalSheetProvider>
       <VehiclePageLayout onButtonPress={() => router.push('screens/AddPostingView/services')}>
-        <TouchableOpacity
-          style={{ width: '100%', height: 40, backgroundColor: '#ededed' }}
-          onPress={() => {
-            console.log(posting)
-          }}
-        ></TouchableOpacity>
         <Section
           title="Dati principali"
           subtitle="Inserisci i dati principali del veicolo*"
@@ -538,6 +569,16 @@ const Vehicle = () => {
         <Section title="Motore" subtitle="Indica i dettagli sul motore del veicolo" icon="engine">
           {engine.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={i} mapKey={engine.key} />
+          ))}
+        </Section>
+
+        <Section
+          title="Equipaggiamento"
+          subtitle="Seleziona tutti gli optional del veicolo dalla nostra lista"
+          icon="wheel"
+        >
+          {equipment.inputs.map((input, i) => (
+            <ModalInput key={input.title} {...input} index={i} mapKey={equipment.key} />
           ))}
         </Section>
       </VehiclePageLayout>

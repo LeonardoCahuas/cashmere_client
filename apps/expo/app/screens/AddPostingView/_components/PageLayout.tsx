@@ -46,6 +46,5 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     width: '100%',
-    paddingTop: 24,
   },
 })

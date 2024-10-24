@@ -51,4 +51,5 @@ export interface Vehicle {
   pollution_class: string
   traction: string
   gears: string
+  optionals: string[]
 }
