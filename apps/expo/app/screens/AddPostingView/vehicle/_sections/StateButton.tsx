@@ -3,7 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 interface StateButtonProps {
   items: { label: string; value: string }[]
-  onPress: (state: 'new' | 'used') => void
+  onPress: (state: string) => void
   selected?: string
 }
 
@@ -18,7 +18,7 @@ export const StateButtons = ({ items, onPress, selected }: StateButtonProps) => 
             borderColor: value === selected ? Colors.greenPrimary : Colors.greySecondary,
             backgroundColor: value === selected ? Colors.greenSelection : 'white',
           }}
-          onPress={() => onPress(value as 'new' | 'used')}
+          onPress={() => onPress(value)}
         >
           <Text>{label}</Text>
         </TouchableOpacity>

@@ -52,4 +52,6 @@ export interface Vehicle {
   traction: string
   gears: string
   optionals: string[]
+  power_type: 'hp' | 'kw'
+  power_amount: string
 }

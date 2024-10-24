@@ -8,6 +8,7 @@ import { Text, View } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { DynamicModalProps } from '../../_components/DynamicModal'
 import { AddModalKey, InputObject, ModalInput, ModalInputProps } from '../../_components/ModalInput'
+import { PowerContainer } from '../../_components/PowerContainer'
 import { Section } from '../../_components/Section'
 import { TextInput } from '../../_components/TextInput'
 import { StateButtons } from './StateButton'
@@ -486,6 +487,10 @@ const Vehicle = () => {
         },
       },
     ],
+    powerTypes: [
+      { label: 'Cv', value: 'hp' },
+      { label: 'Kw', value: 'kw' },
+    ],
   }
 
   const equipment: SectionData = {
@@ -542,7 +547,7 @@ const Vehicle = () => {
           <StateButtons
             selected={posting?.state}
             items={vehicle_state.states}
-            onPress={(state) => setPosting({ ...posting, state })}
+            onPress={(state: 'new' | 'used') => setPosting({ ...posting, state })}
           />
           {vehicle_state.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={i} mapKey={vehicle_state.key} />
@@ -570,6 +575,18 @@ const Vehicle = () => {
           {engine.inputs.map((input, i) => (
             <ModalInput key={input.title} {...input} index={i} mapKey={engine.key} />
           ))}
+          <PowerContainer>
+            <StateButtons
+              selected={posting?.vehicle?.power_type}
+              items={engine.powerTypes}
+              onPress={(power_type: 'kw' | 'hp') => setVehicle({ power_type })}
+            />
+            <TextInput
+              value={posting?.distance_limit_in_km ?? ''}
+              placeholder="Inserisci la potenza del motore"
+              onChange={(power_amount) => setVehicle({ power_amount })}
+            />
+          </PowerContainer>
         </Section>
 
         <Section

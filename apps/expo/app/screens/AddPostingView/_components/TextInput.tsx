@@ -2,7 +2,7 @@ import { Colors } from '@siva/ui'
 import { TextInput as RNTextInput, StyleSheet, Text, View } from 'react-native'
 
 interface TextInputProps {
-  title: string
+  title?: string
   placeholder?: string
   note?: string
   value: string
@@ -12,7 +12,7 @@ interface TextInputProps {
 export const TextInput = ({ title, placeholder, note, value, onChange }: TextInputProps) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {title && <Text style={styles.title}>{title}</Text>}
       <RNTextInput
         placeholder={placeholder}
         value={value}
