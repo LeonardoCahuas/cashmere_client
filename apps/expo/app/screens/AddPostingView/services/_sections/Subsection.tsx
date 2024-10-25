@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     width: '100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
+    gap: 24,
     marginTop: 20,
   },
 })
