@@ -19,22 +19,12 @@ export default function App() {
           name="screens/PostingDetailView"
           options={{
             headerShown: false,
-            // title: 'Dettaglio Annuncio',
-            // headerTintColor: '#000',
-            // headerBackTitle: 'Indietro',
-            // headerRight: () => (
-            //   <View style={{ display: 'flex', flexDirection: 'row', gap: 12 }}>
-            //     <TouchableOpacity onPress={() => {}}>
-            //       <Icon name="share" />
-            //     </TouchableOpacity>
-            //     <TouchableOpacity>
-            //       <Icon
-            //         name="heart_filled"
-            //         color={!!false ? Colors.greenPrimary : Colors.blackPrimary}
-            //       />
-            //     </TouchableOpacity>
-            //   </View>
-            // ),
+          }}
+        />
+        <Stack.Screen
+          name="screens/ChatView"
+          options={{
+            headerShown: false,
           }}
         />
       </Stack>

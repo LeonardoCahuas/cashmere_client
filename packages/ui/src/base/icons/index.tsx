@@ -59,6 +59,9 @@ import SemiAutomaticIcon from './semi.automatic.icon'
 import { StationWagonIcon } from './stationwagon.icon'
 import { StatusIcon } from './status.icon'
 import { SuvIcon } from './suv.icon'
+import { MicrophoneIcon } from './microphone.icon'
+import CameraIcon from './camera.icon'
+import { HorizontalDotsIcon } from './horizontal.dots.icon'
 
 export enum Icons {
   car = 'car',
@@ -119,7 +122,10 @@ export enum Icons {
   semi_automatic = 'semi_automatic',
   station_wagon = 'station_wagon',
   status = 'status',
-  suv = 'suv'
+  suv = 'suv',
+  microphone = 'microphone',
+  camera = 'camera',
+  horizontal_dots = 'horizontal_dots'
 }
 
 export type IconName = `${Icons}`
@@ -254,6 +260,12 @@ export const Icon = ({ ...props }: IconProps) => {
       return <StatusIcon {...p} />
     case 'suv':
       return <SuvIcon {...p} />
+    case 'camera':
+      return <CameraIcon {...p} />
+    case 'microphone':
+      return <MicrophoneIcon {...p} />
+      case 'horizontal_dots':
+      return <HorizontalDotsIcon {...p} />
     default:
       return <></>
   }
