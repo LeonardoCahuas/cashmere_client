@@ -62,6 +62,13 @@ import { SuvIcon } from './suv.icon'
 import { MicrophoneIcon } from './microphone.icon'
 import CameraIcon from './camera.icon'
 import { HorizontalDotsIcon } from './horizontal.dots.icon'
+import NotificationsIcon from './notifications.icon'
+import { ReportIcon } from './report.icon'
+import { BlockIcon } from './block.icon'
+import { BlockedNotificationsIcon } from './blocked.notifications.icon.tsx'
+import { TrashIcon } from './trash.icon'
+import { GalleryIcon } from './gallery.icon'
+import { DocumentIcon } from './document.icon'
 
 export enum Icons {
   car = 'car',
@@ -125,7 +132,14 @@ export enum Icons {
   suv = 'suv',
   microphone = 'microphone',
   camera = 'camera',
-  horizontal_dots = 'horizontal_dots'
+  horizontal_dots = 'horizontal_dots',
+  notifications = 'notifications',
+  block = 'block',
+  report = 'report',
+  trash = 'trash',
+  blocked_notifications = 'blocked_notifications',
+  gallery = 'gallery',
+  document = 'document'
 }
 
 export type IconName = `${Icons}`
@@ -264,8 +278,22 @@ export const Icon = ({ ...props }: IconProps) => {
       return <CameraIcon {...p} />
     case 'microphone':
       return <MicrophoneIcon {...p} />
-      case 'horizontal_dots':
+    case 'horizontal_dots':
       return <HorizontalDotsIcon {...p} />
+    case 'notifications':
+      return <NotificationsIcon {...p} />
+    case 'report':
+      return <ReportIcon {...p} />
+    case 'block':
+      return <BlockIcon {...p} />
+    case 'blocked_notifications':
+      return <BlockedNotificationsIcon {...p} />
+    case 'trash':
+      return <TrashIcon {...p} />
+      case 'gallery':
+        return <GalleryIcon {...p} />
+      case 'document':
+        return <DocumentIcon {...p} />
     default:
       return <></>
   }

@@ -24,8 +24,11 @@ interface ModalSheetRef extends BottomSheetMethods {
 
 interface MessagesState {
   chatModalRef: React.RefObject<ModalSheetRef>
+  mediaModalRef: React.RefObject<ModalSheetRef>
   openChatModal: () => void
   closeChatModal: () => void
+  openMediaModal: () => void
+  closeMediaModal: () => void
 }
 
 interface ProfileState {}
@@ -71,10 +74,21 @@ export const useAppStore = create<AppState>((set, get) => ({
     openChatModal: () => {
       const state = get()
       state.messages.chatModalRef.current?.expand()
+      state.messages.mediaModalRef.current?.close()
     },
     closeChatModal: () => {
       const state = get()
       state.messages.chatModalRef.current?.close()
+    },
+    mediaModalRef: createRef<ModalSheetRef>(),
+    openMediaModal: () => {
+      const state = get()
+      state.messages.mediaModalRef.current?.expand()
+      state.messages.chatModalRef.current?.close()
+    },
+    closeMediaModal: () => {
+      const state = get()
+      state.messages.mediaModalRef.current?.close()
     },
   },
   profile: {},

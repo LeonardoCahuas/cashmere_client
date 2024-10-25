@@ -1,24 +1,26 @@
 import { Colors, Icon } from '@siva/ui'
-import { StyleSheet, TextInput, View } from 'react-native'
+import { useAppStore } from 'apps/expo/app/setup/store'
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
 
 export const ChatControls = () => {
+    const { openMediaModal} = useAppStore((s) => s.messages)
     return (
         <View style={styles.container}>
-            <View>
+            <TouchableOpacity onPress={() => openMediaModal()}>
                 <Icon name="tab_plus" color={Colors.blackPrimary} width={25} height={25} />
-            </View>
+            </TouchableOpacity>
             <View style={styles.inputCont}>
                 <TextInput placeholder='Scrivi un messaggio...' style={styles.input} />
-                <View style={styles.arrow}>
+                <TouchableOpacity style={styles.arrow}>
                     <Icon name="chevron-right" color={"white"} height={15} />
-                </View>
+                </TouchableOpacity>
             </View>
-            <View>
+            <TouchableOpacity>
                 <Icon name="camera" color={Colors.greenPrimary} width={30} height={30} />
-            </View>
-            <View>
+            </TouchableOpacity>
+            <TouchableOpacity>
                 <Icon name='microphone' color={Colors.greenPrimary} width={30} height={25} />
-            </View>
+            </TouchableOpacity>
         </View>
     )
 }

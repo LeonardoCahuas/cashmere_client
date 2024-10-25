@@ -1,5 +1,5 @@
+import { Posting } from '@siva/entities'
 import ChatView, { ChatProps } from './sections'
-import { ChatHeaderProps } from './sections/ChatHeader'
 import { MessageProps } from './sections/components/Message'
 
 export interface UserProps {
@@ -71,18 +71,36 @@ export default function Screen() {
     },
   ]
 
-  const vehicle: ChatHeaderProps = {
+  const posting: Posting = {
+    id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
+    created_at: '',
+    posting_id: '',
+    duration: 'GIORNALIERO',
+    subtitle: null,
+    dropoff_location_plain: '',
+    pickup_location_plain: '',
+    deposit: '',
+    price: 1400,
+    age_required: 0,
+    distance_limit_in_km: '',
+    taxes_included: false,
+    vehicle_id: '',
     brand: 'Lamborghini',
     model: 'Huracan',
-    duration: 'GIORNALIERO',
-    price: 1400,
-    image_uri: 'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z'
+    fuel_type: '',
+    year: 0,
+    interior_material: null,
+    interior_color: null,
+    exterior_color: null,
+    transmission_type: null,
+    vehicle_images: ['https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z'],
+    renter_name: null
   }
 
   const chat: ChatProps = {
     id: "abc123",
     users: users,
-    vehicle: vehicle,
+    vehicle: posting,
     messages: messages
   }
   return <ChatView chat={chat} currentUser='1' />

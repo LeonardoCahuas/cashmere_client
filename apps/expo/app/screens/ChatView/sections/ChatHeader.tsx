@@ -1,24 +1,25 @@
+import { Posting } from '@siva/entities'
 import { Colors, Icon } from '@siva/ui'
-import { StyleSheet, View, Text, Image } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native'
 
-export interface ChatHeaderProps {
-    brand: string,
-    model: string,
-    duration: "GIORNALIERO" | "MENSILE",
-    price: number,
-    image_uri: string
-  }
-
-export const ChatHeader = ({ data }: { data: ChatHeaderProps }) => {
+export const ChatHeader = ({ data, onClick }: { data: Posting, onClick: () => void }) => {
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={onClick} activeOpacity={1}>
             <View style={styles.mediumCardContainer}>
                 <View style={styles.mediumImageContainer}>
-                    <Image
-                        source={{ uri: data.image_uri }}
-                        style={styles.mediumCardImage}
-                    />
+                    {data.vehicle_images && data.vehicle_images.length > 0 ? (
+                        <Image
+                            source={{ uri: data.vehicle_images[0] }}
+                            style={styles.mediumCardImage}
+                        />
+                    ) : (
+                        <View style={[styles.mediumCardImage, styles.placeholderImage]}>
+                            <Text style={styles.placeholderText}>
+                                {data.brand.charAt(0).toUpperCase()}
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <View style={styles.mediumCardContent}>
                     <View>
@@ -53,7 +54,7 @@ export const ChatHeader = ({ data }: { data: ChatHeaderProps }) => {
                     </View>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     )
 }
 
@@ -144,5 +145,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius:5
+    },
+    placeholderImage: {
+        backgroundColor: Colors.lightGray,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    placeholderText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: Colors.greyPrimary,
     },
 })
