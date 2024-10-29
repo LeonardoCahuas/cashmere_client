@@ -1,11 +1,16 @@
 import { linkToChat } from 'apps/expo/app/screens/ChatView/_link'
+import { useAppStore } from 'apps/expo/app/setup/store'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const Chats = () => {
+  const {setChatName} = useAppStore((s) => s.messages)
   return (
     <View style={styles.container}>
       <Text>Chat</Text>
-      <TouchableOpacity onPress={() => linkToChat()}>
+      <TouchableOpacity onPress={() => {
+        setChatName("Massimo bossetti")
+        linkToChat()
+        }}>
         <Text>
           Go to chat
         </Text>

@@ -9604,6 +9604,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-document-picker@npm:^12.0.2":
+  version: 12.0.2
+  resolution: "expo-document-picker@npm:12.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/4eb929c6751ed6f82f2f521a4c8a9e10fdfe6f3e9fd44c4f18c6103db09a84697fb923993d3d658b6560ba20ffac276a166d59822575d70d4706057c0d0a291f
+  languageName: node
+  linkType: hard
+
 "expo-eas-client@npm:~0.12.0":
   version: 0.12.0
   resolution: "expo-eas-client@npm:0.12.0"
@@ -9637,6 +9646,26 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10/2ed8d292f89208b21fece50c2d21c4272833fd37cb769e382365a9502b844c33f582ceee374ad8d3c184cc75418ca9a6daf54005de281c0a952c7f2a39b026c9
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~4.7.0":
+  version: 4.7.0
+  resolution: "expo-image-loader@npm:4.7.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/dbd87fdbf3e50b8c459e5ea985bfd20d77462229e46edefbd62b68e1676416f8608c16cf09103c2fef1bd84ecf55a1fd48f38e1954a2dd535e6f9beef04785bb
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:^15.0.7":
+  version: 15.0.7
+  resolution: "expo-image-picker@npm:15.0.7"
+  dependencies:
+    expo-image-loader: "npm:~4.7.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/6ebd8638ce41c13f63c51494d4c95a991eac31ef6625dc8c4fffa4ce4ccda3fa1bc0b4b3528995262435ddfa76080752ac7f6762c62c1122d7933a4ad85629f6
   languageName: node
   linkType: hard
 
@@ -15850,6 +15879,8 @@ __metadata:
     "@supabase/supabase-js": "npm:^2.45.4"
     check-dependency-version-consistency: "npm:^4.1.0"
     eslint: "npm:^9.3.0"
+    expo-document-picker: "npm:^12.0.2"
+    expo-image-picker: "npm:^15.0.7"
     node-gyp: "npm:^10.1.0"
     prettier: "npm:^3.2.5"
     turbo: "npm:^1.13.3"

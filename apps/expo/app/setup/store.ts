@@ -29,6 +29,8 @@ interface MessagesState {
   closeChatModal: () => void
   openMediaModal: () => void
   closeMediaModal: () => void
+  chatName: string
+  setChatName: (name: string) => void
 }
 
 interface ProfileState {}
@@ -90,6 +92,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       const state = get()
       state.messages.mediaModalRef.current?.close()
     },
+    chatName: '',
+    setChatName: (name) => set((s) => ({...s, messages: {...s.messages, chatName: name}}))
   },
   profile: {},
   detailView: {

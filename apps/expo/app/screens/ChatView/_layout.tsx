@@ -5,13 +5,13 @@ import { useAppStore } from '../../setup/store'
 
 const StackLayout = () => {
   const router = useRouter()
-  const { openChatModal } = useAppStore((s) => s.messages)
+  const { openChatModal, chatName } = useAppStore((s) => s.messages)
 
   return (
     <Stack
       screenOptions={{
         headerShown: true,
-        title: `Chat name`,
+        title: chatName,
         headerTintColor: '#000',
         headerRight: () => {
           return (
