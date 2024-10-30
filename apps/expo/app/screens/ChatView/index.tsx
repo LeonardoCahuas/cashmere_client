@@ -94,11 +94,12 @@ export default function Screen() {
     exterior_color: null,
     transmission_type: null,
     vehicle_images: ['https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z'],
-    renter_name: null
+    renter_name: null,
+    bookmarked: false
   }
 
   const chat: ChatProps = {
-    id: "abc1234",
+    id: "abc123",
     users: users,
     vehicle: posting,
     messages: messages
