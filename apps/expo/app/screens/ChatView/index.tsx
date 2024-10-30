@@ -99,7 +99,7 @@ export default function Screen() {
   }
 
   const chat: ChatProps = {
-    id: "abc1233",
+    id: "abc123",
     users: users,
     vehicle: posting,
     messages: messages
