@@ -55,7 +55,7 @@ export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatC
                     {selectedMedia.map((media, index) => (
                         <View key={index} style={styles.imageWrapper}>
                             {media.type === 'image' ? (
-                                <Image source={{ uri: media.uri }} style={styles.imagePreview} />
+                                <Image source={{ uri: media.base64 }} style={styles.imagePreview} />
                             ) : (
                                 <View style={styles.documentPreview}>
                                     <Icon name="document" color={Colors.blackPrimary} width={30} height={30} />
@@ -74,7 +74,7 @@ export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatC
                     ))}
                 </ScrollView>
             )}
-            <View style={[styles.container, !isKeyboardOpen ? { paddingBottom: 50 } : {paddingBottom: 20}]}>
+            <View style={[styles.container, !isKeyboardOpen ? { paddingBottom: 50 } : { paddingBottom: 20 }]}>
                 <TouchableOpacity
                     onPress={handlePlusPress}
                     disabled={selectedMedia.length >= 5}
@@ -190,4 +190,4 @@ const styles = StyleSheet.create({
         marginTop: 4,
         maxWidth: 60,
     },
-})
+});

@@ -23,7 +23,7 @@ export interface ChatProps {
 }
 
 export interface MediaItem {
-  uri: string;
+  base64: string;
   type: 'image' | 'document';
   name?: string;
   size?: number;
@@ -68,7 +68,6 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
         case 'camera': {
           const { status } = await ImagePicker.requestCameraPermissionsAsync();
           if (status !== 'granted') return;
-          
 
           const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -77,8 +76,9 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
           });
 
           if (!result.canceled && result.assets[0]) {
+            const base64 = await getBase64(result.assets[0].uri);
             setSelectedMedia(prev => [...prev, {
-              uri: result.assets[0].uri,
+              base64: base64,
               type: 'image',
               name: result.assets[0].fileName ?? undefined,
               size: result.assets[0].fileSize
@@ -101,16 +101,19 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
 
           if (!result.canceled && result.assets) {
             const remainingSlots = 5 - selectedMedia.length;
-            const newMedia = result.assets
+            const newMedia: MediaItem[] = await Promise.all(result.assets
               .slice(0, remainingSlots)
-              .map(asset => ({
-                uri: asset.uri,
-                type: 'image' as const,
-                name: asset.fileName,
-                size: asset.fileSize
-              })) as MediaItem[];
+              .map(async asset => {
+                const base64 = await getBase64(asset.uri);
+                return {
+                  base64: base64,
+                  type: 'image',
+                  name: asset.fileName,
+                  size: asset.fileSize
+                } as MediaItem;
+              }));
 
-            setSelectedMedia(prev => [...prev, ...newMedia]);
+            setSelectedMedia((prev) => ([...prev, ...newMedia]));
           }
           break;
         }
@@ -127,8 +130,9 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
 
             if (document.size && document.size > 3 * 1024 * 1024 * 1024) return;
 
+            const base64 = await getBase64(document.uri);
             setSelectedMedia(prev => [...prev, {
-              uri: document.uri,
+              base64: base64,
               type: 'document',
               name: document.name,
               size: document.size
@@ -141,6 +145,19 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
     } catch (err) {
       console.error('errore nella selezione del documento:', err);
     }
+  };
+
+  const getBase64 = async (uri: string) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
   };
 
   const mediaOptions: ModalOptions = {
