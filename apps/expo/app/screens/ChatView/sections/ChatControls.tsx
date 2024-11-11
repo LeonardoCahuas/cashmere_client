@@ -1,10 +1,8 @@
-import { Colors, Icon } from '@siva/ui'
-import { useAppStore } from 'apps/expo/app/setup/store'
-import { StyleSheet, TextInput, TouchableOpacity, View, Image, ScrollView, Text } from 'react-native'
-import { Keyboard } from 'react-native';
-import { MediaItem } from '.';
+import { Colors, Icon } from '@siva/ui';
+import { useAppStore } from 'apps/expo/app/setup/store';
 import { useEffect, useState } from 'react';
-import { LayoutAnimation } from 'react-native';
+import { Image, Keyboard, LayoutAnimation, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MediaItem } from '.';
 
 interface ChatControlsProps {
     selectedMedia: MediaItem[];
@@ -74,7 +72,7 @@ export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatC
                     ))}
                 </ScrollView>
             )}
-            <View style={[styles.container, !isKeyboardOpen ? { paddingBottom: 50 } : { paddingBottom: 20 }]}>
+            <View style={[styles.container, !isKeyboardOpen ? { paddingBottom: 50 } : { paddingBottom: 12 }]}>
                 <TouchableOpacity
                     onPress={handlePlusPress}
                     disabled={selectedMedia.length >= 5}
@@ -99,9 +97,9 @@ export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatC
                 {message.length < 1 && <TouchableOpacity onPress={() => onAddMedia('camera')}>
                     <Icon name="camera" color={Colors.greenPrimary} width={30} height={30} />
                 </TouchableOpacity>}
-                {message.length < 1 && <TouchableOpacity>
+                {/* {message.length < 1 && <TouchableOpacity>
                     <Icon name='microphone' color={Colors.greenPrimary} width={30} height={25} />
-                </TouchableOpacity>}
+                </TouchableOpacity>} */}
             </View>
         </>
     )
@@ -123,12 +121,14 @@ const styles = StyleSheet.create({
     input: {
         color: Colors.blackPrimary,
         flex: 1,
+        fontSize: 16
     },
     inputCont: {
         flex: 1,
         borderRadius: 20,
         backgroundColor: Colors.lightGray,
-        paddingHorizontal: 10,
+        paddingRight: 6,
+        paddingLeft: 8,
         paddingVertical: 5,
         flexDirection: "row",
         alignItems: "center",

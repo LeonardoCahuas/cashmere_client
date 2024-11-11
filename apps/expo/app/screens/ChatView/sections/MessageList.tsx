@@ -6,7 +6,7 @@ import { Colors } from "@siva/ui"
 
 const MessageRenderer = ({ data, from, user }: { data: MessageProps, from: boolean, user: UserProps | undefined }) => {
     return (
-        <View style={[styles.messageWrapper, { alignItems: from ? "flex-start" : "flex-end", marginVertical: 10 }]}>
+        <View style={[styles.messageWrapper, { alignItems: from ? "flex-start" : "flex-end" }]}>
             <Message data={data} isIncoming={from} user={user} />
         </View>)
 }

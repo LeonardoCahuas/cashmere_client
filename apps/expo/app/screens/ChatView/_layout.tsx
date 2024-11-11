@@ -11,7 +11,7 @@ const StackLayout = () => {
     <Stack
       screenOptions={{
         headerShown: true,
-        title: chatName,
+        title: chatName.split(' ').map((w) => w[0].toUpperCase() + w.slice(1)).join(' '),
         headerTintColor: '#000',
         headerRight: () => {
           return (

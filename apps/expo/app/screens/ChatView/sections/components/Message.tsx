@@ -1,5 +1,5 @@
-import { View, StyleSheet, Image, Text } from "react-native"
 import { Colors } from "@siva/ui"
+import { Image, StyleSheet, Text, View } from "react-native"
 import { UserProps } from "../.."
 
 export interface MessageProps {
@@ -32,7 +32,7 @@ export const Message = ({ data, isIncoming, user }: { data: MessageProps, isInco
             <View style={isIncoming ? styles.messageIncoming : styles.messageOutgoing}>
                 <Text style={styles.time}>{time}</Text>
                 <View style={[styles.content, isIncoming ? styles.contentIncoming : styles.contentOutgoing]}>
-                    <Text style={{ color: isIncoming ? Colors.blackPrimary : "white" }}>{data.content}</Text>
+                    <Text style={{ color: isIncoming ? Colors.blackPrimary : "white", lineHeight: 22, fontSize: 15 }}>{data.content}</Text>
                 </View>
             </View>
         </View>
