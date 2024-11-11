@@ -204,7 +204,7 @@ const PostingDetails = () => {
                   <ModalInput<ModalKeys>
                     value={posting?.deposit ? `€ ${posting?.deposit}` : ''}
                     title="Anticipo"
-                    placeholder="$100"
+                    placeholder="Nessun anticipo"
                     style={{ width: (width - 64) / 2 }}
                     mapKey="deposit"
                     index={0}
@@ -216,7 +216,7 @@ const PostingDetails = () => {
                       posting?.distance_limit_in_km ? `${posting?.distance_limit_in_km} km` : ''
                     }
                     title="Limite km annuale"
-                    placeholder="0 km"
+                    placeholder="Nessun limite"
                     style={{ width: (width - 64) / 2 }}
                     mapKey="km_limit"
                     index={0}
