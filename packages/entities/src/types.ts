@@ -7,10 +7,10 @@ export interface Posting {
   subtitle: string | null
   dropoff_location_plain: string
   pickup_location_plain: string
-  deposit: string
+  deposit: string | null
   price: number
   age_required: number
-  distance_limit_in_km: string
+  distance_limit_in_km: string | null
   taxes_included: boolean
   vehicle_id: string
   brand: string

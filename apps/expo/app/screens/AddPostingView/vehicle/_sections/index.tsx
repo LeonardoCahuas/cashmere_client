@@ -139,7 +139,7 @@ const Vehicle = () => {
     input: 0,
   })
 
-  const openModal = ({ mapKey, type, index }: InputObject) => {
+  const openModal = ({ mapKey, type, index }: InputObject<AddModalKey>) => {
     setConfig({ key: mapKey, type, input: index })
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {

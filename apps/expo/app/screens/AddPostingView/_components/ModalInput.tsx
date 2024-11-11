@@ -8,21 +8,25 @@ export type AddModalKey =
   | 'engine'
   | 'equipment'
 
-export type InputObject = { mapKey: AddModalKey; index: number; type: 'single' | 'multi' }
+export type InputObject<ModalKeys = AddModalKey> = {
+  mapKey: ModalKeys
+  index: number
+  type: 'single' | 'multi'
+}
 
-export interface ModalInputProps {
+export interface ModalInputProps<Keys = AddModalKey> {
   title: string
   placeholder?: string
   value: string | undefined
   note?: string
-  mapKey: AddModalKey
+  mapKey: Keys
   index: number
   type: 'single' | 'multi'
-  onPress?: (obj: InputObject) => void
+  onPress?: (obj: InputObject<Keys>) => void
   style?: ViewStyle
 }
 
-export const ModalInput = ({
+export const ModalInput = <T = AddModalKey,>({
   title,
   placeholder,
   note,
@@ -32,7 +36,7 @@ export const ModalInput = ({
   type,
   onPress,
   style,
-}: ModalInputProps) => {
+}: ModalInputProps<T>) => {
   return (
     <View style={{ ...styles.container, ...style }}>
       <Text style={styles.title}>{title}</Text>
