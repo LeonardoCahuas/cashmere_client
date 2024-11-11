@@ -33,7 +33,7 @@ const PostingDetails = () => {
   const ref = useModalSheetRef()
 
   const [page, setPage] = useState<ModalKeys>('km_limit')
-  const [step, setStep] = useState('initial')
+  const step = 'initial'
   const openModal = ({ mapKey, type, index }: InputObject<ModalKeys>) => {
     setPage(mapKey)
     ref.current?.expand()
