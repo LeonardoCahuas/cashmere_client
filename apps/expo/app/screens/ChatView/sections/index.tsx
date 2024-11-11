@@ -1,121 +1,124 @@
+import { Posting } from '@siva/entities'
+import { Colors, Icon } from '@siva/ui'
+import { ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
+import { HorizontalModalSheet } from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
+import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
+import { useAppStore } from 'apps/expo/app/setup/store'
+import * as DocumentPicker from 'expo-document-picker'
+import * as ImagePicker from 'expo-image-picker'
+import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
+import { UserProps } from '..'
+import { linkToDetail } from '../../PostingDetailView/_link'
 import { ChatControls } from './ChatControls'
 import { ChatHeader } from './ChatHeader'
 import { MessageList } from './MessageList'
-import { UserProps } from '..'
 import { MessageProps } from './components/Message'
-import { ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
-import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
-import { useAppStore } from 'apps/expo/app/setup/store'
-import { Colors, Icon } from '@siva/ui'
-import { linkToDetail } from '../../PostingDetailView/_link'
-import { Posting } from '@siva/entities'
-import { HorizontalModalSheet } from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
-import * as ImagePicker from 'expo-image-picker'
-import { useState } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
 
-export interface ChatProps {
+export interface ChatViewProps {
   id: string
   users: UserProps[]
-  vehicle: Posting | null
+  posting: Posting | null
   messages: MessageProps[]
 }
 
 export interface MediaItem {
-  base64: string;
-  type: 'image' | 'document';
-  name?: string;
-  size?: number;
+  base64: string
+  type: 'image' | 'document'
+  name?: string
+  size?: number
 }
 
-const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string }) => {
+const ChatView = ({ chat, currentUser }: { chat: ChatViewProps; currentUser: string }) => {
   const { chatModalRef, mediaModalRef } = useAppStore((s) => s.messages)
-  const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([]);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
 
   const options: ModalOptions = {
     options: [
       {
         label: 'Attiva notifiche',
         icon: <Icon name="notifications" color={Colors.blackPrimary} />,
-        action: () => { }
+        action: () => {},
       },
       {
         label: 'Blocca utente',
         icon: <Icon name="block" color={Colors.blackPrimary} />,
-        action: () => { }
+        action: () => {},
       },
       {
         label: 'Segnala utente',
         icon: <Icon name="report" color={Colors.blackPrimary} />,
-        action: () => { }
+        action: () => {},
       },
       {
         label: 'Elimina chat',
-        icon: <Icon name="trash" color={"red"} />,
-        action: () => { }
+        icon: <Icon name="trash" color={'red'} />,
+        action: () => {},
       },
-    ]
+    ],
   }
 
   const handleRemoveMedia = (index: number) => {
-    setSelectedMedia(prev => prev.filter((_, i) => i !== index));
-  };
+    setSelectedMedia((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const handleMediaSelect = async (type: 'camera' | 'gallery' | 'document') => {
     try {
       switch (type) {
         case 'camera': {
-          const { status } = await ImagePicker.requestCameraPermissionsAsync();
-          if (status !== 'granted') return;
+          const { status } = await ImagePicker.requestCameraPermissionsAsync()
+          if (status !== 'granted') return
 
           const result = await ImagePicker.launchCameraAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             quality: 1,
-          });
+          })
 
           if (!result.canceled && result.assets[0]) {
-            const base64 = await getBase64(result.assets[0].uri);
-            setSelectedMedia(prev => [...prev, {
-              base64: base64,
-              type: 'image',
-              name: result.assets[0].fileName ?? undefined,
-              size: result.assets[0].fileSize
-            }]);
+            const base64 = await getBase64(result.assets[0].uri)
+            setSelectedMedia((prev) => [
+              ...prev,
+              {
+                base64: base64,
+                type: 'image',
+                name: result.assets[0].fileName ?? undefined,
+                size: result.assets[0].fileSize,
+              },
+            ])
           }
-          break;
+          break
         }
 
         case 'gallery': {
-          if (selectedMedia.length >= 5) return;
+          if (selectedMedia.length >= 5) return
 
-          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-          if (status !== 'granted') return;
+          const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+          if (status !== 'granted') return
 
           const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             quality: 1,
             allowsMultipleSelection: true,
-          });
+          })
 
           if (!result.canceled && result.assets) {
-            const remainingSlots = 5 - selectedMedia.length;
-            const newMedia: MediaItem[] = await Promise.all(result.assets
-              .slice(0, remainingSlots)
-              .map(async asset => {
-                const base64 = await getBase64(asset.uri);
+            const remainingSlots = 5 - selectedMedia.length
+            const newMedia: MediaItem[] = await Promise.all(
+              result.assets.slice(0, remainingSlots).map(async (asset) => {
+                const base64 = await getBase64(asset.uri)
                 return {
                   base64: base64,
                   type: 'image',
                   name: asset.fileName,
-                  size: asset.fileSize
-                } as MediaItem;
-              }));
+                  size: asset.fileSize,
+                } as MediaItem
+              })
+            )
 
-            setSelectedMedia((prev) => ([...prev, ...newMedia]));
+            setSelectedMedia((prev) => [...prev, ...newMedia])
           }
-          break;
+          break
         }
 
         case 'document': {
@@ -123,62 +126,65 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
             type: '*/*',
             multiple: false,
             copyToCacheDirectory: true,
-          });
+          })
 
           if (result.assets && result.assets[0]) {
-            const document = result.assets[0];
+            const document = result.assets[0]
 
-            if (document.size && document.size > 3 * 1024 * 1024 * 1024) return;
+            if (document.size && document.size > 3 * 1024 * 1024 * 1024) return
 
-            const base64 = await getBase64(document.uri);
-            setSelectedMedia(prev => [...prev, {
-              base64: base64,
-              type: 'document',
-              name: document.name,
-              size: document.size
-            }]);
+            const base64 = await getBase64(document.uri)
+            setSelectedMedia((prev) => [
+              ...prev,
+              {
+                base64: base64,
+                type: 'document',
+                name: document.name,
+                size: document.size,
+              },
+            ])
           }
-          break;
+          break
         }
       }
-      mediaModalRef.current?.close();
+      mediaModalRef.current?.close()
     } catch (err) {
-      console.error('errore nella selezione del documento:', err);
+      console.error('errore nella selezione del documento:', err)
     }
-  };
+  }
 
   const getBase64 = async (uri: string) => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
+    const response = await fetch(uri)
+    const blob = await response.blob()
     return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onloadend = () => {
-        resolve(reader.result as string);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  };
+        resolve(reader.result as string)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  }
 
   const mediaOptions: ModalOptions = {
     options: [
       {
         label: 'Fotocamera',
         icon: <Icon name="camera" color={Colors.blackPrimary} width={30} height={30} />,
-        action: () => handleMediaSelect('camera')
+        action: () => handleMediaSelect('camera'),
       },
       {
         label: 'Galleria',
         icon: <Icon name="gallery" color={Colors.blackPrimary} width={30} height={30} />,
-        action: () => handleMediaSelect('gallery')
+        action: () => handleMediaSelect('gallery'),
       },
       {
         label: 'Documento',
         icon: <Icon name="document" color={Colors.blackPrimary} width={30} height={30} />,
-        action: () => handleMediaSelect('document')
+        action: () => handleMediaSelect('document'),
       },
-    ]
-  };
+    ],
+  }
 
   const handlePress = (posting: Posting | null) => {
     if (!posting) return
@@ -188,18 +194,20 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
   return (
     <ModalSheetProvider>
       <View style={styles.container}>
-        {chat.vehicle && <ChatHeader data={chat.vehicle} onClick={() => handlePress(chat?.vehicle)} />}
+        {chat.posting && (
+          <ChatHeader data={chat.posting} onClick={() => handlePress(chat?.posting)} />
+        )}
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
           <MessageList id={currentUser} messages={chat.messages} users={chat.users} />
           <ChatControls
             selectedMedia={selectedMedia}
-            onRemoveMedia={handleRemoveMedia} 
-            onAddMedia={handleMediaSelect} 
-            />
+            onRemoveMedia={handleRemoveMedia}
+            onAddMedia={handleMediaSelect}
+          />
         </KeyboardAvoidingView>
       </View>
       <ModalSheet ref={chatModalRef} title="Azioni" options={options} />
@@ -211,11 +219,11 @@ const ChatView = ({ chat, currentUser }: { chat: ChatProps, currentUser: string 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white"
+    backgroundColor: 'white',
   },
   keyboardAvoidingView: {
-    flex: 1
-  }
+    flex: 1,
+  },
 })
 
 export default ChatView
