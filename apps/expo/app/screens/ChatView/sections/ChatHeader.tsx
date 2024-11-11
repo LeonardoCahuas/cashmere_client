@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
         resizeMode: 'cover',
         borderRadius: 8
     },
-
     mediumCardContent: {
         flex:1,
         paddingHorizontal: 6,
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems:"flex-start",
-        gap:5
+        gap: 8
     },
     durationText: {
         color: Colors.greenPrimary,
@@ -112,8 +111,8 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     mediumCardTitle: {
-        fontSize: 16,
-        fontWeight: '300',
+        fontSize: 15,
+        fontWeight: '400',
     },
     mediumCardSubtitle: {
         fontSize: 15,
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     mediumPriceAmount: {
-        fontSize: 17,
+        fontSize: 15,
         color: Colors.blackPrimary,
         fontWeight: '500',
         marginRight: 3,
