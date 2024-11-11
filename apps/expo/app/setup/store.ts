@@ -82,7 +82,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
   },
   add: {
-    posting: { duration: 'long_term', vehicle_type: 'car' },
+    posting: {
+      duration: 'long_term',
+      vehicle_type: 'car',
+      vehicle_images: [
+        'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg',
+      ],
+    },
     setPosting: (posting) => {
       set((state) => ({
         ...state,

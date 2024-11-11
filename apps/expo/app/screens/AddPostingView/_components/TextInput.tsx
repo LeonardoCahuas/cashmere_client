@@ -1,13 +1,20 @@
 import { Colors } from '@siva/ui'
-import { TextInput as RNTextInput, StyleSheet, Text, View } from 'react-native'
+import {
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native'
 
-interface TextInputProps {
+interface TextInputProps extends Omit<RNTextInputProps, 'onChange'> {
   title?: string
   placeholder?: string
   note?: string
   value: string
   onChange: (text: string) => void
   containerStyle?: any
+  addOn?: string
 }
 
 export const TextInput = ({
@@ -17,6 +24,8 @@ export const TextInput = ({
   value,
   onChange,
   containerStyle = {},
+  addOn,
+  ...props
 }: TextInputProps) => {
   return (
     <View style={{ ...styles.container, ...containerStyle }}>
@@ -28,6 +37,7 @@ export const TextInput = ({
         autoCapitalize="none"
         style={styles.input}
         keyboardType="numeric"
+        {...props}
       />
       {note && <Text style={styles.noteText}>{note}</Text>}
     </View>

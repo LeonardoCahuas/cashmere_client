@@ -1,10 +1,13 @@
-import { Colors } from '@siva/ui'
+import { Colors, PostingCard } from '@siva/ui'
+import { BooleanSelect } from 'apps/expo/app/components/BooleanSelect'
 import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
 import { ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
+import { SecondaryButton } from 'apps/expo/app/components/SecondaryButton'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ModalInput } from '../../_components/ModalInput'
 import { PageLayout } from '../../_components/PageLayout'
+import { Section } from '../../_components/Section'
 import { TextInput } from '../../_components/TextInput'
 import { WhiteSection } from './WhiteSection'
 
@@ -14,6 +17,8 @@ const PostingDetails = () => {
   const { posting } = useAppStore((s) => s.add)
   const ref = useModalSheetRef()
   const images = ['uno', 'due', 'tre', 'quattro', 'cinque', 'sei', 'sette', 'otto', 'nove']
+
+  const handleSelectImage = async () => {}
 
   return (
     <ModalSheetProvider>
@@ -81,14 +86,14 @@ const PostingDetails = () => {
                     title="Prezzo al mese"
                     onChange={() => {}}
                     placeholder=""
-                    containerStyle={{ width: (width - 60) / 2 }}
+                    containerStyle={{ width: (width - 64) / 2 }}
                   />
                   <TextInput
                     value={''}
                     title="Durata noleggio"
                     onChange={() => {}}
                     placeholder=""
-                    containerStyle={{ width: (width - 60) / 2 }}
+                    containerStyle={{ width: (width - 64) / 2 }}
                   />
                 </View>
                 {/*  */}
@@ -98,7 +103,7 @@ const PostingDetails = () => {
                     title="Anticipo"
                     onChange={() => {}}
                     placeholder=""
-                    containerStyle={{ width: (width - 60) / 2 }}
+                    containerStyle={{ width: (width - 64) / 2 }}
                   />
                   <ModalInput
                     title={'Limite km annuale'}
@@ -106,12 +111,57 @@ const PostingDetails = () => {
                     mapKey={'main_details'}
                     index={0}
                     type={'single'}
-                    style={{ width: (width - 60) / 2 }}
+                    style={{ width: (width - 64) / 2 }}
                   />
                 </View>
+                {/* IVA */}
+                <BooleanSelect label="IVA Detraibile" selected={true} setSelected={() => {}} />
               </View>
             </HorizontalPadding>
           </WhiteSection>
+
+          <WhiteSection>
+            <HorizontalPadding>
+              <View style={{ display: 'flex', gap: 20 }}>
+                <TextInput
+                  value={''}
+                  title="Numero di telefono"
+                  onChange={() => {}}
+                  placeholder="(Es: Versione, Prezzo + IVA, offerta limitata etc.)"
+                />
+                <SecondaryButton>Aggiungi numero di telefono</SecondaryButton>
+                <BooleanSelect
+                  label="Nascondi numero di telefono"
+                  selected={true}
+                  setSelected={() => {}}
+                />
+              </View>
+            </HorizontalPadding>
+          </WhiteSection>
+
+          {/* Description */}
+          <WhiteSection>
+            <HorizontalPadding>
+              <TextInput
+                value={''}
+                title="Descrizione"
+                onChange={() => {}}
+                placeholder="Inserisci tutto ciò che reputi importante
+                per il veicolo (max 700 caratteri)"
+                multiline
+                numberOfLines={8}
+                style={styles.textArea}
+              />
+            </HorizontalPadding>
+          </WhiteSection>
+
+          <Section
+            title="Anteprima annuncio"
+            icon="citycar"
+            subtitle="Visualizza l’anteprima del tuo annuncio prima di pubblicarlo"
+          >
+            <PostingCard.Large posting={posting} onCardClick={() => {}} />
+          </Section>
         </View>
       </PageLayout>
       <ModalSheet ref={ref}>{}</ModalSheet>
@@ -167,6 +217,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     gap: 20,
     marginTop: 20,
+  },
+  textArea: {
+    height: 160,
+    borderWidth: 1,
+    borderRadius: 6,
+    borderColor: Colors.greySecondary,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    width: '100%',
   },
 })
 
