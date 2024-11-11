@@ -1,5 +1,5 @@
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import { Posting } from '@siva/entities'
+import { Posting, Vehicle } from '@siva/entities'
 import { createRef } from 'react'
 import { create } from 'zustand'
 
@@ -33,6 +33,12 @@ interface DetailViewState {
   setIsBookmarked: (v: boolean) => void
 }
 
+interface AddState {
+  posting: Partial<Posting>
+  setPosting: (posting: Partial<Posting>) => void
+  setVehicle: (vehicle: Partial<Vehicle>) => void
+}
+
 interface AppState {
   home: HomeState
   search: SearchState
@@ -40,6 +46,7 @@ interface AppState {
   messages: MessagesState
   profile: ProfileState
   detailView: DetailViewState
+  add: AddState
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -72,6 +79,30 @@ export const useAppStore = create<AppState>((set, get) => ({
     isBookmarked: false,
     setIsBookmarked: (updated) => {
       set((state) => ({ ...state, detailView: { ...state.detailView, isBookmarked: updated } }))
+    },
+  },
+  add: {
+    posting: {
+      duration: 'long_term',
+      vehicle_type: 'car',
+      vehicle_images: [
+        'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/1.jpg',
+      ],
+    },
+    setPosting: (posting) => {
+      set((state) => ({
+        ...state,
+        add: { ...state.add, posting: { ...state.add.posting, ...posting } },
+      }))
+    },
+    setVehicle: (vehicle) => {
+      set((state) => ({
+        ...state,
+        add: {
+          ...state.add,
+          posting: { ...state.add.posting, vehicle: { ...state.add.posting.vehicle, ...vehicle } },
+        },
+      }))
     },
   },
 }))

@@ -2,8 +2,9 @@ import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/botto
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
 import { Colors, Icon } from '@siva/ui'
 import React, { forwardRef, useCallback, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Keyboard, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
+/** Page in a Multi-Step Modal */
 export type ModalPage = { [key: string]: ModalStep }
 
 export interface ModalStep {
@@ -16,7 +17,7 @@ export interface ModalStep {
   containerStyle?: any
 }
 
-interface MultiModalSheetProps {
+export interface MultiModalSheetProps {
   onChange?: (index: number) => void
   onClose?: () => void
   pages: { [key: string]: ModalStep }
@@ -26,19 +27,24 @@ interface MultiModalSheetProps {
 
 export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalSheetProps>(
   ({ onClose, onChange, pages, step, setStep }, ref) => {
+    const padding = 164
     const renderBackdrop = useCallback(
       (props) => (
         <BottomSheetBackdrop
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
-          onPress={() => (ref as React.RefObject<BottomSheetMethods>).current?.close()}
+          onPress={() => {
+            Keyboard.dismiss()
+            ;(ref as React.RefObject<BottomSheetMethods>).current?.close()
+          }}
         />
       ),
       [ref]
     )
-    const padding = 164
     const [size, setSize] = useState({ width: 0, height: 0 })
+
+    if (pages == undefined || step == undefined || !setStep || !pages[step]) return null
 
     return (
       <BottomSheet
@@ -46,10 +52,10 @@ export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalShee
         index={-1}
         snapPoints={[size.height + padding]}
         onChange={onChange}
-        onClose={onClose}
-        handleComponent={null}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
+        handleComponent={null}
+        onClose={onClose}
         backgroundStyle={{ borderRadius: 0 }}
       >
         <BottomSheetView style={modalStyles.contentContainer}>
@@ -70,17 +76,34 @@ export const MultiStepModalSheet = forwardRef<BottomSheetMethods, MultiModalShee
               />
             </TouchableOpacity>
             <Text style={modalStyles.title}>{pages[step].title}</Text>
-            <TouchableOpacity
-              style={modalStyles.rightIconContainer}
-              onPress={() => {
-                if (pages[step] && pages[step]?.onReset) {
+            {!pages[step]?.onReset && !pages[step]?.doneButton && (
+              <TouchableOpacity style={modalStyles.rightIconContainer}></TouchableOpacity>
+            )}
+            {pages[step]?.onReset && !pages[step]?.doneButton && (
+              <TouchableOpacity
+                style={modalStyles.rightIconContainer}
+                onPress={() => {
+                  if (pages[step] && pages[step]?.onReset) {
+                    // @ts-ignore
+                    pages[step].onReset()
+                  }
+                }}
+              >
+                {pages[step]?.onReset && <Text style={{ color: '#FE0034' }}>Azzera</Text>}
+              </TouchableOpacity>
+            )}
+            {!pages[step]?.onReset && pages[step]?.doneButton && (
+              <TouchableOpacity
+                style={modalStyles.rightIconContainer}
+                onPress={() => {
+                  Keyboard.dismiss()
                   // @ts-ignore
-                  pages[step].onReset()
-                }
-              }}
-            >
-              {pages[step]?.onReset && <Text style={{ color: '#FE0034' }}>Azzera</Text>}
-            </TouchableOpacity>
+                  ref?.current?.close()
+                }}
+              >
+                <Text style={{ color: Colors.greenPrimary }}>Salva</Text>
+              </TouchableOpacity>
+            )}
           </View>
           {pages[step] && !pages[step]?.scrollable && (
             <View
@@ -151,6 +174,7 @@ const modalStyles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 16,
   },
   rightIconContainer: {
     width: 64,
