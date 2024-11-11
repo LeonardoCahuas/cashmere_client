@@ -29,12 +29,7 @@ export const ChatHeader = ({ data, onClick }: { data: Posting, onClick: () => vo
                     </View>
 
                     <View
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: 6,
-                        }}
+                        style={styles.priceRow}
                     >
                         <View style={styles.mediumPriceContainer}>
                             <Text style={styles.mediumPriceAmount}>€{data.price}</Text>
@@ -143,7 +138,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.lightGray,
         paddingHorizontal: 8,
         paddingVertical: 3,
-        borderRadius:5
+        borderRadius:5,
+        marginTop: 1
     },
     placeholderImage: {
         backgroundColor: Colors.lightGray,
@@ -155,4 +151,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.greyPrimary,
     },
+    priceRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    }
 })
