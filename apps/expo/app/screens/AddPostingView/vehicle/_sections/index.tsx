@@ -511,9 +511,8 @@ const Vehicle = () => {
             label,
             action: () => {
               let optionals = posting?.vehicle?.optionals ?? []
-              const set = new Set(optionals)
-              set.add(value)
-              optionals = Array.from(set)
+              optionals.push(value)
+              optionals = Array.from(new Set(optionals))
               setVehicle({ optionals })
             },
           })),

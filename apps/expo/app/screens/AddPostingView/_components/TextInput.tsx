@@ -7,11 +7,19 @@ interface TextInputProps {
   note?: string
   value: string
   onChange: (text: string) => void
+  containerStyle?: any
 }
 
-export const TextInput = ({ title, placeholder, note, value, onChange }: TextInputProps) => {
+export const TextInput = ({
+  title,
+  placeholder,
+  note,
+  value,
+  onChange,
+  containerStyle = {},
+}: TextInputProps) => {
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, ...containerStyle }}>
       {title && <Text style={styles.title}>{title}</Text>}
       <RNTextInput
         placeholder={placeholder}

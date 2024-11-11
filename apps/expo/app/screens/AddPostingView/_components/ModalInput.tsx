@@ -1,5 +1,5 @@
 import { Colors, Icon } from '@siva/ui'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 
 export type AddModalKey =
   | 'main_details'
@@ -19,6 +19,7 @@ export interface ModalInputProps {
   index: number
   type: 'single' | 'multi'
   onPress?: (obj: InputObject) => void
+  style?: ViewStyle
 }
 
 export const ModalInput = ({
@@ -30,9 +31,10 @@ export const ModalInput = ({
   index,
   type,
   onPress,
+  style,
 }: ModalInputProps) => {
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container, ...style }}>
       <Text style={styles.title}>{title}</Text>
       <TouchableOpacity
         style={styles.box}
