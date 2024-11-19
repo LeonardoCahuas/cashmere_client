@@ -1,5 +1,4 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { NativeToast } from '@siva/ui/src/NativeToast'
 import { Provider as AppProvider } from 'app/provider'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
@@ -39,7 +38,7 @@ export function Provider({ children }: PropsWithChildren) {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <AuthProvider>
             {children}
-            <NativeToast />
+            {/* <NativeToast /> */}
           </AuthProvider>
         </ThemeProvider>
       </AppProvider>

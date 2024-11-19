@@ -3,35 +3,55 @@ import { Colors, Icon } from '@siva/ui'
 import { ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
 import { HorizontalModalSheet } from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
 import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
+import { LOGGED_USER } from 'apps/expo/app/setup/auth/seed'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import * as DocumentPicker from 'expo-document-picker'
 import * as ImagePicker from 'expo-image-picker'
 import { useState } from 'react'
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native'
-import { UserProps } from '..'
 import { linkToDetail } from '../../PostingDetailView/_link'
 import { ChatControls } from './ChatControls'
 import { ChatHeader } from './ChatHeader'
 import { MessageList } from './MessageList'
-import { MessageProps } from './components/Message'
+import { useChatMessages } from './_query'
 
-export interface ChatViewProps {
-  id: string
-  users: UserProps[]
-  posting: Posting | null
-  messages: MessageProps[]
+const mock_posting: Posting = {
+  id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
+  created_at: '',
+  posting_id: '',
+  duration: 'GIORNALIERO',
+  subtitle: null,
+  dropoff_location_plain: '',
+  pickup_location_plain: '',
+  deposit: '',
+  price: 1400,
+  age_required: 0,
+  distance_limit_in_km: '',
+  taxes_included: false,
+  vehicle_id: '',
+  brand: 'Lamborghini',
+  model: 'Huracan',
+  fuel_type: '',
+  year: 0,
+  interior_material: null,
+  interior_color: null,
+  exterior_color: null,
+  transmission_type: null,
+  vehicle_images: [
+    'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
+  ],
+  renter_name: null,
+  bookmarked: false,
 }
 
-export interface MediaItem {
-  base64: string
-  type: 'image' | 'document'
-  name?: string
-  size?: number
-}
+const chatId = '93b858d7-1444-41ae-8f21-e76eb01f236b'
+const topic = `$siva-api/rodrigoweilg/chat/room/${chatId}`
 
-const ChatView = ({ chat, currentUser }: { chat: ChatViewProps; currentUser: string }) => {
+const ChatView = () => {
+  const currentUser = LOGGED_USER.id
   const { chatModalRef, mediaModalRef } = useAppStore((s) => s.messages)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
+  const [msgs, setMsgs] = useState<string[]>([])
 
   const options: ModalOptions = {
     options: [
@@ -191,18 +211,25 @@ const ChatView = ({ chat, currentUser }: { chat: ChatViewProps; currentUser: str
     linkToDetail(posting)
   }
 
+  const { data, isLoading } = useChatMessages(chatId)
+
+  if (isLoading || !data) return null
+
+  const endpoint = 'ac2qzaykkdte7-ats.iot.us-east-1.amazonaws.com'
+  const authorizer = 'siva-api-rodrigoweilg-LiveStreamAuthorizer'
+
   return (
     <ModalSheetProvider>
       <View style={styles.container}>
-        {chat.posting && (
-          <ChatHeader data={chat.posting} onClick={() => handlePress(chat?.posting)} />
+        {mock_posting && (
+          <ChatHeader data={mock_posting} onClick={() => handlePress(mock_posting)} />
         )}
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboardAvoidingView}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          <MessageList id={currentUser} messages={chat.messages} users={chat.users} />
+          <MessageList id={currentUser} messages={data.messages} users={data.users} />
           <ChatControls
             selectedMedia={selectedMedia}
             onRemoveMedia={handleRemoveMedia}
@@ -227,3 +254,10 @@ const styles = StyleSheet.create({
 })
 
 export default ChatView
+
+export interface MediaItem {
+  base64: string
+  type: 'image' | 'document'
+  name?: string
+  size?: number
+}

@@ -1,5 +1,6 @@
 {
   "expo": {
+    "newArchEnabled": true,
     "name": "Siva24",
     "slug": "Siva24",
     "scheme": "siva24",
