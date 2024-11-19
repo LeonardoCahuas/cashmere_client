@@ -14,12 +14,11 @@ interface ModalOption {
   action: () => void
 }
 
-export interface ModalOptions {
-  options: Array<ModalOption>
-}
+/** Options for a single-step Modal Sheet */
+export type ModalOptions = Array<ModalOption>
 
 export interface ModalSheetProps {
-  title: string
+  title?: string
   options?: ModalOptions
   onChange?: (index: number) => void
   onClose?: () => void
@@ -53,16 +52,12 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
         handleComponent={null}
-        onClose={() => {
-          if (onClose) {
-            onClose()
-          }
-        }}
+        onClose={onClose}
       >
         <BottomSheetView style={modalStyles.contentContainer}>
           <View style={modalStyles.titleContainer}>
             <View style={modalStyles.leftIconContainer}></View>
-            <Text style={modalStyles.title}>{title}</Text>
+            <Text style={modalStyles.title}>{title ?? 'No title'}</Text>
             <TouchableOpacity
               style={modalStyles.rightIconContainer}
               onPress={() => (ref as React.RefObject<BottomSheetMethods>).current?.close()}
@@ -79,7 +74,7 @@ export const ModalSheet = forwardRef<BottomSheetMethods, ModalSheetProps>(
           >
             {!hasChildren &&
               !!options &&
-              options.options.map(({ icon, label, action }) => (
+              options.map(({ icon, label, action }) => (
                 <TouchableOpacity
                   key={label}
                   style={modalStyles.action}

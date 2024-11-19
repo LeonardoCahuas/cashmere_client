@@ -10,7 +10,14 @@ interface InputProps {
   style?: StyleProp<TextStyle>
 }
 
-export const Input = ({ name, placeholder, control, required, password, style }: InputProps) => {
+export const InputText = ({
+  name,
+  placeholder,
+  control,
+  required,
+  password,
+  style,
+}: InputProps) => {
   return (
     <Controller
       name={name}

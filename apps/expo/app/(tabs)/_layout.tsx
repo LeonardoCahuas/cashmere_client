@@ -103,6 +103,12 @@ function TabLayout() {
         title: 'Inserziona',
         tabBarIcon: ({ color }) => <Icon name="tab_plus" color={color} />,
       }}
+      listeners={({ navigation }) => ({
+        tabPress: (e) => {
+          e.preventDefault()
+          navigation.navigate('screens/AddPostingView')
+        },
+      })}
     />,
     <Tabs.Screen
       name="chats"

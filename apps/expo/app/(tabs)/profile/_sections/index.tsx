@@ -2,7 +2,7 @@ import * as WebBrowser from 'expo-web-browser'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Alert, Button, StyleSheet, Text, View } from 'react-native'
-import { Input } from '../../../components/Input'
+import { InputText } from '../../../components/Input'
 import { LoginSchemaType, auth, getLoginData } from '../../../setup/auth/helpers'
 import { useIsAuthenticated } from '../../../setup/auth/hooks'
 import { useAuthContext } from '../../../setup/auth/useAuthContext'
@@ -63,10 +63,10 @@ const Profile: React.FC = () => {
 
       <View>
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input name="email" placeholder="you@email.com" control={control} />
+          <InputText name="email" placeholder="you@email.com" control={control} />
         </View>
         <View style={styles.verticallySpaced}>
-          <Input name="password" placeholder="*****" control={control} password />
+          <InputText name="password" placeholder="*****" control={control} password />
         </View>
         <Button
           title="Sign IN!!!"

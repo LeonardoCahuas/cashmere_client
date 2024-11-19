@@ -1,12 +1,5 @@
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetView,
-  TouchableOpacity,
-} from '@gorhom/bottom-sheet'
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types'
-import { Colors, Icon } from '@siva/ui'
-import React, { ReactNode, forwardRef, useCallback, useRef, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import BottomSheet from '@gorhom/bottom-sheet'
+import { useRef } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
 export const ModalSheetProvider = GestureHandlerRootView
