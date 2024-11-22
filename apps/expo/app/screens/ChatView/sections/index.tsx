@@ -1,7 +1,10 @@
 import { Posting } from '@siva/entities'
 import { Colors, Icon } from '@siva/ui'
 import { ModalSheetProvider } from 'apps/expo/app/components/ModalSheet'
-import { HorizontalModalSheet } from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
+import {
+  HorizontalModalOptions,
+  HorizontalModalSheet,
+} from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
 import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
 import { LOGGED_USER } from 'apps/expo/app/setup/auth/seed'
 import { useAppStore } from 'apps/expo/app/setup/store'
@@ -13,7 +16,14 @@ import { linkToDetail } from '../../PostingDetailView/_link'
 import { ChatControls } from './ChatControls'
 import { ChatHeader } from './ChatHeader'
 import { MessageList } from './MessageList'
-import { useChatMessages } from './_query'
+import { useChat } from './_query'
+import { getBase64 } from './_utils'
+
+export interface UserProps {
+  id: string
+  name: string
+  image: string | null
+}
 
 const mock_posting: Posting = {
   id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
@@ -42,41 +52,60 @@ const mock_posting: Posting = {
   ],
   renter_name: null,
   bookmarked: false,
+  vehicle_type: '',
+  services: [],
+  insurancePolicies: [],
+  otherServices: [],
 }
 
 const chatId = '93b858d7-1444-41ae-8f21-e76eb01f236b'
-const topic = `$siva-api/rodrigoweilg/chat/room/${chatId}`
+const users = [
+  {
+    id: '79194c4e-37fc-475b-aee6-f53d351d9406',
+    name: 'Rod',
+    image:
+      'https://lh3.googleusercontent.com/ogw/AF2bZygqwVtHlqfvqHOrJ5AQWQPRSBDG_2cC3IL6HsmnmpR0MA=s64-c-mo',
+  },
+  {
+    id: 'fa0d125a-756d-4fba-8de1-d36597e0c41b',
+    name: 'Drigo',
+    image: null,
+  },
+]
 
 const ChatView = () => {
   const currentUser = LOGGED_USER.id
-  const { chatModalRef, mediaModalRef } = useAppStore((s) => s.messages)
+  const { chatModalRef, mediaModalRef, __loadedUser } = useAppStore((s) => s.messages)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
-  const [msgs, setMsgs] = useState<string[]>([])
 
-  const options: ModalOptions = {
-    options: [
-      {
-        label: 'Attiva notifiche',
-        icon: <Icon name="notifications" color={Colors.blackPrimary} />,
-        action: () => {},
-      },
-      {
-        label: 'Blocca utente',
-        icon: <Icon name="block" color={Colors.blackPrimary} />,
-        action: () => {},
-      },
-      {
-        label: 'Segnala utente',
-        icon: <Icon name="report" color={Colors.blackPrimary} />,
-        action: () => {},
-      },
-      {
-        label: 'Elimina chat',
-        icon: <Icon name="trash" color={'red'} />,
-        action: () => {},
-      },
-    ],
-  }
+  const { messages, sendMessage } = useChat({
+    chatId,
+    userId: __loadedUser,
+    sessionToken: '',
+  })
+
+  const options: ModalOptions = [
+    {
+      label: 'Attiva notifiche',
+      icon: <Icon name="notifications" color={Colors.blackPrimary} />,
+      action: () => {},
+    },
+    {
+      label: 'Blocca utente',
+      icon: <Icon name="block" color={Colors.blackPrimary} />,
+      action: () => {},
+    },
+    {
+      label: 'Segnala utente',
+      icon: <Icon name="report" color={Colors.blackPrimary} />,
+      action: () => {},
+    },
+    {
+      label: 'Elimina chat',
+      icon: <Icon name="trash" color={'red'} />,
+      action: () => {},
+    },
+  ]
 
   const handleRemoveMedia = (index: number) => {
     setSelectedMedia((prev) => prev.filter((_, i) => i !== index))
@@ -173,20 +202,7 @@ const ChatView = () => {
     }
   }
 
-  const getBase64 = async (uri: string) => {
-    const response = await fetch(uri)
-    const blob = await response.blob()
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        resolve(reader.result as string)
-      }
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    })
-  }
-
-  const mediaOptions: ModalOptions = {
+  const mediaOptions: HorizontalModalOptions = {
     options: [
       {
         label: 'Fotocamera',
@@ -211,12 +227,8 @@ const ChatView = () => {
     linkToDetail(posting)
   }
 
-  const { data, isLoading } = useChatMessages(chatId)
-
-  if (isLoading || !data) return null
-
-  const endpoint = 'ac2qzaykkdte7-ats.iot.us-east-1.amazonaws.com'
-  const authorizer = 'siva-api-rodrigoweilg-LiveStreamAuthorizer'
+  //const { data } = useChatMessages(chatId)
+  // if (isLoading || !data) return null
 
   return (
     <ModalSheetProvider>
@@ -229,11 +241,12 @@ const ChatView = () => {
           style={styles.keyboardAvoidingView}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          <MessageList id={currentUser} messages={data.messages} users={data.users} />
+          <MessageList id={__loadedUser} messages={messages} users={users} />
           <ChatControls
             selectedMedia={selectedMedia}
             onRemoveMedia={handleRemoveMedia}
             onAddMedia={handleMediaSelect}
+            sendMessage={sendMessage}
           />
         </KeyboardAvoidingView>
       </View>

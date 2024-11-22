@@ -15,13 +15,18 @@ import {
 import { MediaItem } from '.'
 
 interface ChatControlsProps {
-  //   connection: MqttClient | null
   selectedMedia: MediaItem[]
   onRemoveMedia: (index: number) => void
   onAddMedia: (media: string) => void
+  sendMessage: (content: string, type?: 'text' | 'media') => void
 }
 
-export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatControlsProps) => {
+export const ChatControls = ({
+  selectedMedia,
+  onRemoveMedia,
+  onAddMedia,
+  sendMessage,
+}: ChatControlsProps) => {
   const { openMediaModal } = useAppStore((s) => s.messages)
   const [message, setMessage] = useState('')
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
@@ -51,8 +56,7 @@ export const ChatControls = ({ selectedMedia, onRemoveMedia, onAddMedia }: ChatC
   }
 
   const handleSendMessage = () => {
-    // if (!connection) return
-    // connection.publish('', message, { qos: 1 })
+    sendMessage(message, 'text')
     setMessage('')
   }
 

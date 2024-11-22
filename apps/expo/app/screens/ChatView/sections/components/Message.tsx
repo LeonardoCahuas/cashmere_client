@@ -1,17 +1,14 @@
 import { Colors } from "@siva/ui"
 import { Image, StyleSheet, Text, View } from "react-native"
-import { UserProps } from "../.."
+import { UserProps } from "../MessageList"
+import { Message as MessageType } from "../_query"
 
-export interface MessageProps {
-    created_at: string
-    type: "text" | "image"
-    sender_id: string
-    content: string
+export interface MessageProps extends MessageType {
     sender_picture?: string
 }
 
 export const Message = ({ data, isIncoming, user }: { data: MessageProps, isIncoming: boolean, user: UserProps | undefined }) => {
-    const time = new Date(data.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time = new Date(data.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const renderUserAvatar = () => {
         if (user?.image) {

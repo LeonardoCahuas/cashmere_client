@@ -31,6 +31,8 @@ interface MessagesState {
   closeMediaModal: () => void
   chatName: string
   setChatName: (name: string) => void
+  __loadedUser: string
+  __setLoadedUser: (id: string) => void
 }
 
 interface ProfileState {}
@@ -100,7 +102,11 @@ export const useAppStore = create<AppState>((set, get) => ({
       state.messages.mediaModalRef.current?.close()
     },
     chatName: '',
-    setChatName: (name) => set((s) => ({...s, messages: {...s.messages, chatName: name}}))
+    setChatName: (name) => set((s) => ({ ...s, messages: { ...s.messages, chatName: name } })),
+    __loadedUser: '',
+    __setLoadedUser(id) {
+      set((s) => ({ ...s, messages: { ...s.messages, __loadedUser: id } }))
+    },
   },
   profile: {},
   detailView: {
