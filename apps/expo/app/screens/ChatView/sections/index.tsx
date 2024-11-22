@@ -6,7 +6,6 @@ import {
   HorizontalModalSheet,
 } from 'apps/expo/app/components/ModalSheet/HorizontalModalSheet'
 import { ModalOptions, ModalSheet } from 'apps/expo/app/components/ModalSheet/ModalSheet'
-import { LOGGED_USER } from 'apps/expo/app/setup/auth/seed'
 import { useAppStore } from 'apps/expo/app/setup/store'
 import * as DocumentPicker from 'expo-document-picker'
 import * as ImagePicker from 'expo-image-picker'
@@ -74,7 +73,6 @@ const users = [
 ]
 
 const ChatView = () => {
-  const currentUser = LOGGED_USER.id
   const { chatModalRef, mediaModalRef, __loadedUser } = useAppStore((s) => s.messages)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
 
@@ -226,9 +224,6 @@ const ChatView = () => {
     if (!posting) return
     linkToDetail(posting)
   }
-
-  //const { data } = useChatMessages(chatId)
-  // if (isLoading || !data) return null
 
   return (
     <ModalSheetProvider>

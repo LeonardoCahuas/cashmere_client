@@ -28,7 +28,7 @@ export const ChatControls = ({
   sendMessage,
 }: ChatControlsProps) => {
   const { openMediaModal } = useAppStore((s) => s.messages)
-  const [message, setMessage] = useState('')
+  const [input, setInput] = useState('')
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false)
 
   useEffect(() => {
@@ -52,12 +52,12 @@ export const ChatControls = ({
 
   const handleMessageChange = (text: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-    setMessage(text)
+    setInput(text)
   }
 
   const handleSendMessage = () => {
-    sendMessage(message, 'text')
-    setMessage('')
+    sendMessage(input, 'text')
+    setInput('')
   }
 
   return (
@@ -100,12 +100,12 @@ export const ChatControls = ({
           />
         </TouchableOpacity>
         <View style={styles.inputCont}>
-          <TextInput style={styles.input} value={message} onChangeText={handleMessageChange} />
+          <TextInput style={styles.input} value={input} onChangeText={handleMessageChange} />
           <TouchableOpacity style={styles.arrow} onPress={handleSendMessage}>
             <Icon name="chevron-right" color={'white'} height={15} />
           </TouchableOpacity>
         </View>
-        {message.length < 1 && (
+        {input.length < 1 && (
           <TouchableOpacity onPress={() => onAddMedia('camera')}>
             <Icon name="camera" color={Colors.greenPrimary} width={30} height={30} />
           </TouchableOpacity>
