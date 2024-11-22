@@ -1,16 +1,10 @@
+import { Posting } from '@siva/entities'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiUrl, WEBSOCKET_URL } from 'apps/expo/app/setup/query/constants'
 import { apiRoutes } from 'apps/expo/app/setup/query/routes'
 import axios from 'axios'
+import { nanoid } from 'nanoid/non-secure'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useQuery } from 'react-query'
-
-export const useChatMessages = (chatId: string) => {
-  const url = `${apiUrl}/${apiRoutes.getMessagesByChatId.split(':')[0]}${chatId}`
-  return useQuery({
-    queryKey: ['chat', chatId],
-    queryFn: () => axios.get(url).then((res) => res.data),
-  })
-}
 
 export interface Message {
   id: string
@@ -28,11 +22,49 @@ interface UseChatProps {
   apiUrl?: string
 }
 
-export const useChat = ({ chatId, userId, sessionToken, apiUrl = WEBSOCKET_URL }: UseChatProps) => {
-  const [messages, setMessages] = useState<Message[]>([])
+interface UseChatReturn {
+  messages: Array<Message>
+  sendMessage: (content: string, type?: 'text' | 'media') => void
+  isConnected: boolean
+  error: Error | null
+}
+
+interface ChatEndpointPayload {
+  messages: Array<Message>
+  posting: Posting
+  users: Array<{ id: string; image: string | null; name: string }>
+}
+
+const getMessagesQuery = (chatId: string) => {
+  const url = new URL(`${apiUrl}/${apiRoutes.getMessagesByChatId.split(':')[0]}${chatId}`)
+  // url.searchParams.append('from', '')
+  console.log(url.toString())
+  return {
+    queryKey: ['chat', chatId],
+    queryFn: () =>
+      axios.get(url.toString()).then((res) => {
+        console.log('res', res)
+        return res.data
+      }),
+  }
+}
+
+export const useGetMessages = (chatId: string) => {
+  const query = getMessagesQuery(chatId)
+  return useQuery<ChatEndpointPayload>(query)
+}
+
+export const useChat = ({
+  chatId,
+  userId,
+  sessionToken,
+  apiUrl = WEBSOCKET_URL,
+}: UseChatProps): UseChatReturn => {
+  const queryKey = ['chat', chatId]
   const [isConnected, setIsConnected] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const wsRef = useRef<WebSocket | null>(null)
+  const queryClient = useQueryClient()
 
   const connect = useCallback(() => {
     const url = `${apiUrl}`
@@ -56,7 +88,14 @@ export const useChat = ({ chatId, userId, sessionToken, apiUrl = WEBSOCKET_URL }
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data)
         if (data.type === 'message') {
-          setMessages((prev) => [...prev, data.message])
+          console.log('revei', data)
+          queryClient.setQueryData<ChatEndpointPayload>(queryKey, (prev) => {
+            if (!prev) {
+              console.log('wtf')
+              return empty
+            }
+            return { ...prev, messages: [...prev.messages, data.message] }
+          })
         }
       }
 
@@ -82,15 +121,23 @@ export const useChat = ({ chatId, userId, sessionToken, apiUrl = WEBSOCKET_URL }
         return
       }
 
-      wsRef.current.send(
-        JSON.stringify({
-          action: 'message',
-          chatId,
-          content,
-          type,
-          senderId: userId,
-        })
-      )
+      const payload: Message = {
+        id: nanoid(),
+        createdAt: new Date().toString(),
+        chatId,
+        content,
+        type,
+        senderId: userId,
+      }
+
+      queryClient.setQueryData<ChatEndpointPayload>(queryKey, (prev) => {
+        if (!prev) {
+          console.log('wejiwkdiow')
+          return empty
+        }
+        return { ...prev, messages: [...prev.messages, payload] }
+      })
+      wsRef.current.send(JSON.stringify({ ...payload, action: 'message' }))
     },
     [chatId, userId, isConnected]
   )
@@ -106,9 +153,46 @@ export const useChat = ({ chatId, userId, sessionToken, apiUrl = WEBSOCKET_URL }
   }, [connect])
 
   return {
-    messages,
+    messages: queryClient.getQueryData<ChatEndpointPayload['messages']>(queryKey) || [],
     sendMessage,
     isConnected,
     error,
   }
+}
+
+const empty = {
+  messages: [],
+  users: [],
+  posting: {
+    id: 'b89e5b72-9d28-474d-ace3-44ca21437d97',
+    created_at: '',
+    posting_id: '',
+    duration: 'GIORNALIERO',
+    subtitle: null,
+    dropoff_location_plain: '',
+    pickup_location_plain: '',
+    deposit: '',
+    price: 1400,
+    age_required: 0,
+    distance_limit_in_km: '',
+    taxes_included: false,
+    vehicle_id: '',
+    brand: 'Lamborghini',
+    model: 'Huracan',
+    fuel_type: '',
+    year: 0,
+    interior_material: null,
+    interior_color: null,
+    exterior_color: null,
+    transmission_type: null,
+    vehicle_images: [
+      'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/kia-sorento-2024-frontal-lateral.369513.webp?t=2024-09-25T16%3A15%3A47.703Z',
+    ],
+    renter_name: null,
+    bookmarked: false,
+    vehicle_type: '',
+    services: [],
+    insurancePolicies: [],
+    otherServices: [],
+  },
 }

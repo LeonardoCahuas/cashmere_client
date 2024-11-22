@@ -15,7 +15,7 @@ import { linkToDetail } from '../../PostingDetailView/_link'
 import { ChatControls } from './ChatControls'
 import { ChatHeader } from './ChatHeader'
 import { MessageList } from './MessageList'
-import { useChat } from './_query'
+import { useChat, useGetMessages } from './_query'
 import { getBase64 } from './_utils'
 
 export interface UserProps {
@@ -76,11 +76,13 @@ const ChatView = () => {
   const { chatModalRef, mediaModalRef, __loadedUser } = useAppStore((s) => s.messages)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
 
-  const { messages, sendMessage } = useChat({
+  const { sendMessage } = useChat({
     chatId,
     userId: __loadedUser,
     sessionToken: '',
   })
+  console.log('chat view')
+  const { data: messages } = useGetMessages(chatId)
 
   const options: ModalOptions = [
     {
@@ -224,6 +226,8 @@ const ChatView = () => {
     if (!posting) return
     linkToDetail(posting)
   }
+  console.log('messages!', messages)
+  if (!messages) return null
 
   return (
     <ModalSheetProvider>
@@ -236,7 +240,7 @@ const ChatView = () => {
           style={styles.keyboardAvoidingView}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          <MessageList id={__loadedUser} messages={messages} users={users} />
+          <MessageList id={__loadedUser} messages={messages.messages} users={users} />
           <ChatControls
             selectedMedia={selectedMedia}
             onRemoveMedia={handleRemoveMedia}
@@ -268,4 +272,25 @@ export interface MediaItem {
   type: 'image' | 'document'
   name?: string
   size?: number
+}
+
+const x = {
+  messages: [
+    {
+      content: 'Qwert',
+      created_at: '2024-11-22T07:00:58.361859+00:00',
+      sender_id: 'fa0d125a-756d-4fba-8de1-d36597e0c41b',
+      type: 'text',
+    },
+  ],
+  posting: {
+    brand: 'Honda',
+    id: '203fa9f8-d5f3-409d-a286-594a92921206',
+    model: 'CRV',
+    preview:
+      'https://mkvfjhboywoocbqdzilx.supabase.co/storage/v1/object/public/images/2024HondaCr-v_4dr-suvSport-hybridFqOem_1_815.avif?t=2024-09-25T20%3A14%3A47.707Z',
+    price: 179,
+    term: 'long_term',
+  },
+  users: [{ id: 'fa0d125a-756d-4fba-8de1-d36597e0c41b', image: null, name: 'Drigo' }],
 }

@@ -1,6 +1,6 @@
 import { Posting } from '@siva/entities'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { useMutation, useQuery } from 'react-query'
 import { queryClient } from '../Provider'
 import { apiUrl } from './constants'
 import { queryKeys } from './keys'
@@ -9,7 +9,7 @@ import { apiRoutes } from './routes'
 export const useGetBookmarksByUser = (id: string) => {
   const url = `${apiUrl}/${apiRoutes.getBookmarksByUserId.split(':')[0]}${id}`
   return useQuery<Array<Posting>>({
-    queryKey: queryKeys.getBookmarksByUserId,
+    queryKey: [queryKeys.getBookmarksByUserId],
     queryFn: () => axios.get(url).then((res) => res.data),
   })
 }
@@ -21,16 +21,6 @@ export const useGetPosting = (id: string) => {
     queryFn: () => axios.get(url).then((res) => res.data),
   })
 }
-
-export const useIsBookmarked = () =>
-  useQuery<Posting, unknown, boolean>(queryKeys.getPostingById, {
-    select: (data) => data.bookmarked,
-  })
-
-export const usePostingId = () =>
-  useQuery<Posting, unknown, string>(queryKeys.getPostingById, {
-    select: (data) => data.posting_id,
-  })
 
 export const useAddBookmark = (sessionId: string) => {
   const url = `${apiUrl}/${apiRoutes.createBookmark.split(':')[0]}`

@@ -20,6 +20,7 @@
     "@siva/api": "workspace:^",
     "@siva/entities": "workspace:^",
     "@siva/ui": "workspace:^",
+    "@tanstack/react-query": "^5.61.0",
     "add": "^2.0.6",
     "aes-js": "^3.1.2",
     "app": "workspace:^",
