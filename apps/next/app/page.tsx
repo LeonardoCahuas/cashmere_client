@@ -1,14 +1,4 @@
-'use client'
-import { useGetMessages } from '@siva/api'
-import { Row, Text } from '@siva/ui'
-
 function Home() {
-  const { isLoading, data } = useGetMessages('7452a439-624a-4108-902d-11dda2312238')
-
-  if (isLoading) {
-    return <Text>Loading...</Text>
-  }
-
   return (
     <div
       style={{
@@ -19,11 +9,7 @@ function Home() {
         alignItems: 'center',
       }}
     >
-      <div style={{ width: '360px', height: 'fit-content', paddingTop: '8rem' }}>
-        {!isLoading &&
-          data &&
-          data.map((msg) => <Row key={msg.id} type={msg.type} content={msg.content} />)}
-      </div>
+      <div style={{ width: '360px', height: 'fit-content', paddingTop: '8rem' }}>yooo</div>
     </div>
   )
 }
