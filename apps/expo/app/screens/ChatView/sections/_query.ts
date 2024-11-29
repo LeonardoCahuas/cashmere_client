@@ -37,13 +37,10 @@ interface ChatEndpointPayload {
 
 const getMessagesQuery = (chatId: string) => {
   const url = new URL(`${apiUrl}/${apiRoutes.getMessagesByChatId.split(':')[0]}${chatId}`)
-  // url.searchParams.append('from', '')
-  console.log(url.toString())
   return {
     queryKey: ['chat', chatId],
     queryFn: () =>
       axios.get(url.toString()).then((res) => {
-        console.log('res', res)
         return res.data
       }),
   }
@@ -88,12 +85,8 @@ export const useChat = ({
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data)
         if (data.type === 'message') {
-          console.log('revei', data)
           queryClient.setQueryData<ChatEndpointPayload>(queryKey, (prev) => {
-            if (!prev) {
-              console.log('wtf')
-              return empty
-            }
+            if (!prev) return empty
             return { ...prev, messages: [...prev.messages, data.message] }
           })
         }
@@ -131,10 +124,7 @@ export const useChat = ({
       }
 
       queryClient.setQueryData<ChatEndpointPayload>(queryKey, (prev) => {
-        if (!prev) {
-          console.log('wejiwkdiow')
-          return empty
-        }
+        if (!prev) return empty
         return { ...prev, messages: [...prev.messages, payload] }
       })
       wsRef.current.send(JSON.stringify({ ...payload, action: 'message' }))

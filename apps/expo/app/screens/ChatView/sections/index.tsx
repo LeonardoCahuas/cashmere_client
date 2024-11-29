@@ -76,13 +76,13 @@ const ChatView = () => {
   const { chatModalRef, mediaModalRef, __loadedUser } = useAppStore((s) => s.messages)
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([])
 
-  const { sendMessage } = useChat({
+  const { sendMessage, messages } = useChat({
     chatId,
     userId: __loadedUser,
     sessionToken: '',
   })
-  console.log('chat view')
-  const { data: messages } = useGetMessages(chatId)
+
+  const { data } = useGetMessages(chatId)
 
   const options: ModalOptions = [
     {
@@ -240,7 +240,7 @@ const ChatView = () => {
           style={styles.keyboardAvoidingView}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
-          <MessageList id={__loadedUser} messages={messages.messages} users={users} />
+          <MessageList id={__loadedUser} messages={messages} users={users} />
           <ChatControls
             selectedMedia={selectedMedia}
             onRemoveMedia={handleRemoveMedia}
