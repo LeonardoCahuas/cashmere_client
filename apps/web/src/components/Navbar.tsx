@@ -24,7 +24,7 @@ export const NavBar = () => {
     >
       <div className={css({ display: 'flex', gap: 4 })}>
         {tabs.map(({ label, url }) => (
-          <Link key={url} href={url} className={css({ fontSize: 14, fontWeight: 'medium' })}>
+          <Link key={url} href={url} className={css({ fontSize: 14, fontWeight: '500' })}>
             {label}
           </Link>
         ))}
