@@ -2,7 +2,13 @@ import Link from 'next/link'
 import { css } from '../../styled-system/css'
 
 export const NavBar = () => {
-  const tabs = [
+  const leftTabs = [
+    { label: 'Ricerca', url: '/search' },
+    { label: 'Noleggia', url: '/rent' },
+    { label: 'Auto più noleggiate', url: '/trending' },
+  ]
+
+  const rightTabs = [
     { label: 'Ricerca', url: '/search' },
     { label: 'Noleggia', url: '/rent' },
     { label: 'Auto più noleggiate', url: '/trending' },
@@ -23,7 +29,7 @@ export const NavBar = () => {
       })}
     >
       <div className={css({ display: 'flex', gap: 4 })}>
-        {tabs.map(({ label, url }) => (
+        {leftTabs.map(({ label, url }) => (
           <Link key={url} href={url} className={css({ fontSize: 14, fontWeight: '500' })}>
             {label}
           </Link>
