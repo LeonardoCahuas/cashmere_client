@@ -1687,6 +1687,10 @@ const tokens = {
     "value": "#00C15C",
     "variable": "var(--colors-primary-green)"
   },
+  "colors.light-green": {
+    "value": "#EFFFF6",
+    "variable": "var(--colors-light-green)"
+  },
   "colors.primary-red": {
     "value": "#FE0034",
     "variable": "var(--colors-primary-red)"
