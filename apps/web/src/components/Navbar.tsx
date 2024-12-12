@@ -17,7 +17,7 @@ export const NavBar = () => {
       className={css({
         width: '100%',
         background: 'white',
-        height: '84px',
+        height: '80px',
         display: 'flex',
         alignItems: 'center',
         borderWidth: 1,
@@ -28,9 +28,7 @@ export const NavBar = () => {
       })}
     >
       <div className={css({ display: 'flex', gap: 8, alignItems: 'center' })}>
-        <div>
-          <Image src={logoSiva} alt="Logo Siva" width={60} height={50} />
-        </div>
+        <Image src={logoSiva} alt="Logo Siva" width={60} height={50} />
         {leftTabs.map(({ label, url }) => (
           <Link key={url} href={url} className={css({ fontSize: 14, fontWeight: '500' })}>
             {label}
