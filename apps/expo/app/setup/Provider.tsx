@@ -1,11 +1,10 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native'
-import { NativeToast } from '@siva/ui/src/NativeToast'
 import { Provider as AppProvider } from 'app/provider'
 import { useFonts } from 'expo-font'
 import { SplashScreen } from 'expo-router'
 import { PropsWithChildren, useEffect } from 'react'
 import { useColorScheme } from 'react-native'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from './auth/AuthContext'
 import { LargeSecureStore } from './local-storage/secure-store'
 
@@ -39,7 +38,7 @@ export function Provider({ children }: PropsWithChildren) {
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <AuthProvider>
             {children}
-            <NativeToast />
+            {/* <NativeToast /> */}
           </AuthProvider>
         </ThemeProvider>
       </AppProvider>

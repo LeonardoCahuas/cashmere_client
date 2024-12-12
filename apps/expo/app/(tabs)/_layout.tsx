@@ -64,6 +64,7 @@ function TabLayout() {
   const screens = () => [
     <Tabs.Screen
       name="home"
+      key="home"
       options={{
         title: 'Home',
         tabBarIcon: ({ color }) => <Icon name="tab_search" color={color} />,
@@ -72,6 +73,7 @@ function TabLayout() {
     />,
     <Tabs.Screen
       name="saved"
+      key="saved"
       options={{
         title: 'Preferiti',
         tabBarIcon: ({ color }) => <Icon name="tab_heart" color={color} />,
@@ -99,6 +101,7 @@ function TabLayout() {
     />,
     <Tabs.Screen
       name="add"
+      key="add"
       options={{
         title: 'Inserziona',
         tabBarIcon: ({ color }) => <Icon name="tab_plus" color={color} />,
@@ -112,6 +115,7 @@ function TabLayout() {
     />,
     <Tabs.Screen
       name="chats"
+      key="chats"
       options={{
         title: 'Chats',
         tabBarIcon: ({ color }) => <Icon name="tab_chat" color={color} />,
@@ -119,6 +123,7 @@ function TabLayout() {
     />,
     <Tabs.Screen
       name="profile"
+      key="profile"
       options={{
         title: 'Profilo',
         tabBarIcon: ({ color }) => <Icon name="tab_profile" color={color} />,
@@ -147,7 +152,6 @@ function TabLayout() {
           return <BlurView intensity={80} tint="light" style={styles.blurView} />
         },
       }}
-      sceneContainerStyle={{ backgroundColor: 'white' }}
     >
       {screens()}
     </Tabs>

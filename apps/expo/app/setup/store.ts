@@ -22,7 +22,18 @@ interface ModalSheetRef extends BottomSheetMethods {
   isOpen: boolean
 }
 
-interface MessagesState {}
+interface MessagesState {
+  chatModalRef: React.RefObject<ModalSheetRef>
+  mediaModalRef: React.RefObject<ModalSheetRef>
+  openChatModal: () => void
+  closeChatModal: () => void
+  openMediaModal: () => void
+  closeMediaModal: () => void
+  chatName: string
+  setChatName: (name: string) => void
+  __loadedUser: string
+  __setLoadedUser: (id: string) => void
+}
 
 interface ProfileState {}
 
@@ -69,7 +80,34 @@ export const useAppStore = create<AppState>((set, get) => ({
     searchText: null,
     onSearchTextChange: (v) => set((s) => ({ ...s, saved: { ...s.saved, searchText: v } })),
   },
-  messages: {},
+  messages: {
+    chatModalRef: createRef<ModalSheetRef>(),
+    openChatModal: () => {
+      const state = get()
+      state.messages.chatModalRef.current?.expand()
+      state.messages.mediaModalRef.current?.close()
+    },
+    closeChatModal: () => {
+      const state = get()
+      state.messages.chatModalRef.current?.close()
+    },
+    mediaModalRef: createRef<ModalSheetRef>(),
+    openMediaModal: () => {
+      const state = get()
+      state.messages.mediaModalRef.current?.expand()
+      state.messages.chatModalRef.current?.close()
+    },
+    closeMediaModal: () => {
+      const state = get()
+      state.messages.mediaModalRef.current?.close()
+    },
+    chatName: '',
+    setChatName: (name) => set((s) => ({ ...s, messages: { ...s.messages, chatName: name } })),
+    __loadedUser: '',
+    __setLoadedUser(id) {
+      set((s) => ({ ...s, messages: { ...s.messages, __loadedUser: id } }))
+    },
+  },
   profile: {},
   detailView: {
     posting: null,
