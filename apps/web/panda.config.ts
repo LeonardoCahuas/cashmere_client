@@ -17,6 +17,7 @@ export default defineConfig({
         colors: {
           'light-gray': { value: '#F3F4F7' },
           'primary-green': { value: '#00C15C' },
+          'light-green': { value: '#EFFFF6' },
           'primary-red': { value: '#FE0034' },
           'dark-gray': { value: '#CBCED5' },
           'main-text': { value: '#222222' },

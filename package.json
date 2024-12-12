@@ -9,7 +9,7 @@
     "mobile": "cd apps/expo && yarn start",
     "watch": "yarn workspaces foreach -pi run watch",
     "vercel:install": "yarn set version 3.5 && yarn install",
-    "web": "yarn build && cd apps/next && yarn next",
+    "web": "cd apps/web && yarn next",
     "web:extract": "DISABLE_EXTRACTION=false yarn workspace web-app dev",
     "web:prod": "yarn workspace web-app build",
     "web:prod:serve": "yarn workspace web-app serve",
