@@ -45,7 +45,7 @@ export const DropDownMenu = () => {
         {tabs.map(({ title, options }) => (
           <NavigationMenuItem key={title} className="text-siva-main-text">
             <NavigationMenuTrigger>{title}</NavigationMenuTrigger>
-            <NavigationMenuContent className="min-w-80 p-2 flex flex-col gap-0 text-siva-main-text text-sm font-medium">
+            <NavigationMenuContent className="min-w-96 p-2 flex flex-col gap-0 text-siva-main-text text-sm font-medium">
               {options.map(({ label }) => (
                 <NavigationMenuLink
                   key={label}
