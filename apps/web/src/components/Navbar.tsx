@@ -13,10 +13,10 @@ export const NavBar = () => {
 
   return (
     <nav className="w-full bg-white h-[80px] flex items-center border border-dark-gray px-[70px] justify-between">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-8 items-center">
         <Image src={logoSiva} alt="Logo Siva" width={60} height={50} />
         {leftTabs.map(({ label, url }) => (
-          <Link key={url} href={url} className="text-sm font-medium">
+          <Link key={url} href={url} className="text-sm font-medium text-siva-main-text">
             {label}
           </Link>
         ))}
@@ -31,18 +31,18 @@ export const NavBar = () => {
         <PillButton
           label="Chat"
           variant={Variant.neutral}
-          level={Level.primary}
+          level={Level.secondary}
           icon={<HeartIcon />}
         />
         <PillButton
           label="Inserisci annuncio"
           variant={Variant.success}
-          level={Level.primary}
+          level={Level.secondary}
           icon={<HeartIcon />}
         />
         <PillButton
           label={<HeartIcon />}
-          variant={Variant.success}
+          variant={Variant.neutral}
           level={Level.secondary}
           icon={<HeartIcon />}
         />
