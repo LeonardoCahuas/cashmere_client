@@ -1,8 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import logoSiva from '../../public/siva_logo.svg'
-import { css } from '../../styled-system/css'
-import { Fill, PillButton, Variant } from './PillButton'
+import { Level, PillButton, Variant } from './PillButton'
 import { HeartIcon } from './icons/Heart'
 
 export const NavBar = () => {
@@ -13,51 +12,38 @@ export const NavBar = () => {
   ]
 
   return (
-    <nav
-      className={css({
-        width: '100%',
-        background: 'white',
-        height: '80px',
-        display: 'flex',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'dark-gray',
-        paddingLeft: '70px',
-        paddingRight: '70px',
-        justifyContent: 'space-between',
-      })}
-    >
-      <div className={css({ display: 'flex', gap: 8, alignItems: 'center' })}>
+    <nav className="w-full bg-white h-[80px] flex items-center border border-dark-gray px-[70px] justify-between">
+      <div className="flex gap-2 items-center">
         <Image src={logoSiva} alt="Logo Siva" width={60} height={50} />
         {leftTabs.map(({ label, url }) => (
-          <Link key={url} href={url} className={css({ fontSize: 14, fontWeight: '500' })}>
+          <Link key={url} href={url} className="text-sm font-medium">
             {label}
           </Link>
         ))}
       </div>
-      <div className={css({ display: 'flex', gap: 8 })}>
+      <div className="flex gap-2">
         <PillButton
           label="Preferiti"
           variant={Variant.neutral}
-          fill={Fill.outline}
+          level={Level.secondary}
           icon={<HeartIcon />}
         />
         <PillButton
           label="Chat"
           variant={Variant.neutral}
-          fill={Fill.outline}
+          level={Level.primary}
           icon={<HeartIcon />}
         />
         <PillButton
           label="Inserisci annuncio"
           variant={Variant.success}
-          fill={Fill.none}
+          level={Level.primary}
           icon={<HeartIcon />}
         />
         <PillButton
           label={<HeartIcon />}
-          variant={Variant.neutral}
-          fill={Fill.outline}
+          variant={Variant.success}
+          level={Level.secondary}
           icon={<HeartIcon />}
         />
       </div>

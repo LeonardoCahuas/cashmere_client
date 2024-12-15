@@ -1,4 +1,5 @@
-import { css, cva } from '../../styled-system/css'
+import { cva, VariantProps } from 'class-variance-authority'
+import { JSX } from 'react'
 
 export enum Variant {
   neutral = 'neutral',
@@ -6,116 +7,87 @@ export enum Variant {
   danger = 'danger',
 }
 
-export enum Fill {
-  solid = 'solid',
-  outline = 'outline',
-  none = 'none',
+export enum Level {
+  primary = 'primary',
+  secondary = 'secondary',
+  tertiary = 'tertiary',
 }
+
+const button = cva(
+  'flex justify-center items-center px-4 py-2 border rounded-full text-siva-main-text cursor-pointer gap-2',
+  {
+    variants: {
+      variant: {
+        success: '',
+        neutral: 'bg-siva-main-text fill-white',
+        danger: '',
+      },
+      level: {
+        primary: 'border-solid',
+        secondary: 'border-solid',
+        tertiary: 'border-none',
+      },
+    },
+    compoundVariants: [
+      {
+        variant: 'success',
+        level: 'primary',
+        class: 'bg-siva-primary-green border-siva-primary-green text-white fill-white',
+      },
+      {
+        variant: 'success',
+        level: 'secondary',
+        class:
+          'bg-siva-light-green border-siva-light-green text-siva-primary-green fill-siva-primary-green',
+      },
+      {
+        variant: 'success',
+        level: 'tertiary',
+        class:
+          'bg-siva-light-green border-siva-light-green text-siva-primary-green fill-siva-primary-green',
+      },
+      {
+        variant: 'neutral',
+        level: 'primary',
+        class: 'text-white border-siva-main-text',
+      },
+      {
+        variant: 'neutral',
+        level: 'secondary',
+        className: 'bg-white text-siva-main-text border-siva-dark-gray',
+      },
+      {
+        variant: 'neutral',
+        level: 'tertiary',
+        class: '',
+      },
+    ],
+  }
+)
+
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'disabled'>,
+    VariantProps<typeof button> {}
 
 interface PillButtonProps {
   label?: string | JSX.Element
   icon?: JSX.Element
   variant: Variant
-  fill?: Fill
+  level?: Level
   onClick?: () => void
 }
-
-const button = cva({
-  base: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingX: '4',
-    paddingY: '2',
-    borderWidth: '1px',
-    borderRadius: 'full',
-    color: 'main-text',
-    cursor: 'pointer',
-    gap: '2',
-  },
-  variants: {
-    variant: {
-      success: {
-        background: 'primary-green',
-        color: 'white',
-        fill: 'white',
-      },
-      neutral: {
-        background: 'main-text',
-        color: 'white',
-        fill: 'white',
-      },
-      danger: {},
-    },
-    fill: {
-      solid: {
-        borderStyle: 'solid',
-      },
-      outline: {
-        borderStyle: 'solid',
-      },
-      none: {
-        borderStyle: 'none',
-      },
-    },
-  },
-  compoundVariants: [
-    {
-      variant: 'success',
-      fill: 'solid',
-      css: {},
-    },
-    {
-      variant: 'success',
-      fill: 'outline',
-      css: {
-        background: 'light-green',
-        color: 'primary-green',
-        fill: 'primary-green',
-        borderColor: 'primary-green',
-      },
-    },
-    {
-      variant: 'success',
-      fill: 'none',
-      css: { background: 'light-green', color: 'primary-green', fill: 'primary-green' },
-    },
-    {
-      variant: 'neutral',
-      fill: 'solid',
-      css: {},
-    },
-    {
-      variant: 'neutral',
-      fill: 'outline',
-      css: {
-        background: 'white',
-        color: 'main-text',
-        fill: 'main-text',
-        borderColor: 'dark-gray',
-      },
-    },
-    {
-      variant: 'neutral',
-      fill: 'none',
-      css: {},
-    },
-  ],
-})
 
 export const PillButton = ({
   label,
   icon,
   variant,
-  fill = Fill.none,
+  level = Level.tertiary,
   onClick,
 }: PillButtonProps) => {
   return (
-    <button className={button({ variant, fill })} onClick={onClick}>
-      <div className={css({ fill: 'inherit' })}>{icon}</div>
-      {typeof label === 'string' && (
-        <p className={css({ fontSize: 'sm', fontWeight: 'medium', color: 'inherit' })}>{label}</p>
-      )}
+    <button className={button({ variant, level })} onClick={onClick}>
+      <div className="fill-inherit">{icon}</div>
+      {typeof label === 'string' && <p className="text-sm font-medium text-inherit">{label}</p>}
       {typeof label !== 'string' && label}
     </button>
   )
