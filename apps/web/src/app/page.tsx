@@ -1,4 +1,4 @@
-import { NavBar } from '@/components/Navbar'
+import { NavBar } from '@/components/navbar/Navbar'
 import { SearchCard } from './_components/SearchCard'
 
 export default function Home() {

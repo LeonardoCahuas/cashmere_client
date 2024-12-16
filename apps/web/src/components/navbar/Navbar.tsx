@@ -1,8 +1,11 @@
+import { Level, Variant } from '@/lib/shared-types'
 import Image from 'next/image'
-import logoSiva from '../../public/siva_logo.svg'
+import logoSiva from '../../../public/siva_logo.svg'
+import { HeartIcon } from '../icons/Heart'
+import { AccountIcon } from './AccountIcon'
+import { ChatIcon } from './ChatIcon'
 import { DropDownMenu } from './DropDownMenu'
-import { Level, PillButton, Variant } from './PillButton'
-import { HeartIcon } from './icons/Heart'
+import { PillButton } from './PillButton'
 
 export const NavBar = () => {
   return (
@@ -18,24 +21,14 @@ export const NavBar = () => {
           level={Level.secondary}
           icon={<HeartIcon />}
         />
-        <PillButton
-          label="Chat"
-          variant={Variant.neutral}
-          level={Level.secondary}
-          icon={<HeartIcon />}
-        />
+        <ChatIcon />
         <PillButton
           label="Inserisci annuncio"
           variant={Variant.success}
           level={Level.secondary}
           icon={<HeartIcon />}
         />
-        <PillButton
-          label={<HeartIcon />}
-          variant={Variant.neutral}
-          level={Level.secondary}
-          icon={<HeartIcon />}
-        />
+        <AccountIcon />
       </div>
     </nav>
   )

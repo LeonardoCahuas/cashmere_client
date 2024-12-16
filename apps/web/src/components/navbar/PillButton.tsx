@@ -1,17 +1,6 @@
+import { Level, Variant } from '@/lib/shared-types'
 import { cva, VariantProps } from 'class-variance-authority'
 import { JSX } from 'react'
-
-export enum Variant {
-  neutral = 'neutral',
-  success = 'success',
-  danger = 'danger',
-}
-
-export enum Level {
-  primary = 'primary',
-  secondary = 'secondary',
-  tertiary = 'tertiary',
-}
 
 const button = cva(
   'flex justify-center items-center px-4 py-2 border rounded-full text-siva-main-text cursor-pointer gap-2',
