@@ -24,7 +24,7 @@ module.exports = function (api) {
       //       [
       //         {
       //           components: ['@siva/ui'],
-      //           config: '../../packages/config/src/tamagui.config.ts',
+      //           config: '../../packages/config/src/t_amagui.config.ts',
       //           logTimings: true,
       //           disableExtraction: process.env.NODE_ENV === 'development',
       //         },

@@ -1,6 +1,5 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Provider as AppProvider } from 'app/provider'
 import { SplashScreen } from 'expo-router'
 import { PropsWithChildren } from 'react'
 import { AuthProvider } from './auth/AuthContext'
@@ -32,11 +31,9 @@ export function Provider({ children }: PropsWithChildren) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppProvider>
-        <ThemeProvider value={DefaultTheme}>
-          <AuthProvider>{children}</AuthProvider>
-        </ThemeProvider>
-      </AppProvider>
+      <ThemeProvider value={DefaultTheme}>
+        <AuthProvider>{children}</AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }

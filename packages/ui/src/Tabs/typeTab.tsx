@@ -1,7 +1,7 @@
-import { Icon, IconName } from '@siva/ui'
 import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Colors } from '../base/colors'
+import { Icon, IconName } from '../base/icons'
 import CustomButton from './typeButton'
 
 const tabs: Array<TabItem> = [
