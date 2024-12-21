@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
-import { Button, Colors, Icon, IconName, PrimaryButton } from '@siva/ui'
+import { Colors, Icon, IconName } from '@siva/ui'
 import { ModalSheetProvider, useModalSheetRef } from 'apps/expo/app/components/ModalSheet'
 import {
   ModalPage,
@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useReducer, useState } from 'react'
 import {
+  Button,
   Dimensions,
   ScrollView,
   StyleSheet,
@@ -658,9 +659,11 @@ const FilterSection = () => {
           </View>
           <View style={{ paddingBottom: 140 }}>
             <FilterComponent title="Marca e modello" icon="search">
-              <Button style={styles.buttonStyle} onPress={() => openStepModal('brands')}>
-                Seleziona marca e modello
-              </Button>
+              <Button
+                title=" Seleziona marca e modello"
+                onPress={() => openStepModal('brands')}
+                {...styles.buttonStyle}
+              />
               {search.vehicles.length > 0 &&
                 search.vehicles.map((item) => (
                   <View style={styles.brandModel} key={item.brand}>
@@ -1296,9 +1299,7 @@ const FilterSection = () => {
           </View>
         </ScrollView>
         <TouchableOpacity style={styles.ctaContainer}>
-          <PrimaryButton style={styles.cta} onPress={goToResults}>
-            Mostra risultati
-          </PrimaryButton>
+          <Button title="Mostra risultati" onPress={goToResults} {...styles.cta} />
         </TouchableOpacity>
       </View>
       <MultiStepModalSheet

@@ -1,14 +1,10 @@
-import { Icon, PrimaryButton } from '@siva/ui'
 import { useRouter } from 'expo-router'
+import { Button } from 'react-native'
 
 export const SearchButton = () => {
   const router = useRouter()
 
   const handlePress = () => router.push('/home/search')
 
-  return (
-    <PrimaryButton icon={<Icon name="search" color="white" />} onPress={handlePress}>
-      Avvia la ricerca
-    </PrimaryButton>
-  )
+  return <Button title="Avvia la ricerca" onPress={handlePress}></Button>
 }

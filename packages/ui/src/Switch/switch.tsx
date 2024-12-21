@@ -1,10 +1,10 @@
-import { cloneElement, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, useEffect, useRef, useState } from 'react'
 import { Animated, LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Colors } from '../base/colors'
 
 interface TabItem {
   label: string
-  icon?: JSX.Element
+  icon?: React.JSX.Element
   action: () => void
 }
 

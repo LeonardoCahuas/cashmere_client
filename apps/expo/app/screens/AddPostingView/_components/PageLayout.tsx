@@ -1,5 +1,4 @@
-import { PrimaryButton } from '@siva/ui'
-import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
+import { Dimensions, Button as PrimaryButton, ScrollView, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 interface PageLayoutProps {
@@ -19,9 +18,12 @@ export const PageLayout = ({ children, onButtonPress }: PageLayoutProps) => {
         </ScrollView>
       </View>
       <View style={styles.fixedButtonsContainer}>
-        <PrimaryButton style={{ width: screenWidth - 48 }} onPress={() => onButtonPress()}>
-          Avanti
-        </PrimaryButton>
+        {/* { width: screenWidth - 48 } */}
+        <PrimaryButton
+          title="Avanti"
+          onPress={() => onButtonPress()}
+          {...{ width: screenWidth - 48 }}
+        />
       </View>
     </View>
   )
