@@ -12,10 +12,6 @@
     "types",
     "dist"
   ],
-  "scripts": {
-    "build": "tamagui-build --skip-types",
-    "watch": "tamagui-build --skip-types --watch"
-  },
   "dependencies": {
     "@siva/entities": "workspace:^",
     "react-native-svg": "^15.4.0"

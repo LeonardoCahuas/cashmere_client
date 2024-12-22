@@ -1,7 +1,7 @@
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SplashScreen } from 'expo-router'
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren, useEffect } from 'react'
 import { AuthProvider } from './auth/AuthContext'
 import { LargeSecureStore } from './local-storage/secure-store'
 
@@ -9,7 +9,6 @@ export const queryClient = new QueryClient()
 export const secureStore = new LargeSecureStore()
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
 
 export function Provider({ children }: PropsWithChildren) {
   // const [interLoaded, interError] = useFonts({
@@ -28,6 +27,10 @@ export function Provider({ children }: PropsWithChildren) {
   // if (!interLoaded && !interError) {
   //   return null
   // }
+
+  useEffect(() => {
+    SplashScreen.hideAsync()
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

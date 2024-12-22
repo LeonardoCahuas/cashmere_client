@@ -1,4 +1,4 @@
-import { SplashScreen, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import { Provider } from './setup/Provider'
 
 export const unstable_settings = {
@@ -7,7 +7,7 @@ export const unstable_settings = {
 }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync()
+//SplashScreen.preventAutoHideAsync()
 
 export default function App() {
   return (

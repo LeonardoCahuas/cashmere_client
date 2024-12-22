@@ -28,11 +28,11 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.24.6",
-    "@manypkg/cli": "^0.22.0",
+    "@manypkg/cli": "0.23.0",
     "@siva/ui": "workspace:^",
-    "check-dependency-version-consistency": "^4.1.0",
+    "check-dependency-version-consistency": "5.0.0",
     "eslint": "^9.3.0",
-    "node-gyp": "^10.1.0",
+    "node-gyp": "11.0.0",
     "prettier": "^3.2.5",
     "turbo": "^2.3.0",
     "typescript": "^5.4.5"
