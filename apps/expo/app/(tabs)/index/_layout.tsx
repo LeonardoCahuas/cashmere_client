@@ -7,7 +7,7 @@ const StackLayout = () => {
         headerTintColor: '#000',
         headerBackTitle: 'Indietro',
         title: 'Home',
-        headerShown: true,
+        headerShown: false,
       }}
     ></Stack>
   )
