@@ -63,7 +63,7 @@ function TabLayout() {
 
   const screens = () => [
     <Tabs.Screen
-      name="home"
+      name="index"
       key="home"
       options={{
         title: 'Home',
