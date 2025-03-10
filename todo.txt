@@ -1,26 +1,23 @@
-3 account stesso numero di cell tutti i prof bloccati
+admin:
+- calendario(completo con visualizzazione storico prenotzioni e.g. quale segretatio ha modificato la pren)
+- occupazione studi e ricerca veloce
+- conferma prenotazioni
+- gestisci personale (calendario fonici, ferie e disponibilita)
+- fatturazione e resoconti sul personale
+- gestione entita (aggiungi togli artisti da label/major)
 
-segreteria in chimata 
+segreteria:
+- calendario(completo)
+- occupazione studi e ricerca veloce
+- conferma prenotazioni(senza approvazione ferie)
+- gestione entita (aggiungi togli artisti da label/major)
 
-press su annuncio small 
+fonici:
+- calendario con le sue prenotazioni e disponibilita (o solo le sue prenotazioni)
+- gestione ferie
+- tutte le prenotazioni
 
-chat: click su immagine del messaggio apri profilo, click su nome anuncio in alto, apro annuncio
-
-segui profilo se verificato
-
-
-
-
-modifica header titolo modale
-
-mappe posizione in fondo v
-
-stella colorata parziale
-
-tipo numero stelle
-
-dove mettere componente profilo verificato
-
-profilo non verificato
-
-login
+user:
+- visualizza prenotazioni passate e future
+- inserisci prenotazioni
+-? mix&master

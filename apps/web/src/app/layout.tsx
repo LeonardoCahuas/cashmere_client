@@ -14,8 +14,8 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Siva24',
-  description: 'Noleggia con Siva',
+  title: 'Cashmere Studio',
+  description: 'Prenota una sessione a Cashmere Studio in via Oreste Salomonne a Milano',
 }
 
 export default function RootLayout({
@@ -25,7 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} bg-gray-100`}>{children}</body>
+      <head>
+        <link rel="icon" href='/cashmere-logo.svg'  type="image/svg+xml"/>
+      </head>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   )
 }
