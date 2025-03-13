@@ -5,10 +5,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'cashmere-main-blue':'#08B1DF',
         'siva-light-gray': '#F3F4F7',
         'siva-primary-green': '#00C15C',
         'siva-light-green': '#EFFFF6',
+        'cashmere-lightblue': '#EFFAFE',
         'siva-primary-red': '#FE0034',
+        'cashmere-dark-lightblue':'#41A6C2',
         'siva-dark-gray': '#CBCED5',
         'siva-main-text': '#222222',
         background: 'hsl(var(--background))',

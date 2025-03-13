@@ -69,27 +69,27 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="h-screen bg-white lg:px-36 overflow-y-auto py-32">
+    <div className="h-screen bg-white mx-auto overflow-y-auto py-16 sm:p-4 md:p-6 lg:p-8 xl:p-16">
       <div className="container mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
               <Button
-                variant={view === "timeGridDay" ? "secondary" : "outline"}
+                variant={view === "timeGridDay" ? "light_blue" : "gray"}
                 className="rounded-md px-4 py-2 text-sm font-medium"
                 onClick={() => handleViewChange("timeGridDay")}
               >
                 Giorno
               </Button>
               <Button
-                variant={view === "timeGridWeek" ? "secondary" : "outline"}
+                variant={view === "timeGridWeek" ? "light_blue" : "gray"}
                 className="rounded-md px-4 py-2 text-sm font-medium"
                 onClick={() => handleViewChange("timeGridWeek")}
               >
                 Settimana
               </Button>
               <Button
-                variant={view === "dayGridMonth" ? "secondary" : "outline"}
+                variant={view === "dayGridMonth" ? "light_blue" : "gray"}
                 className="rounded-md px-4 py-2 text-sm font-medium"
                 onClick={() => handleViewChange("dayGridMonth")}
               >
