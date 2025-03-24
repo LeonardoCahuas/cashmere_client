@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Calendar, Briefcase, X, Eye, ArrowUpDown } from "lucide-react"
+import { Calendar, Briefcase, Eye, ArrowUpDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { it } from "date-fns/locale"
@@ -14,112 +14,64 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ScrollArea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/Table"
 import { Input } from "@/components/Input"
+import { studios, services } from "@/lib/types"
+import type { Booking } from "@/types/booking"
+import type { BookingState, HolidayTypeType } from "@/types/types"
+import { useHoliday } from "@/hooks/useHoliday"
 
-type RequestType = "ferie" | "permesso" | null
+type RequestType = "FERIE" | "PERMESSO" | null
 
-// Tipo per le sessioni
-interface Sessione {
-  id: string
-  giornoRichiesta: {
-    giorno: string
-    ora: string
-  }
-  instagram: string
-  servizi: string[]
-  fonico: string
-  dataOra: {
-    giorno: string
-    oraInizio: string
-    oraFine: string
-  }
-  sala: string
-  stato: "Fuori orario" | "Accettata"
-  nomeArtista: string
-  entita?: {
-    nome: string
-    logo?: string
-  }
-  telefono?: string
+// Tipo per le ferie/permessi
+interface Holiday {
+  userId: string
+  start: Date
+  end: Date
+  type: HolidayTypeType
+  reason: string
 }
 
 // Dati di esempio
-const sessioni: Sessione[] = [
+const bookings: Booking[] = [
   {
     id: "1",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "17:42",
-    },
-    instagram: "@skugnizz",
-    servizi: ["Rec", "Affitto sala", "Mix & Master"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Ven, 7 febbraio",
-      oraInizio: "16:00",
-      oraFine: "21:00",
-    },
-    sala: "Studio 2",
-    stato: "Fuori orario",
-    nomeArtista: "Skugnizz",
-    entita: {
-      nome: "ADA Music",
-      logo: "ada",
-    },
-    telefono: "366 400 7807",
+    userId: "@skugnizz",
+    fonicoId: "Estel",
+    studioId: "fj2m48xyn0vrkzqwtlcsd96bp", // Studio 2
+    start: new Date("2024-02-07T16:00:00"),
+    end: new Date("2024-02-07T21:00:00"),
+    services: ["wtscbdf9xv7qkz0m2y4nlgr3p", "p4xv7qk2m90zylwtscbdg3nfr"], // Affitto sala, Registrazione
+    notes: "366 400 7807",
+    state: "FUORI_ORARIO" as BookingState,
   },
   {
     id: "2",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "00:34",
-    },
-    instagram: "@bl3dem",
-    servizi: ["Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Sab, 8 febbraio",
-      oraInizio: "14:00",
-      oraFine: "21:00",
-    },
-    sala: "Studio 3",
-    stato: "Accettata",
-    nomeArtista: "Bl3dem",
+    userId: "@bl3dem",
+    fonicoId: "Estel",
+    studioId: "m3v9xtkq2wsn74yl0cbdg5prz", // Studio 3
+    start: new Date("2024-02-08T14:00:00"),
+    end: new Date("2024-02-08T21:00:00"),
+    services: ["wtscbdf9xv7qkz0m2y4nlgr3p"], // Affitto sala
+    state: "ACCETTATA" as BookingState,
   },
   {
     id: "3",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "17:42",
-    },
-    instagram: "@oggkange",
-    servizi: ["Rec", "Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Ven, 7 febbraio",
-      oraInizio: "16:00",
-      oraFine: "21:00",
-    },
-    sala: "Studio 2",
-    stato: "Accettata",
-    nomeArtista: "Oggkange",
+    userId: "@oggkange",
+    fonicoId: "Estel",
+    studioId: "fj2m48xyn0vrkzqwtlcsd96bp", // Studio 2
+    start: new Date("2024-02-07T16:00:00"),
+    end: new Date("2024-02-07T21:00:00"),
+    services: ["wtscbdf9xv7qkz0m2y4nlgr3p", "p4xv7qk2m90zylwtscbdg3nfr"], // Affitto sala, Registrazione
+    state: "ACCETTATA" as BookingState,
   },
   {
     id: "4",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "00:34",
-    },
-    instagram: "Niky Savage",
-    servizi: ["Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Sab, 8 febbraio",
-      oraInizio: "14:00",
-      oraFine: "21:00",
-    },
-    sala: "Studio 3",
-    stato: "Accettata",
-    nomeArtista: "Niky Savage",
+    userId: "Niky Savage",
+    fonicoId: "Estel",
+    studioId: "m3v9xtkq2wsn74yl0cbdg5prz", // Studio 3
+    start: new Date("2024-02-08T14:00:00"),
+    end: new Date("2024-02-08T21:00:00"),
+    services: ["wtscbdf9xv7qkz0m2y4nlgr3p"], // Affitto sala
+    state: "ACCETTATA" as BookingState,
   },
 ]
 
@@ -141,8 +93,8 @@ export default function DashboardPage() {
 
   // Aggiungiamo stati per il modale di visualizzazione
   const [viewSessionDialogOpen, setViewSessionDialogOpen] = useState(false)
-  const [selectedSession, setSelectedSession] = useState<Sessione | null>(null)
-
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const { createHoliday } = useHoliday()
   const handleCalendarClick = () => {
     router.push("/admin/calendar")
   }
@@ -162,16 +114,45 @@ export default function DashboardPage() {
   }
 
   const handleSubmit = () => {
-    // Qui gestisci l'invio della richiesta
-    console.log({
-      type: requestType,
-      dateRange,
-      singleDate,
-      startTime,
-      endTime,
-      motivazione,
-    })
+    // Crea l'oggetto Holiday con le date corrette
+    const holiday: Holiday = {
+      userId: "cm6ds8hq80000w6d2y9ttjh7x", // Sostituire con l'ID utente corrente
+      start: new Date(),
+      end: new Date(),
+      reason: motivazione,
+      type: requestType || "FERIE"
+    }
+
+    if (requestType === "FERIE" && dateRange.from && dateRange.to) {
+      // Per le ferie: inizio alle 5 del mattino del giorno selezionato
+      const startDate = new Date(dateRange.from)
+      startDate.setHours(5, 0, 0, 0)
+
+      // Per le ferie: fine alle 5 del mattino del giorno DOPO quello selezionato
+      const endDate = new Date(dateRange.to)
+      endDate.setDate(endDate.getDate() + 1)
+      endDate.setHours(5, 0, 0, 0)
+
+      holiday.start = startDate
+      holiday.end = endDate
+    } else if (requestType === "PERMESSO" && singleDate && startTime && endTime) {
+      // Per i permessi: usa l'orario esatto specificato
+      const [startHour, startMinute] = startTime.split(":").map(Number)
+      const [endHour, endMinute] = endTime.split(":").map(Number)
+
+      const startDate = new Date(singleDate)
+      startDate.setHours(startHour, startMinute, 0, 0)
+
+      const endDate = new Date(singleDate)
+      endDate.setHours(endHour, endMinute, 0, 0)
+
+      holiday.start = startDate
+      holiday.end = endDate
+    }
+
+    console.log("Holiday request:", holiday)
     setRequestDialogOpen(false)
+    createHoliday(holiday)
     // Reset form
     setRequestType(null)
     setDateRange({ from: undefined, to: undefined })
@@ -181,16 +162,27 @@ export default function DashboardPage() {
     setMotivazione("")
   }
 
-  const handleViewSession = (sessione: Sessione) => {
-    setSelectedSession(sessione)
+  const handleViewSession = (booking: Booking) => {
+    setSelectedBooking(booking)
     setViewSessionDialogOpen(true)
+  }
+
+  // Funzioni helper per ottenere i nomi
+  const getStudioName = (studioId: string): string => {
+    const studio = studios.find((s) => s.id === studioId)
+    return studio ? studio.name : studioId
+  }
+
+  const getServiceName = (serviceId: string): string => {
+    const service = services.find((s) => s.id === serviceId)
+    return service ? service.name : serviceId
   }
 
   // Generiamo gli orari con intervalli di 15 minuti
   const timeOptions = Array.from({ length: 19 }, (_, i) => {
     const hour = (10 + i) % 24 // Partiamo da 10 e gestiamo il ciclo oltre la mezzanotte
     return `${hour.toString().padStart(2, "0")}:00`
-})
+  })
 
   // Formatta la data per la visualizzazione
   const formatDateRange = () => {
@@ -205,6 +197,28 @@ export default function DashboardPage() {
       return format(singleDate, "dd/MM/yyyy")
     }
     return "Seleziona data"
+  }
+
+  // Formatta data e ora
+  const formatDate = (date: Date | string): string => {
+    const d = new Date(date)
+    return format(d, "EEE, d MMMM", { locale: it })
+  }
+
+  const formatTime = (date: Date | string): string => {
+    const d = new Date(date)
+    return format(d, "HH:mm")
+  }
+
+  // Formatta la data di richiesta (per semplicità, uso la data di inizio meno un giorno)
+  const formatRequestDate = (date: Date): { day: string; time: string } => {
+    const requestDate = new Date(date)
+    requestDate.setDate(requestDate.getDate() - 1)
+
+    return {
+      day: format(requestDate, "EEE, d MMMM", { locale: it }),
+      time: format(requestDate, "HH:mm"),
+    }
   }
 
   return (
@@ -263,42 +277,46 @@ export default function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sessioni.map((sessione) => (
-                <TableRow key={sessione.id} className="border-t">
-                  <TableCell className="align-top">
-                    <div>{sessione.giornoRichiesta.giorno}</div>
-                    <div className="text-gray-500">{sessione.giornoRichiesta.ora}</div>
-                  </TableCell>
-                  <TableCell>{sessione.instagram}</TableCell>
-                  <TableCell className="align-top">
-                    {sessione.servizi.includes("Rec") && <div>Rec</div>}
-                    {sessione.servizi.includes("Affitto sala") && <div>Affitto sala</div>}
-                    {sessione.servizi.includes("Mix & Master") && <div>Mix & Master</div>}
-                  </TableCell>
-                  <TableCell className="text-pink-500">{sessione.fonico}</TableCell>
-                  <TableCell className="align-top">
-                    <div>{sessione.dataOra.giorno}</div>
-                    <div className="flex gap-4 text-gray-500">
-                      <span>{sessione.dataOra.oraInizio}</span>
-                      <span>{sessione.dataOra.oraFine}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{sessione.sala}</TableCell>
-                  <TableCell className={sessione.stato === "Accettata" ? "text-green-500" : "text-orange-500"}>
-                    {sessione.stato}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      className="rounded-full px-6 py-2 h-auto"
-                      onClick={() => handleViewSession(sessione)}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="sr-only">Visualizza</span>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {bookings.map((booking) => {
+                const requestDate = formatRequestDate(booking.start)
+
+                return (
+                  <TableRow key={booking.id} className="border-t">
+                    <TableCell className="align-top">
+                      <div>{requestDate.day}</div>
+                      <div className="text-gray-500">{requestDate.time}</div>
+                    </TableCell>
+                    <TableCell>{booking.userId}</TableCell>
+                    <TableCell className="align-top">
+                      {booking.services.map((serviceId, index) => (
+                        <div key={index}>{getServiceName(serviceId)}</div>
+                      ))}
+                    </TableCell>
+                    <TableCell className="text-pink-500">{booking.fonicoId}</TableCell>
+                    <TableCell className="align-top">
+                      <div>{formatDate(booking.start)}</div>
+                      <div className="flex gap-4 text-gray-500">
+                        <span>{formatTime(booking.start)}</span>
+                        <span>{formatTime(booking.end)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{getStudioName(booking.studioId)}</TableCell>
+                    <TableCell className={booking.state === "CONFERMATO" ? "text-green-500" : "text-orange-500"}>
+                      {booking.state === "CONFERMATO" ? "Accettata" : "Fuori orario"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        className="rounded-full px-6 py-2 h-auto"
+                        onClick={() => handleViewSession(booking)}
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">Visualizza</span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
             </TableBody>
           </Table>
         </div>
@@ -319,8 +337,8 @@ export default function DashboardPage() {
               <div className="grid grid-cols-2 gap-4">
                 <Button
                   variant="outline"
-                  className={`h-24 relative ${requestType === "ferie" ? "border-2 border-red-400" : ""}`}
-                  onClick={() => handleTypeSelect("ferie")}
+                  className={`h-24 relative ${requestType === "FERIE" ? "border-2 border-red-400" : ""}`}
+                  onClick={() => handleTypeSelect("FERIE")}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-red-400 flex items-center justify-center">
@@ -332,8 +350,8 @@ export default function DashboardPage() {
 
                 <Button
                   variant="outline"
-                  className={`h-24 relative ${requestType === "permesso" ? "border-2 border-orange-400" : ""}`}
-                  onClick={() => handleTypeSelect("permesso")}
+                  className={`h-24 relative ${requestType === "PERMESSO" ? "border-2 border-orange-400" : ""}`}
+                  onClick={() => handleTypeSelect("PERMESSO")}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-orange-400 flex items-center justify-center">
@@ -348,7 +366,7 @@ export default function DashboardPage() {
                 <>
                   <div>
                     <h3 className="text-lg font-semibold mb-2">Data e ora</h3>
-                    {requestType === "ferie" ? (
+                    {requestType === "FERIE" ? (
                       // Calendario per ferie (selezione range)
                       <div className="space-y-4">
                         <div className="border rounded-md p-4">
@@ -465,8 +483,8 @@ export default function DashboardPage() {
               disabled={
                 !requestType ||
                 !motivazione ||
-                (requestType === "ferie" && (!dateRange.from || !dateRange.to)) ||
-                (requestType === "permesso" && (!singleDate || !startTime || !endTime))
+                (requestType === "FERIE" && (!dateRange.from || !dateRange.to)) ||
+                (requestType === "PERMESSO" && (!singleDate || !startTime || !endTime))
               }
             >
               Conferma
@@ -479,97 +497,89 @@ export default function DashboardPage() {
       <Dialog open={viewSessionDialogOpen} onOpenChange={setViewSessionDialogOpen}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader className="flex flex-row items-center justify-between">
-            <DialogTitle className="text-center flex-1">{selectedSession?.instagram}</DialogTitle>
+            <DialogTitle className="text-center flex-1">{selectedBooking?.userId}</DialogTitle>
             <Button variant="outline" className="px-4">
               Modifica
             </Button>
           </DialogHeader>
 
-          {selectedSession && (
+          {selectedBooking && (
             <ScrollArea className="max-h-[80vh]">
               <div className="space-y-6 py-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Data e ora</h3>
                   <div className="flex items-center gap-4">
                     <div className="bg-gray-100 rounded-md py-3 px-4 flex-1">
-                      <span>{selectedSession.dataOra.giorno}</span>
+                      <span>{formatDate(selectedBooking.start)}</span>
                     </div>
                     <div className="bg-gray-100 rounded-md py-3 px-4 w-24 text-center">
-                      <span>{selectedSession.dataOra.oraInizio}</span>
+                      <span>{formatTime(selectedBooking.start)}</span>
                     </div>
                     <span>-</span>
                     <div className="bg-gray-100 rounded-md py-3 px-4 w-24 text-center">
-                      <span>{selectedSession.dataOra.oraFine}</span>
+                      <span>{formatTime(selectedBooking.end)}</span>
                     </div>
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Nome artista</h3>
-                  <Input value={selectedSession.nomeArtista} className="w-full" readOnly />
+                  <Input value={selectedBooking.userId} className="w-full" readOnly />
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Entità</h3>
                   <div className="border rounded-md p-3 flex items-center gap-3">
                     <div className="font-bold text-lg">ada</div>
-                    <span>{selectedSession.entita?.nome || "Non specificata"}</span>
+                    <span>{"Non specificata"}</span>
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Numero di telefono</h3>
-                  <Input value={selectedSession.telefono || "Non specificato"} className="w-full" readOnly />
+                  <Input value={selectedBooking.notes || "Non specificato"} className="w-full" readOnly />
                 </div>
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Servizi</h3>
                   <div className="flex gap-3">
-                    {selectedSession.servizi.includes("Affitto sala") && (
-                      <div className="border rounded-md p-3 flex-1 flex items-center gap-2 bg-blue-50 border-blue-200 text-blue-600">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
-                            fill="currentColor"
-                          />
-                          <path
-                            d="M19 4C15.96 4 13.1 5.17 11 7.09C8.9 5.17 6.04 4 3 4C3 4 1 14 11 20C21 14 19 4 19 4Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                        <span>Affitto sala</span>
-                      </div>
-                    )}
-                    {selectedSession.servizi.includes("Rec") && (
-                      <div className="border rounded-md p-3 flex-1 flex items-center gap-2 bg-blue-50 border-blue-200 text-blue-600">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
-                            fill="currentColor"
-                          />
-                          <path
-                            d="M19 4C15.96 4 13.1 5.17 11 7.09C8.9 5.17 6.04 4 3 4C3 4 1 14 11 20C21 14 19 4 19 4Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                        <span>Registrazione</span>
-                      </div>
-                    )}
-                    {selectedSession.servizi.includes("Mix & Master") && (
-                      <div className="border rounded-md p-3 flex-1 flex items-center gap-2">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
-                            fill="currentColor"
-                          />
-                          <path
-                            d="M19 4C15.96 4 13.1 5.17 11 7.09C8.9 5.17 6.04 4 3 4C3 4 1 14 11 20C21 14 19 4 19 4Z"
-                            fill="currentColor"
-                          />
-                        </svg>
-                        <span>Mix & Master</span>
-                      </div>
-                    )}
+                    {selectedBooking.services.map((serviceId, index) => {
+                      const serviceName = getServiceName(serviceId)
+                      const isAffittoSala = serviceName === "Affitto sala"
+                      const isRegistrazione = serviceName === "Registrazione"
+                      const isMixMaster = serviceName === "Mix&Master"
+
+                      return (
+                        <div
+                          key={index}
+                          className={`border rounded-md p-3 flex-1 flex items-center gap-2 ${isAffittoSala || isRegistrazione ? "bg-blue-50 border-blue-200 text-blue-600" : ""
+                            }`}
+                        >
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                              fill="currentColor"
+                            />
+                            <path
+                              d="M19 4C15.96 4 13.1 5.17 11 7.09C8.9 5.17 6.04 4 3 4C3 4 1 14 11 20C21 14 19 4 19 4Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span>
+                            {isAffittoSala && "Affitto sala"}
+                            {isRegistrazione && "Registrazione"}
+                            {isMixMaster && "Mix & Master"}
+                            {!isAffittoSala && !isRegistrazione && !isMixMaster && serviceName}
+                          </span>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

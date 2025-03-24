@@ -1,4 +1,4 @@
-import type { CreateBooking } from "@/types/types"
+import type { BookingState, CreateBooking, StateType } from "@/types/types"
 import api from "@/lib/axios"
 import axios from "axios"
 import { User } from "@/store/user-store"
@@ -100,26 +100,49 @@ export class BookingApi {
       throw error;
     }
   }
-  async getToConfirm(): Promise<any> {
-    try {
-     const response = await api.get<any>(`${this.BASE_PATH}/confirm`, {
-       headers: {
-         "Cache-Control": "no-cache",
-       },
-     })
-     console.log(response.data)
-     return response.data
-   } catch (error) {
-     console.log(error)
-     if (axios.isAxiosError(error)) {
-       throw {
-         message: error.response?.data?.message || " get Booking failed",
-         statusCode: error.response?.status || 500,
-       }
+
+ async getToConfirm(): Promise<any> {
+  try {
+   const response = await api.get<any>(`${this.BASE_PATH}/confirm`, {
+     headers: {
+       "Cache-Control": "no-cache",
+     },
+   })
+   console.log(response.data)
+   return response.data
+ } catch (error) {
+   console.log(error)
+   if (axios.isAxiosError(error)) {
+     throw {
+       message: error.response?.data?.message || " get Booking failed",
+       statusCode: error.response?.status || 500,
      }
-     throw error
-   } 
- }
+   }
+   throw error
+ } 
+}
+
+async updateState(id: string, state: StateType): Promise<any> {
+  console.log(id)
+  try {
+    const response = await api.put<any>(`${this.BASE_PATH}/${id}/${state}`, {
+      headers: {
+        "Cache-Control": "no-cache",
+      },
+    })
+    console.log(response.data)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    if (axios.isAxiosError(error)) {
+      throw {
+        message: error.response?.data?.message || "Booking update failed",
+        statusCode: error.response?.status || 500,
+      }
+    }
+    throw error
+  }
+}
 }
 
 export const bookingApi = BookingApi.getInstance()

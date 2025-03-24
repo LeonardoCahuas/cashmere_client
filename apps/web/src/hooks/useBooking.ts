@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import type { ApiError } from "@/types/auth"
-import type { CreateBooking } from "@/types/types"
+import type { CreateBooking, StateType } from "@/types/types"
 import { bookingApi } from "@/api/booking"
 import { useUserStore } from "@/store/user-store"
 
@@ -55,6 +55,21 @@ export const useBooking = () => {
         }
     }
 
+    const updateBookingState = async (id: string, state: StateType) => {
+        console.log(id)
+        try {
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.updateState(id, state)
+            return response
+        } catch (err) {
+            setError(err as ApiError)
+            return null
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
     const deleteBooking = async (id: string) => {
         try {
           setIsLoading(true);
@@ -90,6 +105,7 @@ export const useBooking = () => {
         updateBooking,
         deleteBooking,
         getToConfirm,
+        updateBookingState,
         isLoading,
         error,
     }

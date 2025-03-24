@@ -1,7 +1,8 @@
 export enum BookingState {
   CONTATTARE = "CONTATTARE",
   CONFERMATO = "CONFERMATO",
-  CONTATTATO = "CONTATTATO"
+  CONTATTATO = "CONTATTATO",
+  ANNULLATO = "ANNULLATO"
 }
 
 export interface User {
