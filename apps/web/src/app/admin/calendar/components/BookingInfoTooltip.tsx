@@ -15,7 +15,7 @@ interface BookingInfoTooltipProps {
 
 export function BookingInfoTooltip({ event, position, onClose }: BookingInfoTooltipProps) {
   const tooltipRef = useRef<HTMLDivElement>(null)
-
+  console.log(event)
   const users = getMockUsers()
   const fonici = getMockFonici()
   const studios = getMockStudios()
@@ -68,7 +68,7 @@ export function BookingInfoTooltip({ event, position, onClose }: BookingInfoTool
           <User className="h-4 w-4 mt-0.5 text-primary" />
           <div>
             <p className="font-medium">Fonico</p>
-            <p>{fonico?.name}</p>
+            <p>{event.fonicoId}</p>
           </div>
         </div>
 
@@ -76,17 +76,17 @@ export function BookingInfoTooltip({ event, position, onClose }: BookingInfoTool
           <MapPin className="h-4 w-4 mt-0.5 text-primary" />
           <div>
             <p className="font-medium">Studio</p>
-            <p>{studio?.name}</p>
+            <p>{event.studioId}</p>
           </div>
         </div>
 
-        {eventServices.length > 0 && (
+        {event.services.length > 0 && (
           <div className="flex items-start gap-2 text-sm">
             <Clock className="h-4 w-4 mt-0.5 text-primary" />
             <div>
               <p className="font-medium">Servizi</p>
               <ul className="list-disc pl-4">
-                {eventServices.map((service) => (
+                {event.services.map((service) => (
                   <li key={service.id}>{service.name}</li>
                 ))}
               </ul>

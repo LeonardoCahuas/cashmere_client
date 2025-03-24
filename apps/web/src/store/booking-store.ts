@@ -2,7 +2,6 @@ import { create } from "zustand"
 
 export type ServiceType = "recording" | "mixing" | null
 export type PackageType = "2h-mix" | "2h-mix-beat" | "4h-2mix" | "beat-session" | null
-export type Studio = "1" | "2" | "3" | "4"
 export type Engineer = "Primo fonico" | "Sleza" | "Tarantino" | "Rivreck" | "Nicholas Frey" | "Emdi"
 
 interface BookingState {
@@ -16,7 +15,7 @@ interface BookingState {
   timeTo: string | null
 
   // Step 3: Studio
-  selectedStudio: Studio | null
+  selectedStudio: string | null
 
   // Step 4: Engineer
   needsEngineer: boolean
@@ -32,7 +31,7 @@ interface BookingState {
   setSelectedPackage: (pkg: PackageType) => void
   setSelectedDate: (date: Date | null) => void
   setTimeRange: (from: string | null, to: string | null) => void
-  setSelectedStudio: (studio: Studio | null) => void
+  setSelectedStudio: (studio: string | null) => void
   setNeedsEngineer: (needs: boolean) => void
   setSelectedEngineer: (engineer: Engineer | null) => void
   setContactInfo: (instagram: string, phone: string, notes: string) => void

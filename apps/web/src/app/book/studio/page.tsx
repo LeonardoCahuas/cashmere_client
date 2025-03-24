@@ -5,7 +5,7 @@ import { Button } from "@/components/Button"
 import { BackButton } from "../components/BackButton"
 import { BookingSummary } from "../components/BookingSummary"
 import { StudioCard } from "./components/StudioCard"
-import { Studio, useBookingStore } from "../../../store/booking-store"
+import { useBookingStore } from "../../../store/booking-store"
 
 interface DateAlternative{
     timeRange:string
@@ -17,7 +17,7 @@ interface UnavailabilityInfo{
 }
 
 interface StudioCardProps {
-    id: Studio
+    id: string
     name:string
     description:string
     image:string
@@ -27,28 +27,28 @@ interface StudioCardProps {
 
 const studios: StudioCardProps[] = [
   {
-    id: "1",
+    id: "a9xgk7yq34mnp0z2vwsdl5btc",
     name: "Studio 1",
     description: "Il nostro studio di punta.",
     image: "/Studio 1/1.jpg",
     isAvailable: true,
   },
   {
-    id: "2",
+    id: "fj2m48xyn0vrkzqwtlcsd96bp",
     name: "Studio 2",
     description: "Garantisce registrazioni di massima qualità.",
     image: "/Studio 2/1.jpg",
     isAvailable: true,
   },
   {
-    id: "3",
+    id: "m3v9xtkq2wsn74yl0cbdg5prz",
     name: "Studio 3",
     description: "Studio ideale per momenti creativi.",
     image: "/Studio 3/1.jpg",
     isAvailable: true,
   },
   {
-    id: "4",
+    id: "z7wqktx3y0m24vn9slcbdg5rp",
     name: "Studio 4",
     description: "Descrizione",
     image: "/Studio 3/1.jpg",

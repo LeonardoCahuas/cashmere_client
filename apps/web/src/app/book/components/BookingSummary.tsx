@@ -11,7 +11,7 @@ export function SummaryContent() {
         <div className="flex flex-row flex-wrap gap-4">
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
                 <span className="mr-1">Servizi: </span>
-                <span className='font-semibold'> {selectedServices.join(', ')}</span>
+                <span className='font-semibold'> {selectedServices.join(', ')}, {selectedPackage}</span>
             </div>
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
                 <span className="mr-1">Data:</span>

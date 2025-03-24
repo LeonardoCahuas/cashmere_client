@@ -21,3 +21,13 @@ user:
 - visualizza prenotazioni passate e future
 - inserisci prenotazioni
 -? mix&master
+
+
+
+
+
+
+
+
+fonici disponibilita 
+prenotazione (da user e da calendar)

@@ -5,30 +5,37 @@ import { Button } from "@/components/Button"
 import { RadioGroup, RadioGroupItem } from "@/components/RadioGroup"
 import { Label } from "@/components/Label"
 import ServiceCard from "./components/ServiceCard"
-import { useBookingStore, type ServiceType, type PackageType } from "../../store/booking-store"
+import { useBookingStore } from "../../store/booking-store"
 import Image from "next/image"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
+// Definizione dei tipi
+export type ServiceType = "p4xv7qk2m90zylwtscbdg3nfr" | "y0m2xv7qkz4nlwt3cbdf9srpg" | "wtscbdf9xv7qkz0m2y4nlgr3p"
+export type PackageType = "ivljinhh3cj10wem26i7mup2kr" | "x8o0secmg2jie6o3jqiviaz7kx" | "bre5y3oupkoy1p5n6adf9w5kyr" | "838jf1d16rf5q25ddlxszgtxo6"
+
 export default function BookingPage() {
-    const [services, setServices] = useState<Array<"recording" | "mixing">>([])
+    const [services, setServices] = useState<ServiceType[]>([])
     const { selectedServices, selectedPackage, setSelectedServices, setSelectedPackage } = useBookingStore()
     const router = useRouter()
 
     const toggleService = (service: ServiceType) => {
         if (!service) return
-        const newServices = services.includes(service)
-            ? services.filter((s) => s !== service)
-            : [...services, service]
 
-        setServices(newServices)
-        console.log(newServices)
-        setSelectedPackage(null)
+        if (service === "wtscbdf9xv7qkz0m2y4nlgr3p") {
+            setServices(["wtscbdf9xv7qkz0m2y4nlgr3p"])
+            setSelectedPackage(null)
+        } else {
+            const newServices = services.includes(service)
+                ? services.filter((s) => s !== service)
+                : [...services.filter((s) => s !== "wtscbdf9xv7qkz0m2y4nlgr3p"), service]
+            setServices(newServices)
+        }
     }
 
     const handlePackageSelect = (pkg: PackageType) => {
+        if (services.includes("wtscbdf9xv7qkz0m2y4nlgr3p")) return
         setSelectedPackage(pkg)
-        setSelectedServices([])
     }
 
     const canProceed = services.length > 0 || selectedPackage !== null
@@ -57,8 +64,8 @@ export default function BookingPage() {
                         <ServiceCard
                             title="Registrazione"
                             description="La fase di registrazione è quella in cui l'artista viene al microfono e registra le sue parti vocali."
-                            selected={services.includes("recording")}
-                            onSelect={() => toggleService("recording")}
+                            selected={services.includes("p4xv7qk2m90zylwtscbdg3nfr")}
+                            onSelect={() => toggleService("p4xv7qk2m90zylwtscbdg3nfr")}
                             imageUrl="/Microfono.svg"
                         />
 
@@ -66,8 +73,16 @@ export default function BookingPage() {
                             imageUrl="/Mix & Master.svg"
                             title="Mix & Master"
                             description="Il Mix & Master è il processo finale di lavorazione sul beat e sulla voce, che serve a far suonare in modo professionale una canzone."
-                            selected={services.includes("mixing")}
-                            onSelect={() => toggleService("mixing")}
+                            selected={services.includes("y0m2xv7qkz4nlwt3cbdf9srpg")}
+                            onSelect={() => toggleService("y0m2xv7qkz4nlwt3cbdf9srpg")}
+                        />
+
+                        <ServiceCard
+                            imageUrl="/Studio.svg"
+                            title="Affitto Sala"
+                            description="Affitta la sala per le tue sessioni senza servizi aggiuntivi."
+                            selected={services.includes("wtscbdf9xv7qkz0m2y4nlgr3p")}
+                            onSelect={() => toggleService("wtscbdf9xv7qkz0m2y4nlgr3p")}
                         />
                     </div>
                 </div>
@@ -95,13 +110,13 @@ export default function BookingPage() {
                             className="grid grid-cols-1 md:grid-cols-2 gap-4"
                         >
                             {[
-                                { id: "2h-mix", label: "2h + Mix & Master" },
-                                { id: "2h-mix-beat", label: "2h + Mix & Master + Beat" },
-                                { id: "4h-2mix", label: "4h + 2 Mix & Master" },
-                                { id: "beat-session", label: "Beat in session" },
+                                { id: "ivljinhh3cj10wem26i7mup2kr", label: "2h + Mix & Master" },
+                                { id: "x8o0secmg2jie6o3jqiviaz7kx", label: "2h + Mix & Master + Beat" },
+                                { id: "bre5y3oupkoy1p5n6adf9w5kyr", label: "4h + 2 Mix & Master" },
+                                { id: "838jf1d16rf5q25ddlxszgtxo6", label: "Beat in session" },
                             ].map((pkg) => (
                                 <div key={pkg.id} className="flex items-center space-x-2">
-                                    <RadioGroupItem value={pkg.id} id={pkg.id} />
+                                    <RadioGroupItem value={pkg.id} id={pkg.id} disabled={services.includes("wtscbdf9xv7qkz0m2y4nlgr3p")} />
                                     <Label htmlFor={pkg.id}>{pkg.label}</Label>
                                 </div>
                             ))}

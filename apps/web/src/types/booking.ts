@@ -1,8 +1,9 @@
+import { BookingState } from "@/app/admin/calendar/types/booking"
 import { RoleType } from "@/store/user-store"
 import type { Session as SupabaseSession } from "@supabase/supabase-js"
 
 export interface BookingCreateRequest {
-    userId: string
+    userId: string | null
     fonicoId: string
     studioId: string
     start: Date
@@ -58,4 +59,16 @@ export interface AuthError {
 
 export interface GooGleLoginDTO{
   supabaseToken: string
+}
+
+export interface Booking {
+  id: string
+  userId: string
+  fonicoId: string
+  studioId: string
+  start: Date
+  end: Date
+  services: string[]
+  notes?: string
+  state: BookingState
 }

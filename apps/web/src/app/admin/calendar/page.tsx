@@ -19,13 +19,29 @@ import { Button } from '@/components/Button'
 import { BookingCalendar } from './components/Calendar'
 import { format } from 'date-fns'
 import { it } from 'date-fns/locale'
+import { studios } from '@/lib/types'
+import { useUser } from '@/hooks/useUser'
 
 export default function CalendarPage() {
   const [view, setView] = useState<"timeGridDay" | "timeGridWeek" | "dayGridMonth">("timeGridWeek")
   const [selectedStudio, setSelectedStudio] = useState<string>("all")
   const [selectedFonico, setSelectedFonico] = useState<string>("all")
   const [date, setDate] = useState<Date>(new Date())
+  const [engineers, setEngineers] = useState<any[]>([])
   const calendarRef = useRef(null)
+
+  // Call the getEngineers function from the useUser hook when the component mounts
+  const { getEngineers } = useUser()
+
+  useEffect(() => {
+    const fetchEngineers = async () => {
+      const engns = await getEngineers()
+      console.log(engns)
+      setEngineers(engns)
+    }
+
+    fetchEngineers()
+  }, [])
 
   const handleViewChange = (newView: "timeGridDay" | "timeGridWeek" | "dayGridMonth") => {
     setView(newView)
@@ -119,10 +135,13 @@ export default function CalendarPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tutti gli studi</SelectItem>
-                  <SelectItem value="studio1">Studio 1</SelectItem>
-                  <SelectItem value="studio2">Studio 2</SelectItem>
-                  <SelectItem value="studio3">Studio 3</SelectItem>
-                  <SelectItem value="studio4">Studio 4</SelectItem>
+                  {
+                    studios.map((studio) => {
+                      return (
+                        <SelectItem key={studio.id} value={studio.id}>{studio.name}</SelectItem>
+                      )
+                    })
+                  }
                 </SelectContent>
               </Select>
 
@@ -132,9 +151,13 @@ export default function CalendarPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tutti i fonici</SelectItem>
-                  <SelectItem value="tizio">Tizio</SelectItem>
-                  <SelectItem value="caio">Caio</SelectItem>
-                  <SelectItem value="sempronio">Sempronio</SelectItem>
+                  {
+                    engineers.map((en) => {
+                      return (
+                        <SelectItem key={en.id} value={en.id}>{en.username}</SelectItem>
+                      )
+                    })
+                  }
                 </SelectContent>
               </Select>
 
@@ -164,4 +187,3 @@ export default function CalendarPage() {
     </div>
   )
 }
-

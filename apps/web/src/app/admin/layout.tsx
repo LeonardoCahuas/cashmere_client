@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/Button"
-import { Calendar, Phone, Music, Menu, Home, CheckCircle, Settings, Sun } from 'lucide-react'
+import { Calendar, Phone, Music, Menu, Home, CheckCircle, Settings, Sun, Music2 } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from "@/lib/utils"
 import Image from 'next/image'
@@ -33,7 +33,7 @@ const sidebarItems: SidebarItem[] = [
   {
     icon: <Phone className="min-w-4 h-4" />,
     label: "Fonici",
-    href: "/admin/engineers"
+    href: "/admin/availability"
   },
   {
     icon: <Sun className="min-w-4 h-4" />,
@@ -41,9 +41,9 @@ const sidebarItems: SidebarItem[] = [
     href: "/admin/holidays"
   },
   {
-    icon: <Settings className="min-w-4 h-4" />,
-    label: "Impostazioni",
-    href: "/admin/settings"
+    icon: <Music2 className="min-w-4 h-4" />,
+    label: "Entità",
+    href: "/admin/entities"
   }
 ]
 
@@ -55,7 +55,7 @@ export default function AdminLayout({
   const [isCollapsed, setIsCollapsed] = useState(true)
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-y-auto flex">
       {/* Sidebar */}
       <div 
         className={cn(

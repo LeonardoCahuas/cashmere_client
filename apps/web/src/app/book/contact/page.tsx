@@ -6,17 +6,41 @@ import { Input } from "@/components/Input"
 import { BackButton } from "../components/BackButton"
 import { BookingSummary, SummaryContent } from "../components/BookingSummary"
 import { useBookingStore } from "../../../store/booking-store"
-import type React from "react" // Import React
+import type React from "react"
 import Link from "next/link"
 import { BookButton } from "../components/BookButton"
+import { BookingCreateRequest } from "@/types/booking"
+import { useAuth } from "@/hooks/useAuth"
+import { useUserStore } from "@/store/user-store"
+import { useBooking } from "@/hooks/useBooking"
+
+function combineDateAndTime(date: Date, time: string): Date {
+    const [hours, minutes] = time.split(":").map(Number);
+    const result = new Date(date);
+    result.setHours(hours, minutes, 0, 0);
+    return result;
+}
 
 export default function ContactPage() {
-    const { instagramUsername, phoneNumber, notes, setContactInfo, selectedEngineer, selectedServices, selectedDate, timeTo, timeFrom  } = useBookingStore()
+    const { instagramUsername, phoneNumber, notes, setContactInfo, selectedEngineer, selectedStudio, selectedServices, selectedDate, timeTo, timeFrom, selectedPackage  } = useBookingStore()
+    const { user } = useUserStore()  
+    const { createBooking} = useBooking()
 
     const handleSubmit = (e: React.FormEvent) => {
+        console.log(timeFrom)
+        console.log(timeTo)
+        const booking: BookingCreateRequest = {
+            userId: user.id || '',             
+            fonicoId: 'cm6ds8hq80000w6d2y9ttjh7x',
+            studioId: selectedStudio,
+            start: combineDateAndTime(selectedDate, timeFrom),
+            end: combineDateAndTime(selectedDate, timeTo),
+            services: selectedPackage ? [...selectedServices, selectedPackage] : selectedServices,
+            notes:'note'
+        }
+        console.log(booking)
         e.preventDefault()
-        // Qui implementeresti la logica di invio della prenotazione
-        console.log("Prenotazione inviata")
+        const res = createBooking(booking)
     }
 
     return (

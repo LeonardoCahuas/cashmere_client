@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Check, Eye, X, ArrowUpDown } from "lucide-react"
-
+import { BookingCreateRequest, Booking } from "@/types/booking"
 import { Button } from "@/components/Button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/Dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/Table"
@@ -18,6 +18,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/Pagination"
+import { useBooking } from "@/hooks/useBooking"
 
 // Tipi più strutturati
 type Servizio = "Rec" | "Affitto sala" | "Mix & Master" | "Registrazione"
@@ -51,276 +52,26 @@ interface Prenotazione {
   telefono?: string
 }
 
-// Dati di esempio con timestamp per ordinamento
-const prenotazioni: Prenotazione[] = [
-  {
-    id: "1",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "17:42",
-      timestamp: new Date(2024, 1, 7, 17, 42).getTime(),
-    },
-    instagram: "@skugnizz",
-    servizi: ["Rec", "Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Ven, 7 febbraio",
-      oraInizio: "16:00",
-      oraFine: "21:00",
-      timestamp: new Date(2024, 1, 7, 16, 0).getTime(),
-    },
-    sala: "Studio 2",
-    stato: "Contattato",
-    nomeArtista: "Skugnizz",
-    entita: {
-      nome: "ADA Music",
-      logo: "ada",
-    },
-    telefono: "366 400 7807",
-  },
-  {
-    id: "2",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "00:34",
-      timestamp: new Date(2024, 1, 7, 0, 34).getTime(),
-    },
-    instagram: "@bl3dem",
-    servizi: ["Affitto sala"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Sab, 8 febbraio",
-      oraInizio: "14:00",
-      oraFine: "21:00",
-      timestamp: new Date(2024, 1, 8, 14, 0).getTime(),
-    },
-    sala: "Studio 3",
-    stato: "Da contattare",
-    nomeArtista: "Bl3dem",
-    telefono: "333 123 4567",
-  },
-  {
-    id: "3",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "17:42",
-      timestamp: new Date(2024, 1, 7, 17, 42).getTime(),
-    },
-    instagram: "@skugnizz",
-    servizi: ["Rec", "Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Ven, 7 febbraio",
-      oraInizio: "16:00",
-      oraFine: "21:00",
-      timestamp: new Date(2024, 1, 7, 16, 0).getTime(),
-    },
-    sala: "Studio 2",
-    stato: "Contattato",
-    nomeArtista: "Skugnizz",
-    entita: {
-      nome: "ADA Music",
-      logo: "ada",
-    },
-    telefono: "366 400 7807",
-  },
-  {
-    id: "4",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "00:34",
-      timestamp: new Date(2024, 1, 7, 0, 34).getTime(),
-    },
-    instagram: "@bl3dem",
-    servizi: ["Affitto sala"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Sab, 8 febbraio",
-      oraInizio: "14:00",
-      oraFine: "21:00",
-      timestamp: new Date(2024, 1, 8, 14, 0).getTime(),
-    },
-    sala: "Studio 3",
-    stato: "Da contattare",
-    nomeArtista: "Bl3dem",
-    telefono: "333 123 4567",
-  },
-  // Aggiungiamo più dati per testare la paginazione
-  {
-    id: "5",
-    giornoRichiesta: {
-      giorno: "Lun, 4 febbraio",
-      ora: "10:15",
-      timestamp: new Date(2024, 1, 4, 10, 15).getTime(),
-    },
-    instagram: "@marco_rossi",
-    servizi: ["Registrazione", "Mix & Master"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Mer, 6 febbraio",
-      oraInizio: "09:00",
-      oraFine: "13:00",
-      timestamp: new Date(2024, 1, 6, 9, 0).getTime(),
-    },
-    sala: "Studio 1",
-    stato: "Contattato",
-    nomeArtista: "Marco Rossi",
-    telefono: "345 678 9012",
-  },
-  {
-    id: "6",
-    giornoRichiesta: {
-      giorno: "Mar, 5 febbraio",
-      ora: "14:30",
-      timestamp: new Date(2024, 1, 5, 14, 30).getTime(),
-    },
-    instagram: "@laura_bianchi",
-    servizi: ["Affitto sala"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Gio, 7 febbraio",
-      oraInizio: "18:00",
-      oraFine: "22:00",
-      timestamp: new Date(2024, 1, 7, 18, 0).getTime(),
-    },
-    sala: "Studio 2",
-    stato: "Da contattare",
-    nomeArtista: "Laura Bianchi",
-    telefono: "333 987 6543",
-  },
-  {
-    id: "7",
-    giornoRichiesta: {
-      giorno: "Mer, 6 febbraio",
-      ora: "09:20",
-      timestamp: new Date(2024, 1, 6, 9, 20).getTime(),
-    },
-    instagram: "@giovanni_verdi",
-    servizi: ["Rec", "Mix & Master"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Lun, 10 febbraio",
-      oraInizio: "10:00",
-      oraFine: "15:00",
-      timestamp: new Date(2024, 1, 10, 10, 0).getTime(),
-    },
-    sala: "Studio 1",
-    stato: "Contattato",
-    nomeArtista: "Giovanni Verdi",
-    telefono: "347 123 4567",
-  },
-  {
-    id: "8",
-    giornoRichiesta: {
-      giorno: "Gio, 7 febbraio",
-      ora: "11:45",
-      timestamp: new Date(2024, 1, 7, 11, 45).getTime(),
-    },
-    instagram: "@anna_neri",
-    servizi: ["Registrazione"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Mar, 11 febbraio",
-      oraInizio: "14:00",
-      oraFine: "18:00",
-      timestamp: new Date(2024, 1, 11, 14, 0).getTime(),
-    },
-    sala: "Studio 3",
-    stato: "Da contattare",
-    nomeArtista: "Anna Neri",
-    telefono: "339 876 5432",
-  },
-  {
-    id: "9",
-    giornoRichiesta: {
-      giorno: "Ven, 8 febbraio",
-      ora: "16:10",
-      timestamp: new Date(2024, 1, 8, 16, 10).getTime(),
-    },
-    instagram: "@paolo_gialli",
-    servizi: ["Affitto sala", "Rec"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Mer, 12 febbraio",
-      oraInizio: "09:00",
-      oraFine: "14:00",
-      timestamp: new Date(2024, 1, 12, 9, 0).getTime(),
-    },
-    sala: "Studio 2",
-    stato: "Contattato",
-    nomeArtista: "Paolo Gialli",
-    telefono: "348 765 4321",
-  },
-  {
-    id: "10",
-    giornoRichiesta: {
-      giorno: "Sab, 9 febbraio",
-      ora: "10:30",
-      timestamp: new Date(2024, 1, 9, 10, 30).getTime(),
-    },
-    instagram: "@francesca_blu",
-    servizi: ["Mix & Master"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Gio, 13 febbraio",
-      oraInizio: "15:00",
-      oraFine: "19:00",
-      timestamp: new Date(2024, 1, 13, 15, 0).getTime(),
-    },
-    sala: "Studio 1",
-    stato: "Da contattare",
-    nomeArtista: "Francesca Blu",
-    telefono: "340 123 7890",
-  },
-  {
-    id: "11",
-    giornoRichiesta: {
-      giorno: "Dom, 10 febbraio",
-      ora: "18:20",
-      timestamp: new Date(2024, 1, 10, 18, 20).getTime(),
-    },
-    instagram: "@roberto_viola",
-    servizi: ["Registrazione", "Affitto sala"],
-    fonico: "Estel",
-    dataOra: {
-      giorno: "Ven, 14 febbraio",
-      oraInizio: "10:00",
-      oraFine: "16:00",
-      timestamp: new Date(2024, 1, 14, 10, 0).getTime(),
-    },
-    sala: "Studio 3",
-    stato: "Contattato",
-    nomeArtista: "Roberto Viola",
-    telefono: "335 678 9012",
-  },
-  {
-    id: "12",
-    giornoRichiesta: {
-      giorno: "Lun, 11 febbraio",
-      ora: "09:15",
-      timestamp: new Date(2024, 1, 11, 9, 15).getTime(),
-    },
-    instagram: "@chiara_rosa",
-    servizi: ["Mix & Master"],
-    fonico: "Senza fonico",
-    dataOra: {
-      giorno: "Sab, 15 febbraio",
-      oraInizio: "14:00",
-      oraFine: "20:00",
-      timestamp: new Date(2024, 1, 15, 14, 0).getTime(),
-    },
-    sala: "Studio 2",
-    stato: "Da contattare",
-    nomeArtista: "Chiara Rosa",
-    telefono: "339 012 3456",
-  },
-]
 
 export default function Confirm() {
-  const [prenotazioniState, setPrenotazioniState] = useState<Prenotazione[]>(prenotazioni)
+  const [prenotazioniState, setPrenotazioniState] = useState<Booking[]>([])
   const [selectedPrenotazione, setSelectedPrenotazione] = useState<Prenotazione | null>(null)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
+  const [bookings, setBookings] = useState([])
+  const { getToConfirm} = useBooking()
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const data = await getToConfirm()
+      setBookings(data)
+    }
+
+    // Effettua il fetch solo una volta
+    if (bookings.length === 0) {
+      fetchBookings()
+    }
+  }, []) 
 
   // Stato per paginazione
   const [currentPage, setCurrentPage] = useState(1)

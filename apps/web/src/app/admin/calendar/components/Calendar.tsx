@@ -1,17 +1,18 @@
-'use client'
+"use client"
 
-import { forwardRef, useRef, useState, useCallback, useEffect, useImperativeHandle } from 'react'
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import itLocale from '@fullcalendar/core/locales/it'
-import { BookingState, CalendarEvent, Booking, DraggedEvent, BookingFormData } from '../types/booking'
-import { BookingDialog } from './BookingDialog'
-import { BookingInfoTooltip } from './BookingInfoTooltip'
-import { ConfirmDialog } from './ConfirmDialog'
-import { generateMockBookings } from '../lib/data'
-import { format } from 'date-fns'
+import { forwardRef, useRef, useState, useCallback, useEffect, useImperativeHandle } from "react"
+import FullCalendar from "@fullcalendar/react"
+import dayGridPlugin from "@fullcalendar/daygrid"
+import timeGridPlugin from "@fullcalendar/timegrid"
+import interactionPlugin from "@fullcalendar/interaction"
+import itLocale from "@fullcalendar/core/locales/it"
+import type { Booking, CalendarEvent } from "../types/booking"
+import { useBooking } from "@/hooks/useBooking"
+import { BookingInfoTooltip } from "./BookingInfoTooltip"
+import { BookingDialog } from "./BookingDialog"
+import { format } from "date-fns"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/Dialog"
+import { Button } from "@/components/Button"
 
 interface BookingCalendarProps {
   view: "timeGridDay" | "timeGridWeek" | "dayGridMonth"
@@ -22,19 +23,47 @@ interface BookingCalendarProps {
 export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
   ({ view, selectedStudio, selectedFonico }, ref) => {
     const calendarRef = useRef<any>(null)
-    const [bookings, setBookings] = useState<CalendarEvent[]>(generateMockBookings())
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
     const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false)
-    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
-    const [newBookingData, setNewBookingData] = useState<Partial<BookingFormData> | null>(null)
-    const [draggedEvent, setDraggedEvent] = useState<DraggedEvent | null>(null)
+    const [bookings, setBookings] = useState<CalendarEvent[]>([])
     const [tooltipEvent, setTooltipEvent] = useState<CalendarEvent | null>(null)
     const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
+
+    // Stato per il modale di conferma
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+    const [modifiedEvent, setModifiedEvent] = useState<any>(null)
+    const [modificationInfo, setModificationInfo] = useState<{
+      start: string
+      end: string
+      type: "resize" | "drop"
+      originalEvent: any
+    } | null>(null)
+
+    const { getAll, createBooking, updateBooking, deleteBooking } = useBooking()
+
+    // Chiamata iniziale per ottenere le prenotazioni
+    useEffect(() => {
+      const fetchBookings = async () => {
+        const data = await getAll()
+        setBookings(data)
+      }
+
+      // Effettua il fetch solo una volta
+      if (bookings.length === 0) {
+        fetchBookings()
+      }
+    }, [])
+
+    const refresh = async () => {
+      const data = await getAll()
+        setBookings(data)
+    }
 
     useImperativeHandle(ref, () => ({
       getApi: () => calendarRef.current?.getApi(),
     }))
 
+    // Aggiorna la vista quando cambia la view
     useEffect(() => {
       const api = calendarRef.current?.getApi()
       if (api && api.view.type !== view) {
@@ -44,142 +73,207 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
       }
     }, [view])
 
-    const filteredEvents = bookings.filter((booking) => {
-      if (selectedStudio !== "all" && booking.extendedProps.studioId !== selectedStudio) {
-        return false
-      }
-      if (selectedFonico !== "all" && booking.extendedProps.fonicoId !== selectedFonico) {
-        return false
-      }
-      return true
-    })
-
-    const handleEventClick = useCallback((info: any) => {
-      setSelectedEvent(info.event.extendedProps as CalendarEvent)
-      setIsBookingDialogOpen(true)
-    }, [])
-
-    const handleDateSelect = useCallback((selectInfo: any) => {
-      const newBooking: Partial<BookingFormData> = {
-        start: selectInfo.start,
-        end: selectInfo.end,
-      }
-      setNewBookingData(newBooking)
-      setIsBookingDialogOpen(true)
-    }, [])
-
-    const handleEventDrop = useCallback((dropInfo: any) => {
-      const draggedEvent: DraggedEvent = {
-        event: dropInfo.event,
-        oldStart: dropInfo.oldEvent.start,
-        oldEnd: dropInfo.oldEvent.end,
-        newStart: dropInfo.event.start,
-        newEnd: dropInfo.event.end,
-      }
-      setDraggedEvent(draggedEvent)
-      setIsConfirmDialogOpen(true)
-    }, [])
-
-    const handleEventResize = useCallback((resizeInfo: any) => {
-      const draggedEvent: DraggedEvent = {
-        event: resizeInfo.event,
-        oldStart: resizeInfo.prevEvent.start,
-        oldEnd: resizeInfo.prevEvent.end,
-        newStart: resizeInfo.event.start,
-        newEnd: resizeInfo.event.end,
-      }
-      setDraggedEvent(draggedEvent)
-      setIsConfirmDialogOpen(true)
-    }, [])
-
+    // Gestione mouse hover per il tooltip
     const handleEventMouseEnter = useCallback((mouseEnterInfo: any) => {
       const event = mouseEnterInfo.event.extendedProps as CalendarEvent
-      setTooltipEvent(event)
+      // Aggiungi start e end direttamente se non sono già inclusi
+      const eventWithTimes = {
+        ...event,
+        start: mouseEnterInfo.event.startStr,
+        end: mouseEnterInfo.event.endStr,
+      }
 
+      setTooltipEvent(eventWithTimes) // Passa l'oggetto completo al tooltip
+
+      // Posizione del tooltip (vicino al mouse)
       const rect = mouseEnterInfo.el.getBoundingClientRect()
       setTooltipPosition({
-        x: rect.right,
+        x: rect.left + rect.width, // Posiziona il tooltip a destra dell'evento
         y: rect.top,
       })
     }, [])
 
     const handleEventMouseLeave = useCallback(() => {
-      setTooltipEvent(null)
+      setTooltipEvent(null) // Nascondi il tooltip quando esci dall'evento
     }, [])
 
-    const handleSaveBooking = useCallback(
-      (bookingData: BookingFormData) => {
-        const newEvent: CalendarEvent = {
-          id: selectedEvent ? selectedEvent.id : `booking-${Date.now()}`,
-          title: `${format(bookingData.start, "HH:mm")} - ${format(bookingData.end, "HH:mm")} ${bookingData.userId}`,
-          start: bookingData.start,
-          end: bookingData.end,
-          backgroundColor: getRandomColor(),
-          borderColor: getRandomColor(),
-          userId: bookingData.userId,
-          fonicoId: bookingData.fonicoId,
-          studioId: bookingData.studioId,
-          services: bookingData.services,
-          notes: bookingData.notes,
-          state: BookingState.CONFIRMED,
-          extendedProps: {
-            ...bookingData,
-            id: selectedEvent ? selectedEvent.id : `booking-${Date.now()}`,
-            state: BookingState.CONFIRMED,
-          },
-        }
+    // Filtra gli eventi in base alla selezione
+    const filteredEvents = bookings.filter((booking) => {
+      if (selectedStudio !== "all" && booking.studioId !== selectedStudio) {
+        return false
+      }
+      if (selectedFonico !== "all" && booking.fonicoId !== selectedFonico) {
+        return false
+      }
 
-        setBookings((prevBookings) => {
-          if (selectedEvent) {
-            return prevBookings.map((booking) => (booking.id === selectedEvent.id ? newEvent : booking))
-          } else {
-            return [...prevBookings, newEvent]
-          }
+      return true
+    })
+
+    // Gestisce il click sugli eventi
+    const handleEventClick = useCallback((info: any) => {
+      console.log("Evento cliccato:", info.event); // Debug completo
+
+      const eventId = info.event.id || info.event._def.publicId || info.event._def.extendedProps?.id;
+
+      // Creazione dell'oggetto evento con start, end e id
+      const selectedEventWithTimes: CalendarEvent = {
+        ...info.event._def.extendedProps, // Mantiene gli altri dati dell'evento
+        id: eventId, // Assegna l'ID corretto
+        start: info.event.start ? info.event.start.toISOString() : "",
+        end: info.event.end ? info.event.end.toISOString() : "",
+      };
+
+      console.log("Evento selezionato con ID e orari:", selectedEventWithTimes);
+
+      setSelectedEvent(selectedEventWithTimes); // Imposta l'evento selezionato con ID
+      setIsBookingDialogOpen(true); // Apre il dialogo di prenotazione
+    }, []);
+
+
+    // Gestisce il ridimensionamento di un evento
+    const handleEventResize = useCallback((info: any) => {
+      // Ottieni l'ID dell'evento
+      const eventId = info.event.id || info.event._def.publicId || info.event._def.extendedProps.id
+
+      // Crea un oggetto completo con tutti i dati dell'evento
+      const updatedEvent = {
+        ...info.event._def.extendedProps,
+        id: eventId, // Assicurati che l'ID sia incluso
+        start: info.event.start.toISOString(),
+        end: info.event.end.toISOString(),
+        title: info.event.title,
+      }
+
+      console.log("Prenotazione ridimensionata - Prenotazione completa:", updatedEvent)
+
+      // Memorizza le informazioni sulla modifica e apre il modale di conferma
+      setModificationInfo({
+        start: format(new Date(updatedEvent.start), "dd/MM/yyyy HH:mm"),
+        end: format(new Date(updatedEvent.end), "dd/MM/yyyy HH:mm"),
+        type: "resize",
+        originalEvent: info,
+      })
+      setModifiedEvent(updatedEvent)
+      setIsConfirmDialogOpen(true)
+
+      // Annulla temporaneamente la modifica fino alla conferma
+      info.revert()
+    }, [])
+
+    // Gestisce lo spostamento di un evento
+    const handleEventDrop = useCallback((info: any) => {
+      // Ottieni l'ID dell'evento
+      const eventId = info.event.id || info.event._def.publicId || info.event._def.extendedProps.id
+
+      // Crea un oggetto completo con tutti i dati dell'evento
+      const updatedEvent = {
+        ...info.event._def.extendedProps,
+        id: eventId, // Assicurati che l'ID sia incluso
+        start: info.event.start.toISOString(),
+        end: info.event.end.toISOString(),
+        title: info.event.title,
+      }
+
+      console.log("Prenotazione spostata - Prenotazione completa:", updatedEvent)
+
+      // Memorizza le informazioni sulla modifica e apre il modale di conferma
+      setModificationInfo({
+        start: format(new Date(updatedEvent.start), "dd/MM/yyyy HH:mm"),
+        end: format(new Date(updatedEvent.end), "dd/MM/yyyy HH:mm"),
+        type: "drop",
+        originalEvent: info,
+      })
+      setModifiedEvent(updatedEvent)
+      setIsConfirmDialogOpen(true)
+
+      // Annulla temporaneamente la modifica fino alla conferma
+      info.revert()
+    }, [])
+
+    // Gestisce la conferma della modifica
+    const handleConfirmModification = async () => {
+      if (!modifiedEvent || !modifiedEvent.id) {
+        console.error("ID evento mancante:", modifiedEvent)
+        return
+      }
+
+      try {
+        console.log("Aggiornamento prenotazione con ID:", modifiedEvent.id)
+
+        // Chiama la funzione di aggiornamento
+        const result = await updateBooking(modifiedEvent.id, {
+          start: new Date(modifiedEvent.start),
+          end: new Date(modifiedEvent.end),
         })
 
-        setIsBookingDialogOpen(false)
-        setSelectedEvent(null)
-        setNewBookingData(null)
-      },
-      [selectedEvent],
-    )
+        if (result) {
+          console.log("Prenotazione aggiornata con successo:", result)
 
-    const handleConfirmDrag = useCallback(() => {
-      if (draggedEvent) {
-        setBookings((prevBookings) =>
-          prevBookings.map((booking) =>
-            booking.id === draggedEvent.event.id
-              ? {
-                  ...booking,
-                  start: draggedEvent.newStart,
-                  end: draggedEvent.newEnd,
-                  title: `${format(draggedEvent.newStart, "HH:mm")} - ${format(draggedEvent.newEnd, "HH:mm")} ${booking.userId}`,
-                  extendedProps: {
-                    ...booking.extendedProps,
-                    start: draggedEvent.newStart,
-                    end: draggedEvent.newEnd,
-                  },
-                }
-              : booking,
-          ),
-        )
+          // Aggiorna la vista del calendario
+          const api = calendarRef.current?.getApi()
+          if (api) {
+            // Riapplica la modifica
+            if (modificationInfo?.originalEvent) {
+              // Aggiorna l'evento nel calendario
+              const event = api.getEventById(modifiedEvent.id)
+              if (event) {
+                event.setStart(new Date(modifiedEvent.start))
+                event.setEnd(new Date(modifiedEvent.end))
+              }
+            }
+          }
+
+          // Aggiorna la lista delle prenotazioni
+          const updatedBookings = bookings.map((booking) =>
+            booking.id === modifiedEvent.id ? { ...booking, ...modifiedEvent } : booking,
+          )
+          setBookings(updatedBookings)
+        }
+      } catch (error) {
+        console.error("Errore durante l'aggiornamento della prenotazione:", error)
+      } finally {
+        setIsConfirmDialogOpen(false)
+        setModifiedEvent(null)
+        setModificationInfo(null)
       }
-      setIsConfirmDialogOpen(false)
-      setDraggedEvent(null)
-    }, [draggedEvent])
+    }
 
-    const handleCancelDrag = useCallback(() => {
-      if (draggedEvent && draggedEvent.event) {
-        draggedEvent.event.setStart(draggedEvent.oldStart)
-        draggedEvent.event.setEnd(draggedEvent.oldEnd)
+    // Gestisce l'annullamento della modifica
+    const handleCancelModification = () => {
+      setIsConfirmDialogOpen(false)
+      setModifiedEvent(null)
+      setModificationInfo(null)
+    }
+
+    // Gestisce la selezione di una data
+    const handleDateSelect = useCallback((info: any) => {
+      const start = info.startStr
+      const end = info.endStr
+      setSelectedEvent({
+        start,
+        end,
+        title: "",
+        description: "dc",
+        studioId: "",
+        fonicoId: "",
+      })
+      setIsBookingDialogOpen(true)
+    }, [])
+
+    const onDelete = (id: string) => {
+      setIsBookingDialogOpen(false)
+      deleteBooking(id)
+    }
+
+    const onSubmit = (booking: Booking) => {
+      console.log(booking)
+      setIsBookingDialogOpen(false)
+      if (booking.id) {
+        updateBooking(booking.id, booking)
+      } else {
+        createBooking(booking)
       }
-      setIsConfirmDialogOpen(false)
-      setDraggedEvent(null)
-    }, [draggedEvent])
-
-    const getRandomColor = () => {
-      const colors = ["#38bdf8", "#f87171", "#a78bfa", "#4ade80", "#fb923c", "#f472b6"]
-      return colors[Math.floor(Math.random() * colors.length)]
+      refresh()
     }
 
     return (
@@ -203,87 +297,76 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
             slotDuration="01:00:00"
             slotLabelInterval="01:00:00"
             slotLabelFormat={{
-              hour: '2-digit',
-              minute: '2-digit',
+              hour: "2-digit",
+              minute: "2-digit",
               hour12: false,
-              meridiem: false
+              meridiem: false,
             }}
             scrollTime="10:00:00"
             nowIndicator={true}
             expandRows={true}
             height="auto"
-            dayHeaderFormat={{ weekday: 'short', day: 'numeric' }}
-            views={{
-              timeGridWeek: {
-                type: 'timeGrid',
-                duration: { days: 7 },
-                slotDuration: '01:00:00',
-                slotLabelInterval: '01:00:00',
-                displayEventTime: true,
-                dayHeaderFormat: { weekday: 'short', day: 'numeric' }
-              },
-              timeGridDay: {
-                type: 'timeGrid',
-                duration: { days: 1 },
-                slotDuration: '01:00:00',
-                slotLabelInterval: '01:00:00',
-                displayEventTime: true
-              },
-              dayGridMonth: {
-                dayHeaderFormat: { weekday: 'short' },
-                fixedWeekCount: false
-              }
-            }}
-            eventContent={(eventInfo) => {
-              return (
-                <div className="fc-event-main-frame p-1">
-                  <div className="fc-event-time font-medium">
-                    {format(eventInfo.event.start!, "HH:mm")} - {format(eventInfo.event.end!, "HH:mm")}
-                  </div>
-                  <div className="fc-event-title-container">
-                    <div className="fc-event-title font-medium text-white">{eventInfo.event.extendedProps.userId}</div>
-                  </div>
-                </div>
-              )
-            }}
+            dayHeaderFormat={{ weekday: "short", day: "numeric" }}
             eventClick={handleEventClick}
             select={handleDateSelect}
-            eventDrop={handleEventDrop}
-            eventResize={handleEventResize}
             eventMouseEnter={handleEventMouseEnter}
             eventMouseLeave={handleEventMouseLeave}
+            eventResize={handleEventResize}
+            eventDrop={handleEventDrop}
+            timeZone="local" // Imposta il fuso orario su quello locale
           />
+
         </div>
 
+        {/* Tooltip per l'evento */}
         {tooltipEvent && (
           <BookingInfoTooltip event={tooltipEvent} position={tooltipPosition} onClose={() => setTooltipEvent(null)} />
         )}
 
+        {/* Dialog di prenotazione */}
         <BookingDialog
           isOpen={isBookingDialogOpen}
           onClose={() => {
+            console.log("Evento selezionato:", selectedEvent) // Stampa l'evento selezionato quando chiudi il dialogo
             setIsBookingDialogOpen(false)
             setSelectedEvent(null)
-            setNewBookingData(null)
           }}
-          onSave={handleSaveBooking}
-          booking={selectedEvent ? selectedEvent.extendedProps : newBookingData}
+          onDelete={onDelete}
+          onSave={onSubmit}
+          booking={selectedEvent ? selectedEvent : {}}
         />
 
-        <ConfirmDialog
-          isOpen={isConfirmDialogOpen}
-          onClose={() => {
-            setIsConfirmDialogOpen(false)
-            handleCancelDrag()
-          }}
-          onConfirm={handleConfirmDrag}
-          title="Conferma modifica prenotazione"
-          description={
-            draggedEvent
-              ? `Vuoi spostare la prenotazione da ${format(draggedEvent.oldStart, "dd/MM/yyyy HH:mm")} - ${format(draggedEvent.oldEnd, "HH:mm")} a ${format(draggedEvent.newStart, "dd/MM/yyyy HH:mm")} - ${format(draggedEvent.newEnd, "HH:mm")}?`
-              : "Vuoi confermare la modifica della prenotazione?"
-          }
-        />
+        {/* Dialog di conferma modifica */}
+        <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Conferma modifica</DialogTitle>
+              <DialogDescription>
+                Sei sicuro di voler {modificationInfo?.type === "resize" ? "ridimensionare" : "spostare"} la
+                prenotazione?
+              </DialogDescription>
+            </DialogHeader>
+
+            {modificationInfo && (
+              <div className="py-4">
+                <p className="mb-2">Nuovi orari:</p>
+                <p>
+                  <strong>Inizio:</strong> {modificationInfo.start}
+                </p>
+                <p>
+                  <strong>Fine:</strong> {modificationInfo.end}
+                </p>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button variant="outline" onClick={handleCancelModification}>
+                Annulla
+              </Button>
+              <Button onClick={handleConfirmModification}>Conferma</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </>
     )
   },

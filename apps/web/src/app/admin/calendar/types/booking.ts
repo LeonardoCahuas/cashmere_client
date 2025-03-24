@@ -1,8 +1,7 @@
 export enum BookingState {
-  PENDING = "PENDING",
-  CONFIRMED = "CONFIRMED",
-  CANCELLED = "CANCELLED",
-  COMPLETED = "COMPLETED",
+  CONTATTARE = "CONTATTARE",
+  CONFERMATO = "CONFERMATO",
+  CONTATTATO = "CONTATTATO"
 }
 
 export interface User {
