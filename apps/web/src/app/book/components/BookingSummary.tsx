@@ -2,21 +2,26 @@
 
 import { Button } from "@/components/Button"
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/Dialog"
+import { services, studios } from "@/lib/types"
 import { useBookingStore } from "@/store/booking-store"
 
 export function SummaryContent() {
-    const { selectedServices, selectedPackage, selectedEngineer, selectedStudio, selectedDate, timeFrom, timeTo} = useBookingStore()
+    const { selectedServices, selectedPackage, selectedEngineer, selectedStudio, selectedDate, timeFrom, timeTo } = useBookingStore()
     return (
 
         <div className="flex flex-row flex-wrap gap-4">
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
                 <span className="mr-1">Servizi: </span>
-                <span className='font-semibold'> {selectedServices.join(', ')}, {selectedPackage}</span>
+                <span className='font-semibold'>
+                    {selectedServices.map(ser => services.find(s => s.id === ser)?.name).filter(Boolean).join(', ')}
+                    {selectedPackage && `, ${services.find(s => s.id === selectedPackage)?.name || selectedPackage}`}
+                </span>
+
             </div>
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
                 <span className="mr-1">Data:</span>
                 <span className='font-semibold'>
-                    {selectedDate?.getDate()}
+                {selectedDate && `${selectedDate.getDate()} ${selectedDate.toLocaleString('it-IT', { month: 'long' })}`}
                 </span>
             </div>
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
@@ -26,7 +31,7 @@ export function SummaryContent() {
 
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">
                 <span className="mr-1">Studio:</span>
-                <span className='font-semibold'>{selectedStudio}</span>
+                <span className='font-semibold'>{studios.find(s => s.id == selectedStudio)?.name}</span>
             </div>
 
             <div className="flex flex-row justify-between flex-nowrap bg-gray-100 py-2 px-4 rounded-sm">

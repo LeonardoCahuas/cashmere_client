@@ -36,9 +36,11 @@ interface BookingState {
   setSelectedEngineer: (engineer: Engineer | null) => void
   setContactInfo: (instagram: string, phone: string, notes: string) => void
   resetBooking: () => void
+  saveBookingToLocalStorage: () => void
+  loadBookingFromLocalStorage: () => void
 }
 
-export const useBookingStore = create<BookingState>((set) => ({
+export const useBookingStore = create<BookingState>((set, get) => ({
   // Initial state
   selectedServices: [],
   selectedPackage: null,
@@ -75,5 +77,47 @@ export const useBookingStore = create<BookingState>((set) => ({
       phoneNumber: "",
       notes: "",
     }),
+  saveBookingToLocalStorage: () => {
+    const state = get()
+    const bookingData = {
+      selectedServices: state.selectedServices,
+      selectedPackage: state.selectedPackage,
+      selectedDate: state.selectedDate,
+      timeFrom: state.timeFrom,
+      timeTo: state.timeTo,
+      selectedStudio: state.selectedStudio,
+      needsEngineer: state.needsEngineer,
+      selectedEngineer: state.selectedEngineer,
+      instagramUsername: state.instagramUsername,
+      phoneNumber: state.phoneNumber,
+      notes: state.notes
+    }
+    localStorage.setItem("bookingData", JSON.stringify(bookingData))
+  },
+  
+  loadBookingFromLocalStorage: () => {
+    const bookingDataStr = localStorage.getItem("bookingData")
+    if (bookingDataStr) {
+      try {
+        const bookingData = JSON.parse(bookingDataStr)
+        set({
+          selectedServices: bookingData.selectedServices || [],
+          selectedPackage: bookingData.selectedPackage || null,
+          selectedDate: bookingData.selectedDate ? new Date(bookingData.selectedDate) : null,
+          timeFrom: bookingData.timeFrom || null,
+          timeTo: bookingData.timeTo || null,
+          selectedStudio: bookingData.selectedStudio || null,
+          needsEngineer: bookingData.needsEngineer || false,
+          selectedEngineer: bookingData.selectedEngineer || null,
+          instagramUsername: bookingData.instagramUsername || "",
+          phoneNumber: bookingData.phoneNumber || "",
+          notes: bookingData.notes || ""
+        })
+        // Clean up after loading
+        localStorage.removeItem("bookingData")
+      } catch (error) {
+        console.error("Error loading booking data from localStorage:", error)
+      }
+    }
+  }
 }))
-

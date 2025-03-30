@@ -40,6 +40,34 @@ export const useBooking = () => {
         }
     }
 
+    const getEngineerBookings = async (id: string) => {
+        try {
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getFonicoBookings(id)
+            return response
+        } catch (err) {
+            setError(err as ApiError)
+            return null
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const getUserBookings = async (id: string) => {
+      try {
+          setIsLoading(true)
+          setError(null)
+          const response = await bookingApi.getUserBookings(id)
+          return response
+      } catch (err) {
+          setError(err as ApiError)
+          return null
+      } finally {
+          setIsLoading(false)
+      }
+  }
+
     const updateBooking = async (id: string, updatedData: Partial<CreateBooking>) => {
         console.log(id)
         try {
@@ -97,14 +125,75 @@ export const useBooking = () => {
             setIsLoading(false)
         }
     }
+
+    const getAvailableEngineers = async (start: Date, end: Date) => {
+        try {
+          setIsLoading(true)
+          setError(null)
+          const response = await bookingApi.getAvailableEngineers(start, end)
+          return response
+        } catch (err) {
+          setError(err as ApiError)
+          return null
+        } finally {
+          setIsLoading(false)
+        }
+      }
     
+    const getCurrentBookings = async () => {
+        try {
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getCurrentBookings()
+            return response
+        } catch (err) {
+            setError(err as ApiError)
+            return null
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const getAvailableTimeSlots = async (studioId: string, fonicoId: string) => {
+        try {
+          setIsLoading(true)
+          setError(null)
+          const response = await bookingApi.getAvailableTimeSlots(studioId, fonicoId)
+          return response
+        } catch (err) {
+          setError(err as ApiError)
+          return null
+        } finally {
+          setIsLoading(false)
+        }
+      }
+
+      const getAvailableStudios = async (start: Date, end: Date) => {
+        try {
+          setIsLoading(true)
+          setError(null)
+          const response = await bookingApi.getAvailableStudio(start, end)
+          return response
+        } catch (err) {
+          setError(err as ApiError)
+          return null
+        } finally {
+          setIsLoading(false)
+        }
+      }
 
     return {
         getAll,
         createBooking,
         updateBooking,
+        getAvailableEngineers,
         deleteBooking,
         getToConfirm,
+        getUserBookings,
+        getAvailableStudios,
+        getEngineerBookings,
+        getAvailableTimeSlots,
+        getCurrentBookings,
         updateBookingState,
         isLoading,
         error,

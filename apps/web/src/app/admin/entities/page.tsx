@@ -1,121 +1,194 @@
 "use client"
 
-import { useState } from "react"
-import { Search, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Search, X, CalendarIcon, ChevronsUpDown, Check, RefreshCw } from "lucide-react"
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/Dialog"
 import { Textarea } from "@/components/TextArea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Select"
-import { Accordion,AccordionContent, AccordionItem, AccordionTrigger } from "@/components/Accordion"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/Accordion"
+import { useEntity } from "@/hooks/useEntity"
+import { useUser } from "@/hooks/useUser"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/Popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/Command"
+import { Calendar } from "@/components/Calendar"
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 
-// Tipi di dati
-interface Artista {
+// Data types
+interface User {
   id: string
-  nome: string
-  entita: string
-  note: string
+  username: string
+  entityId?: string
+  notes?: string
 }
 
-interface Entita {
+interface Entity {
   id: string
-  nome: string
-  logo?: string
-  artisti: Artista[]
+  name: string
 }
 
-export default function FatturazioneRoasterPage() {
-  // Stati per i modali
-  const [aggiungiArtistaAperto, setAggiungiArtistaAperto] = useState(false)
-  const [aggiungiEntitaAperto, setAggiungiEntitaAperto] = useState(false)
-  const [modificaArtistaAperto, setModificaArtistaAperto] = useState(false)
-  const [artistaSelezionato, setArtistaSelezionato] = useState<Artista | null>(null)
+interface InvoiceData {
+  fonicoName: string
+  totHours: number
+}
 
-  // Stati per i form
-  const [nuovoArtista, setNuovoArtista] = useState<Partial<Artista>>({
-    nome: "",
-    entita: "Warner Music",
-    note: "Le sessioni gliele scontiamo a 20€ l'ora",
-  })
+export default function RosterManagementPage() {
+  // Modal states
+  const [addArtistOpen, setAddArtistOpen] = useState(false)
+  const [addEntityOpen, setAddEntityOpen] = useState(false)
+  const [editArtistOpen, setEditArtistOpen] = useState(false)
+  const [selectedArtist, setSelectedArtist] = useState<User | null>(null)
+  const [newEntityName, setNewEntityName] = useState<string>("")
+  const [entities, setEntities] = useState<Entity[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
 
-  // Dati di esempio
-  const [entita, setEntita] = useState<Entita[]>([
-    {
-      id: "1",
-      nome: "ADA Music",
-      artisti: [],
-    },
-    {
-      id: "2",
-      nome: "Warner Music",
-      logo: "/placeholder.svg?height=24&width=24",
-      artisti: [
-        { id: "1", nome: "Niky Savage", entita: "Warner Music", note: "Le sessioni gliele scontiamo a 20€ l'ora" },
-        { id: "2", nome: "Baby Gang", entita: "Warner Music", note: "" },
-        { id: "3", nome: "Capo Plaza", entita: "Warner Music", note: "" },
-        { id: "4", nome: "Olly", entita: "Warner Music", note: "" },
-        { id: "5", nome: "Bello Figo", entita: "Warner Music", note: "" },
-        { id: "6", nome: "Simba la Rue", entita: "Warner Music", note: "" },
-      ],
-    },
-    {
-      id: "3",
-      nome: "Island Records",
-      artisti: [],
-    },
-    {
-      id: "4",
-      nome: "Sugar Music",
-      artisti: [],
-    },
-  ])
+  // Combobox states
+  const [openUserCombobox, setOpenUserCombobox] = useState(false)
+  const [openEntityCombobox, setOpenEntityCombobox] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<string>("")
+  const [selectedEntity, setSelectedEntity] = useState<string>("")
+  const [artistNotes, setArtistNotes] = useState<string>("")
 
-  // Gestione apertura modale artista
-  const apriAggiungiArtista = () => {
-    setNuovoArtista({
-      nome: "",
-      entita: "Warner Music",
-      note: "Le sessioni gliele scontiamo a 20€ l'ora",
-    })
-    setAggiungiArtistaAperto(true)
+  // Billing calculation states
+  const [billingEntityOpen, setBillingEntityOpen] = useState(false)
+  const [billingArtistOpen, setBillingArtistOpen] = useState(false)
+  const [billingEntity, setBillingEntity] = useState<string>("")
+  const [billingArtist, setBillingArtist] = useState<string>("")
+  const [fromDate, setFromDate] = useState<Date>()
+  const [toDate, setToDate] = useState<Date>()
+  const [fromCalendarOpen, setFromCalendarOpen] = useState(false)
+  const [toCalendarOpen, setToCalendarOpen] = useState(false)
+  const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Hooks
+  const { getAll, createEntity, getInvoices } = useEntity()
+  const { getUsers } = useUser()
+
+  // Fetch entities and users
+  useEffect(() => {
+    const fetchEntities = async () => {
+      const fetchedEntities = await getAll()
+      setEntities(fetchedEntities)
+    }
+
+    const fetchUsers = async () => {
+      const fetchedUsers = await getUsers()
+      setUsers(fetchedUsers)
+    }
+
+    fetchEntities()
+    fetchUsers()
+  }, [])
+
+  // Fetch invoice data when filters change
+  useEffect(() => {
+    const fetchInvoiceData = async () => {
+      if (!billingEntity && !billingArtist) {
+        setInvoiceData([])
+        return
+      }
+
+      setIsLoading(true)
+      try {
+        const id = billingEntity || billingArtist
+        const query: any = {}
+
+        if (fromDate) {
+          query.startDate = fromDate.toISOString()
+        }
+
+        if (toDate) {
+          query.endDate = toDate.toISOString()
+        }
+
+        const data = await getInvoices(id, query)
+        setInvoiceData(data)
+      } catch (error) {
+        console.error("Error fetching invoice data:", error)
+        setInvoiceData([])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (billingEntity || billingArtist) {
+      fetchInvoiceData()
+    }
+  }, [billingEntity, billingArtist, fromDate, toDate])
+
+  // Reset billing filters
+  const resetBillingFilters = () => {
+    setBillingEntity("")
+    setBillingArtist("")
+    setFromDate(undefined)
+    setToDate(undefined)
+    setInvoiceData([])
   }
 
-  // Gestione apertura modale modifica artista
-  const apriModificaArtista = (artista: Artista) => {
-    setArtistaSelezionato(artista)
-    setNuovoArtista({
-      nome: artista.nome,
-      entita: artista.entita,
-      note: artista.note,
+  // Create new entity
+  const handleCreateEntity = () => {
+    createEntity({
+      name: newEntityName,
     })
-    setModificaArtistaAperto(true)
+    setAddEntityOpen(false)
+    setNewEntityName("")
   }
 
-  // Dati per la sezione di calcolo fatturazione
-  const artistiOre = [
-    { nome: "Estel", ore: 80, colore: "text-pink-500" },
-    { nome: "Emdi", ore: 32, colore: "text-red-500" },
-    { nome: "Tarantino", ore: 32, colore: "text-purple-500" },
-    { nome: "Senza fonico", ore: 245, colore: "text-gray-500" },
-  ]
+  // Open add artist modal
+  const openAddArtist = () => {
+    setSelectedUser("")
+    setSelectedEntity("")
+    setArtistNotes("")
+    setAddArtistOpen(true)
+  }
 
-  const totaleOre = artistiOre.reduce((acc, curr) => acc + curr.ore, 0)
+  // Open edit artist modal
+  const openEditArtist = (artist: User) => {
+    setSelectedArtist(artist)
+    setSelectedUser(artist.id)
+    setSelectedEntity(artist.entityId || "")
+    setArtistNotes(artist.notes || "")
+    setEditArtistOpen(true)
+  }
+
+  // Filter entities and artists based on search term
+  const filteredEntities = entities.filter((entity) => entity.name.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  // Get artists for an entity
+  const getArtistsForEntity = (entityId: string) => {
+    return users.filter((user) => user.entityId === entityId)
+  }
+
+  // Get filtered artists for billing combobox
+  const getFilteredArtistsForBilling = () => {
+    if (billingEntity) {
+      return users.filter((user) => user.entityId === billingEntity)
+    }
+    return users
+  }
+
+  // Calculate total hours from invoice data
+  const totalInvoiceHours = invoiceData.reduce((acc, curr) => acc + curr.totHours, 0)
 
   return (
-    <div className="p-6">
-      {/* Sezione Entità & Artisti */}
+    <div className="p-4 md:p-6">
+      {/* Entities & Artists Section */}
       <div className="mb-10">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <h2 className="text-xl font-semibold">Entità & artisti</h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               className="rounded-full bg-white text-black border-gray-300"
-              onClick={() => setAggiungiEntitaAperto(true)}
+              onClick={() => setAddEntityOpen(true)}
             >
               Aggiungi entità
             </Button>
-            <Button className="rounded-full bg-black text-white" onClick={apriAggiungiArtista}>
+            <Button className="rounded-full bg-black text-white" onClick={openAddArtist}>
               Aggiungi artista
             </Button>
           </div>
@@ -123,24 +196,29 @@ export default function FatturazioneRoasterPage() {
 
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-          <Input className="pl-10 bg-gray-100 border-none" placeholder="Cerca" />
+          <Input
+            className="pl-10 bg-gray-100 border-none"
+            placeholder="Cerca"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <Accordion type="multiple" defaultValue={["item-2"]} className="border-none">
-          {entita.map((ent) => (
-            <AccordionItem key={ent.id} value={`item-${ent.id}`} className="border-b py-2">
+        <Accordion type="multiple" defaultValue={["item-1"]} className="border-none">
+          {filteredEntities.map((entity) => (
+            <AccordionItem key={entity.id} value={`item-${entity.id}`} className="border-b py-2">
               <AccordionTrigger className="hover:no-underline py-2">
-                <span className="font-medium">{ent.nome}</span>
+                <span className="font-medium">{entity.name}</span>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {ent.artisti.map((artista) => (
+                  {getArtistsForEntity(entity.id).map((artist) => (
                     <div
-                      key={artista.id}
+                      key={artist.id}
                       className="bg-gray-100 rounded-full px-4 py-2 text-sm cursor-pointer"
-                      onClick={() => apriModificaArtista(artista)}
+                      onClick={() => openEditArtist(artist)}
                     >
-                      {artista.nome}
+                      {artist.username}
                     </div>
                   ))}
                 </div>
@@ -150,135 +228,326 @@ export default function FatturazioneRoasterPage() {
         </Accordion>
       </div>
 
-      {/* Sezione Calcolo Fatturazione */}
+      {/* Billing Calculation Section */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Calcolo fatturazione</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <h2 className="text-xl font-semibold">Calcolo fatturazione</h2>
+          <Button variant="outline" className="flex items-center gap-2" onClick={resetBillingFilters}>
+            <RefreshCw className="h-4 w-4" />
+            Resetta filtri
+          </Button>
+        </div>
 
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-1">Seleziona entità</p>
-          <Input className="bg-white" placeholder="Entità" />
+          <Popover open={billingEntityOpen} onOpenChange={setBillingEntityOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={billingEntityOpen}
+                className="w-full justify-between bg-white"
+              >
+                {billingEntity ? entities.find((entity) => entity.id === billingEntity)?.name : "Seleziona entità"}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Cerca entità..." />
+                <CommandList>
+                  <CommandEmpty>Nessuna entità trovata.</CommandEmpty>
+                  <CommandGroup>
+                    {entities.map((entity) => (
+                      <CommandItem
+                        key={entity.id}
+                        value={entity.name}
+                        onSelect={() => {
+                          setBillingEntity(entity.id)
+                          setBillingEntityOpen(false)
+                          // Reset artist selection when entity changes
+                          setBillingArtist("")
+                        }}
+                      >
+                        <Check
+                          className={cn("mr-2 h-4 w-4", billingEntity === entity.id ? "opacity-100" : "opacity-0")}
+                        />
+                        {entity.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-1">Seleziona artista</p>
-          <Input className="bg-white" placeholder="Artista" />
+          <Popover open={billingArtistOpen} onOpenChange={setBillingArtistOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={billingArtistOpen}
+                className="w-full justify-between bg-white"
+              >
+                {billingArtist ? users.find((user) => user.id === billingArtist)?.username : "Seleziona artista"}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Cerca artista..." />
+                <CommandList>
+                  <CommandEmpty>Nessun artista trovato.</CommandEmpty>
+                  <CommandGroup>
+                    {getFilteredArtistsForBilling().map((user) => (
+                      <CommandItem
+                        key={user.id}
+                        value={user.username}
+                        onSelect={() => {
+                          setBillingArtist(user.id)
+                          setBillingArtistOpen(false)
+                        }}
+                      >
+                        <Check
+                          className={cn("mr-2 h-4 w-4", billingArtist === user.id ? "opacity-100" : "opacity-0")}
+                        />
+                        {user.username}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
 
-        <div className="flex gap-4 mb-6">
-          <div className="w-1/2">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+          <div className="w-full sm:w-1/2">
             <p className="text-sm text-gray-600 mb-1">Da</p>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Da" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="01-01-2023">01/01/2023</SelectItem>
-                <SelectItem value="01-02-2023">01/02/2023</SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover open={fromCalendarOpen} onOpenChange={setFromCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {fromDate ? format(fromDate, "PPP", { locale: it }) : "Seleziona data"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={fromDate}
+                  onSelect={(date) => {
+                    setFromDate(date)
+                    setFromCalendarOpen(false)
+                  }}
+                  initialFocus
+                  locale={it}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-          <div className="w-1/2">
+          <div className="w-full sm:w-1/2">
             <p className="text-sm text-gray-600 mb-1">A</p>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Da" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="01-03-2023">01/03/2023</SelectItem>
-                <SelectItem value="01-04-2023">01/04/2023</SelectItem>
-              </SelectContent>
-            </Select>
+            <Popover open={toCalendarOpen} onOpenChange={setToCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal bg-white">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {toDate ? format(toDate, "PPP", { locale: it }) : "Seleziona data"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={toDate}
+                  onSelect={(date) => {
+                    setToDate(date)
+                    setToCalendarOpen(false)
+                  }}
+                  initialFocus
+                  locale={it}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
         <h3 className="font-medium mb-3">Totale ore</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-          {artistiOre.map((artista, index) => (
-            <div key={index} className="bg-white rounded-lg p-4 border">
-              <p className={`${artista.colore} font-medium`}>{artista.nome}</p>
-              <p className="text-2xl font-bold">{artista.ore} ore</p>
-            </div>
-          ))}
-          <div className="bg-black rounded-lg p-4 text-white">
-            <p className="font-medium">Totale</p>
-            <p className="text-2xl font-bold">{totaleOre} ore</p>
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
           </div>
-        </div>
+        ) : invoiceData.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            {invoiceData.map((item, index) => {
+              // Assign a color based on the index
+              const colors = [
+                "text-pink-500",
+                "text-red-500",
+                "text-purple-500",
+                "text-blue-500",
+                "text-green-500",
+                "text-orange-500",
+              ]
+              const color = colors[index % colors.length]
+
+              return (
+                <div key={index} className="bg-white rounded-lg p-4 border">
+                  <p className={`${color} font-medium`}>{item.fonicoName}</p>
+                  <p className="text-2xl font-bold">{Math.round(item.totHours * 10) / 10} ore</p>
+                </div>
+              )
+            })}
+            <div className="bg-black rounded-lg p-4 text-white">
+              <p className="font-medium">Totale</p>
+              <p className="text-2xl font-bold">{Math.round(totalInvoiceHours * 10) / 10} ore</p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            {billingEntity || billingArtist
+              ? "Nessun dato disponibile per i filtri selezionati"
+              : "Seleziona un'entità o un artista per visualizzare i dati"}
+          </div>
+        )}
       </div>
 
-      {/* Modale Aggiungi Artista */}
-      <Dialog open={aggiungiArtistaAperto} onOpenChange={setAggiungiArtistaAperto}>
+      {/* Add Artist Modal */}
+      <Dialog open={addArtistOpen} onOpenChange={setAddArtistOpen}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
           <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between">
             <DialogTitle className="text-xl font-medium">Aggiungi artista</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => setAggiungiArtistaAperto(false)} className="h-8 w-8">
+            <Button variant="ghost" size="icon" onClick={() => setAddArtistOpen(false)} className="h-8 w-8">
               <X size={24} />
             </Button>
           </DialogHeader>
           <div className="p-6">
             <div className="space-y-6">
               <div>
-                <label className="text-lg font-medium mb-2 block">Nome artista</label>
-                <Input
-                  placeholder="Artista"
-                  value={nuovoArtista.nome}
-                  onChange={(e) => setNuovoArtista({ ...nuovoArtista, nome: e.target.value })}
-                />
+                <label className="text-lg font-medium mb-2 block">Artista</label>
+                <Popover open={openUserCombobox} onOpenChange={setOpenUserCombobox}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openUserCombobox}
+                      className="w-full justify-between"
+                    >
+                      {selectedUser ? users.find((user) => user.id === selectedUser)?.username : "Seleziona artista"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Cerca artista..." />
+                      <CommandList>
+                        <CommandEmpty>Nessun artista trovato.</CommandEmpty>
+                        <CommandGroup>
+                          {users.map((user) => (
+                            <CommandItem
+                              key={user.id}
+                              value={user.username}
+                              onSelect={() => {
+                                setSelectedUser(user.id)
+                                setOpenUserCombobox(false)
+                              }}
+                            >
+                              <Check
+                                className={cn("mr-2 h-4 w-4", selectedUser === user.id ? "opacity-100" : "opacity-0")}
+                              />
+                              {user.username}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
                 <label className="text-lg font-medium mb-2 block">Entità</label>
-                <Select
-                  value={nuovoArtista.entita}
-                  onValueChange={(value) => setNuovoArtista({ ...nuovoArtista, entita: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      {nuovoArtista.entita === "Warner Music" && (
-                        <img src="/placeholder.svg?height=24&width=24" alt="Warner Music" className="h-6 w-6" />
-                      )}
-                      <SelectValue>{nuovoArtista.entita}</SelectValue>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {entita.map((ent) => (
-                      <SelectItem key={ent.id} value={ent.nome}>
-                        <div className="flex items-center gap-2">
-                          {ent.logo && <img src={ent.logo || "/placeholder.svg"} alt={ent.nome} className="h-6 w-6" />}
-                          {ent.nome}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={openEntityCombobox} onOpenChange={setOpenEntityCombobox}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openEntityCombobox}
+                      className="w-full justify-between"
+                    >
+                      {selectedEntity
+                        ? entities.find((entity) => entity.id === selectedEntity)?.name
+                        : "Seleziona entità"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Cerca entità..." />
+                      <CommandList>
+                        <CommandEmpty>Nessuna entità trovata.</CommandEmpty>
+                        <CommandGroup>
+                          {entities.map((entity) => (
+                            <CommandItem
+                              key={entity.id}
+                              value={entity.name}
+                              onSelect={() => {
+                                setSelectedEntity(entity.id)
+                                setOpenEntityCombobox(false)
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedEntity === entity.id ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              {entity.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
                 <label className="text-lg font-medium mb-2 block">Note</label>
                 <Textarea
                   placeholder="Note"
-                  value={nuovoArtista.note}
-                  onChange={(e) => setNuovoArtista({ ...nuovoArtista, note: e.target.value })}
+                  value={artistNotes}
+                  onChange={(e) => setArtistNotes(e.target.value)}
                   className="min-h-[120px]"
                 />
               </div>
             </div>
           </div>
           <div className="border-t p-4 flex justify-between">
-            <Button variant="ghost" onClick={() => setAggiungiArtistaAperto(false)} className="text-lg font-medium">
+            <Button variant="ghost" onClick={() => setAddArtistOpen(false)} className="text-lg font-medium">
               Annulla
             </Button>
-            <Button className="bg-black text-white text-lg font-medium px-8 rounded-md">Conferma</Button>
+            <Button
+              className="bg-black text-white text-lg font-medium px-8 rounded-md"
+              onClick={() => {
+                // Here you would implement the logic to assign a user to an entity
+                console.log("Assigning user", selectedUser, "to entity", selectedEntity, "with notes", artistNotes)
+                setAddArtistOpen(false)
+              }}
+            >
+              Conferma
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modale Modifica Artista */}
-      <Dialog open={modificaArtistaAperto} onOpenChange={setModificaArtistaAperto}>
+      {/* Edit Artist Modal */}
+      <Dialog open={editArtistOpen} onOpenChange={setEditArtistOpen}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
           <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between">
-            <DialogTitle className="text-xl font-medium">{artistaSelezionato?.nome || ""}</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => setModificaArtistaAperto(false)} className="h-8 w-8">
+            <DialogTitle className="text-xl font-medium">{selectedArtist?.username || ""}</DialogTitle>
+            <Button variant="ghost" size="icon" onClick={() => setEditArtistOpen(false)} className="h-8 w-8">
               <X size={24} />
             </Button>
           </DialogHeader>
@@ -288,87 +557,117 @@ export default function FatturazioneRoasterPage() {
                 <label className="text-lg font-medium mb-2 block">Nome artista</label>
                 <Input
                   placeholder="Artista"
-                  value={nuovoArtista.nome}
-                  onChange={(e) => setNuovoArtista({ ...nuovoArtista, nome: e.target.value })}
+                  value={selectedArtist?.username || ""}
+                  disabled={true}
+                  className="bg-gray-100"
                 />
               </div>
 
               <div>
                 <label className="text-lg font-medium mb-2 block">Entità</label>
-                <Select
-                  value={nuovoArtista.entita}
-                  onValueChange={(value) => setNuovoArtista({ ...nuovoArtista, entita: value })}
-                >
-                  <SelectTrigger className="w-full">
-                    <div className="flex items-center gap-2">
-                      {nuovoArtista.entita === "Warner Music" && (
-                        <img src="/placeholder.svg?height=24&width=24" alt="Warner Music" className="h-6 w-6" />
-                      )}
-                      <SelectValue>{nuovoArtista.entita}</SelectValue>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {entita.map((ent) => (
-                      <SelectItem key={ent.id} value={ent.nome}>
-                        <div className="flex items-center gap-2">
-                          {ent.logo && <img src={ent.logo || "/placeholder.svg"} alt={ent.nome} className="h-6 w-6" />}
-                          {ent.nome}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={openEntityCombobox} onOpenChange={setOpenEntityCombobox}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openEntityCombobox}
+                      className="w-full justify-between"
+                    >
+                      {selectedEntity
+                        ? entities.find((entity) => entity.id === selectedEntity)?.name
+                        : "Seleziona entità"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command>
+                      <CommandInput placeholder="Cerca entità..." />
+                      <CommandList>
+                        <CommandEmpty>Nessuna entità trovata.</CommandEmpty>
+                        <CommandGroup>
+                          {entities.map((entity) => (
+                            <CommandItem
+                              key={entity.id}
+                              value={entity.name}
+                              onSelect={() => {
+                                setSelectedEntity(entity.id)
+                                setOpenEntityCombobox(false)
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  selectedEntity === entity.id ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              {entity.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
                 <label className="text-lg font-medium mb-2 block">Note</label>
                 <Textarea
                   placeholder="Note"
-                  value={nuovoArtista.note}
-                  onChange={(e) => setNuovoArtista({ ...nuovoArtista, note: e.target.value })}
+                  value={artistNotes}
+                  onChange={(e) => setArtistNotes(e.target.value)}
                   className="min-h-[120px]"
                 />
               </div>
             </div>
           </div>
           <div className="border-t p-4 flex justify-between">
-            <Button variant="ghost" onClick={() => setModificaArtistaAperto(false)} className="text-lg font-medium">
+            <Button variant="ghost" onClick={() => setEditArtistOpen(false)} className="text-lg font-medium">
               Annulla
             </Button>
-            <Button className="bg-black text-white text-lg font-medium px-8 rounded-md">Conferma</Button>
+            <Button
+              className="bg-black text-white text-lg font-medium px-8 rounded-md"
+              onClick={() => {
+                // Here you would implement the logic to update a user's entity
+                console.log("Updating user", selectedUser, "to entity", selectedEntity, "with notes", artistNotes)
+                setEditArtistOpen(false)
+              }}
+            >
+              Conferma
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modale Aggiungi Entità */}
-      <Dialog open={aggiungiEntitaAperto} onOpenChange={setAggiungiEntitaAperto}>
+      {/* Add Entity Modal */}
+      <Dialog open={addEntityOpen} onOpenChange={setAddEntityOpen}>
         <DialogContent className="sm:max-w-md p-0 overflow-hidden">
           <DialogHeader className="px-6 py-4 border-b flex flex-row items-center justify-between">
             <DialogTitle className="text-xl font-medium">Aggiungi entità</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={() => setAggiungiEntitaAperto(false)} className="h-8 w-8">
+            <Button variant="ghost" size="icon" onClick={() => setAddEntityOpen(false)} className="h-8 w-8">
               <X size={24} />
             </Button>
           </DialogHeader>
+
           <div className="p-6">
             <div className="space-y-6">
               <div>
                 <label className="text-lg font-medium mb-2 block">Nome entità</label>
-                <Input placeholder="Nome entità" />
-              </div>
-
-              <div>
-                <label className="text-lg font-medium mb-2 block">Logo</label>
-                <div className="border-2 border-dashed rounded-lg p-8 text-center">
-                  <p className="text-gray-500">Trascina qui il logo o clicca per caricare</p>
-                </div>
+                <Input
+                  placeholder="Nome entità"
+                  value={newEntityName}
+                  onChange={(e) => setNewEntityName(e.target.value)}
+                />
               </div>
             </div>
           </div>
           <div className="border-t p-4 flex justify-between">
-            <Button variant="ghost" onClick={() => setAggiungiEntitaAperto(false)} className="text-lg font-medium">
+            <Button variant="ghost" onClick={() => setAddEntityOpen(false)} className="text-lg font-medium">
               Annulla
             </Button>
-            <Button className="bg-black text-white text-lg font-medium px-8 rounded-md">Conferma</Button>
+            <Button className="bg-black text-white text-lg font-medium px-8 rounded-md" onClick={handleCreateEntity}>
+              Conferma
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

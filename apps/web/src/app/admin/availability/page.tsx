@@ -1,28 +1,45 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
+import { Button } from "@/components/Button"
 import { Calendar } from "@/components/Calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/Popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/Select"
-import { Button } from "@/components/Button"
-import { AvailabilityCalendar } from "./components/AvailabilityCalendar"
-import { format } from "date-fns"
-import { it } from "date-fns/locale"
 import { Card, CardContent } from "@/components/Card"
-
-const fonici = [
-  { id: "emdi", name: "Emdi" },
-  { id: "tizio", name: "Tizio" },
-  { id: "caio", name: "Caio" },
-  { id: "sempronio", name: "Sempronio" },
-]
+import { AvailabilityCalendar } from "./components/AvailabilityCalendar"
+import { useUser } from "@/hooks/useUser"
 
 export default function AvailabilityPage() {
-  const [view, setView] = useState<"timeGridDay" | "timeGridWeek">("timeGridDay")
+  const [view, setView] = useState<"timeGridDay" | "timeGridWeek">("timeGridWeek")
   const [date, setDate] = useState<Date>(new Date())
-  const [selectedFonico, setSelectedFonico] = useState<string>("emdi")
+  const [selectedEngineer, setSelectedEngineer] = useState<string>("")
+  const [engineers, setEngineers] = useState<Array<{ id: string; name: string }>>([])
+  const [isLoading, setIsLoading] = useState(true)
   const calendarRef = useRef(null)
+  const { getEngineers } = useUser()
+
+  // Load engineers on component mount
+  useEffect(() => {
+    const loadEngineers = async () => {
+      try {
+        const data = await getEngineers()
+        setEngineers(data)
+        console.log(data)
+        if (data.length > 0) {
+          setSelectedEngineer(data[0].id)
+        }
+      } catch (error) {
+        console.error("Error loading engineers:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadEngineers()
+  }, [])
 
   const handleViewChange = (newView: "timeGridDay" | "timeGridWeek") => {
     setView(newView)
@@ -65,11 +82,18 @@ export default function AvailabilityPage() {
     }
   }
 
+  // Mock stats data
   const stats = {
     availability: view === "timeGridDay" ? 13 : 78,
     sessions: view === "timeGridDay" ? 9 : 33,
     holidays: view === "timeGridDay" ? 0 : 12,
   }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen">Caricamento...</div>
+  }
+
+  const selectedEngineerName = engineers.find((eng) => eng.id === selectedEngineer)?.name || ""
 
   return (
     <div className="h-screen overflow-y-auto bg-white p-4 md:p-6 lg:p-8 py-12">
@@ -77,20 +101,6 @@ export default function AvailabilityPage() {
         <div className="mb-6 flex flex-col space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex flex-wrap gap-2">
-              <Button
-                variant={view === "timeGridDay" ? "secondary" : "outline"}
-                className="rounded-md px-4 py-2 text-sm font-medium"
-                onClick={() => handleViewChange("timeGridDay")}
-              >
-                Giorno
-              </Button>
-              <Button
-                variant={view === "timeGridWeek" ? "secondary" : "outline"}
-                className="rounded-md px-4 py-2 text-sm font-medium"
-                onClick={() => handleViewChange("timeGridWeek")}
-              >
-                Settimana
-              </Button>
               <Button variant="outline" className="rounded-md px-4 py-2 text-sm font-medium" onClick={handleTodayClick}>
                 Oggi
               </Button>
@@ -107,14 +117,14 @@ export default function AvailabilityPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Select value={selectedFonico} onValueChange={setSelectedFonico}>
-                <SelectTrigger className="w-[140px]">
+              <Select value={selectedEngineer} onValueChange={setSelectedEngineer}>
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Seleziona fonico" />
                 </SelectTrigger>
                 <SelectContent>
-                  {fonici.map((fonico) => (
-                    <SelectItem key={fonico.id} value={fonico.id}>
-                      {fonico.name}
+                  {engineers.map((engineer) => (
+                    <SelectItem key={engineer.id} value={engineer.id}>
+                      {engineer.username}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -134,20 +144,20 @@ export default function AvailabilityPage() {
           </div>
         </div>
 
-        <div
-          className="rounded-lg bg-white"
-          style={{ height: "calc(100vh - 300px)", minHeight: "600px" }}
-        >
-          <AvailabilityCalendar
-            ref={calendarRef}
-            view={view}
-            onViewChange={handleViewChange}
-            selectedFonico={selectedFonico}
-          />
+        <div className="rounded-lg bg-white" style={{ height: "calc(100vh - 300px)", minHeight: "600px" }}>
+          {selectedEngineer && (
+            <AvailabilityCalendar
+              ref={calendarRef}
+              view={'timeGridWeek'}
+              onViewChange={handleViewChange}
+              selectedEngineer={selectedEngineer}
+              date={date}
+            />
+          )}
         </div>
 
         <div className="mt-24">
-          <h2 className="mb-4 text-xl font-semibold">Panoramica {fonici.find((f) => f.id === selectedFonico)?.name}</h2>
+          <h2 className="mb-4 text-xl font-semibold">Panoramica {selectedEngineerName}</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <Card>
               <CardContent className="pt-6">
@@ -179,4 +189,6 @@ export default function AvailabilityPage() {
     </div>
   )
 }
+
+
 

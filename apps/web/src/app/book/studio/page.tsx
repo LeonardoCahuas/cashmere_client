@@ -6,65 +6,122 @@ import { BackButton } from "../components/BackButton"
 import { BookingSummary } from "../components/BookingSummary"
 import { StudioCard } from "./components/StudioCard"
 import { useBookingStore } from "../../../store/booking-store"
+import { useEffect, useState } from "react"
+import { useBooking } from "@/hooks/useBooking"
+import { studios as studioDetails } from "@/lib/studios" // Dettagli completi degli studi
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
 
-interface DateAlternative{
-    timeRange:string
-    date:string
-}
-interface UnavailabilityInfo{
-    alternativeDates: DateAlternative[]
-    occupiedTime: string
-}
-
-interface StudioCardProps {
-    id: string
-    name:string
-    description:string
-    image:string
-    isAvailable:boolean
-    unavailabilityInfo?: UnavailabilityInfo
+interface DateAlternative {
+  timeRange: string
+  date: string
 }
 
-const studios: StudioCardProps[] = [
-  {
-    id: "a9xgk7yq34mnp0z2vwsdl5btc",
-    name: "Studio 1",
-    description: "Il nostro studio di punta.",
-    image: "/Studio 1/1.jpg",
-    isAvailable: true,
-  },
-  {
-    id: "fj2m48xyn0vrkzqwtlcsd96bp",
-    name: "Studio 2",
-    description: "Garantisce registrazioni di massima qualità.",
-    image: "/Studio 2/1.jpg",
-    isAvailable: true,
-  },
-  {
-    id: "m3v9xtkq2wsn74yl0cbdg5prz",
-    name: "Studio 3",
-    description: "Studio ideale per momenti creativi.",
-    image: "/Studio 3/1.jpg",
-    isAvailable: true,
-  },
-  {
-    id: "z7wqktx3y0m24vn9slcbdg5rp",
-    name: "Studio 4",
-    description: "Descrizione",
-    image: "/Studio 3/1.jpg",
-    isAvailable: false,
-    unavailabilityInfo: {
-      occupiedTime: "Sab 25 Gen / 16:00 - 19:00",
-      alternativeDates: [
-        { date: "Sab 25 Gen", timeRange: "10:00 - 13:00" },
-        { date: "Dom 26 Gen", timeRange: "16:00 - 21:00" },
-      ],
-    },
-  },
-]
+interface UnavailabilityInfo {
+  alternativeDates: DateAlternative[]
+  occupiedTime: string
+}
 
 export default function StudioPage() {
-  const { selectedStudio, setSelectedStudio } = useBookingStore()
+  const { selectedStudio, setSelectedStudio, timeFrom, timeTo, selectedDate } = useBookingStore()
+  const { getAvailableStudios } = useBooking()
+
+  const [availableStudios, setAvailableStudios] = useState<any[]>([]) // Gli studi disponibili
+  const [unavailableStudios, setUnavailableStudios] = useState<any[]>([]) // Gli studi non disponibili
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const loadStudios = async () => {
+      try {
+        if (!selectedDate || !timeFrom || !timeTo) return
+
+        setIsLoading(true)
+
+        const [fromHours, fromMinutes] = timeFrom.split(":").map(Number)
+        const [toHours, toMinutes] = timeTo.split(":").map(Number)
+
+        const start = new Date(selectedDate)
+        start.setHours(fromHours)
+        start.setMinutes(fromMinutes)
+        start.setSeconds(0)
+        start.setMilliseconds(0)
+
+        const end = new Date(selectedDate)
+        end.setHours(toHours)
+        end.setMinutes(toMinutes)
+        end.setSeconds(0)
+        end.setMilliseconds(0)
+
+        // Recuperiamo gli studi disponibili per il periodo
+        const studioAvailability = await getAvailableStudios(start, end)
+        console.log("Studio availability:", studioAvailability)
+
+        // Formatta l'orario richiesto per mostrarlo nei messaggi di indisponibilità
+        const requestedTimeRange = `${timeFrom} - ${timeTo}`
+
+        // Studi disponibili
+        const available = []
+        // Studi non disponibili
+        const unavailable = []
+
+        // Elabora i dati di disponibilità e combina con i dettagli degli studi
+        for (const studioAvail of studioAvailability) {
+          // Trova i dettagli completi dello studio
+          const studioDetail = studioDetails.find((s) => s.dbId === studioAvail.id)
+
+          if (!studioDetail) continue // Salta se non troviamo i dettagli
+
+          const studioData = {
+            id: studioAvail.id,
+            name: studioDetail.name,
+            description: studioDetail.description.join(" "),
+            image: studioDetail.imagesUrl[0] || "",
+          }
+
+          if (studioAvail.isAvailable) {
+            // Studio disponibile
+            available.push(studioData)
+          } else {
+            // Studio non disponibile - prepara le alternative
+            const alternativeDates: DateAlternative[] = []
+
+            if (studioAvail.alternativeSlots && studioAvail.alternativeSlots.length > 0) {
+              // Converti gli slot alternativi nel formato richiesto
+              studioAvail.alternativeSlots.forEach((slot: { start: string | number | Date; end: string | number | Date }) => {
+                const startDate = new Date(slot.start)
+                const endDate = new Date(slot.end)
+
+                const formattedDate = format(startDate, "EEEE d MMMM", { locale: it })
+                const formattedTimeRange = `${format(startDate, "HH:mm")} - ${format(endDate, "HH:mm")}`
+
+                alternativeDates.push({
+                  date: formattedDate,
+                  timeRange: formattedTimeRange,
+                })
+              })
+            }
+
+            unavailable.push({
+              ...studioData,
+              unavailabilityInfo: {
+                alternativeDates,
+                occupiedTime: requestedTimeRange,
+              },
+            })
+          }
+        }
+
+        setAvailableStudios(available)
+        setUnavailableStudios(unavailable)
+      } catch (error) {
+        console.error("Error loading studios:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadStudios()
+  }, [selectedDate, timeFrom, timeTo])
 
   return (
     <div className="container max-w-3xl py-8 pb-32">
@@ -79,56 +136,58 @@ export default function StudioPage() {
           <p className="text-muted-foreground mt-2">Seleziona la sala che desideri.</p>
         </div>
 
-        {/* Available Studios */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Studi disponibili nella tua fascia oraria</h2>
-          <div className="space-y-4">
-            {studios
-              .filter((studio) => studio.isAvailable)
-              .map((studio) => (
-                <StudioCard
-                  key={studio.id}
-                  id={studio.id}
-                  name={studio.name}
-                  description={studio.description}
-                  image={studio.image}
-                  isSelected={selectedStudio === studio.id}
-                  onSelect={setSelectedStudio}
-                />
-              ))}
+        {isLoading ? (
+          <div className="py-8 text-center">
+            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p>Verificando la disponibilità degli studi...</p>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Studi disponibili */}
+            {availableStudios.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Studi disponibili nella tua fascia oraria</h2>
+                <div className="space-y-4">
+                  {availableStudios.map((studio) => (
+                    <StudioCard
+                      key={studio.id}
+                      id={studio.id}
+                      name={studio.name}
+                      description={studio.description}
+                      image={studio.image}
+                      isSelected={selectedStudio === studio.id}
+                      onSelect={setSelectedStudio}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {/* Unavailable Studios */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Studi non disponibili nella tua fascia oraria</h2>
-          <div className="space-y-4">
-            {studios
-              .filter((studio) => !studio.isAvailable)
-              .map((studio) => (
-                <StudioCard
-                  key={studio.id}
-                  id={studio.id}
-                  name={studio.name}
-                  description={studio.description}
-                  image={studio.image}
-                  isUnavailable
-                  unavailabilityInfo={studio.unavailabilityInfo}
-                />
-              ))}
-          </div>
-        </div>
+            {/* Studi non disponibili */}
+            {unavailableStudios.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Studi non disponibili nella tua fascia oraria</h2>
+                <div className="space-y-4">
+                  {unavailableStudios.map((studio) => (
+                    <StudioCard
+                      key={studio.id}
+                      id={studio.id}
+                      name={studio.name}
+                      description={studio.description}
+                      image={studio.image}
+                      isUnavailable={true}
+                      unavailabilityInfo={studio.unavailabilityInfo}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         <div className="flex justify-end">
-          <Button 
-            size="lg" 
-            asChild
-            variant="gradient"
-            className='px-12 py-6'
-          >
-            <Link href="/book/engineer">
-              Avanti
-            </Link>
+          <Button size="lg" asChild variant="gradient" className="px-12 py-6" disabled={!selectedStudio || isLoading}>
+            <Link href="/book/engineer">Avanti</Link>
           </Button>
         </div>
       </div>

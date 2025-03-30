@@ -63,9 +63,6 @@ export function EngineerCard({
                             </p>
 
                             <div>
-                                <a href="/book/datetime" className="text-primary underline">
-                                    Seleziona nuova data
-                                </a>
 
                                 <p className="font-medium mt-4">Date libere suggerite</p>
                                 <div className="flex gap-4 mt-2">

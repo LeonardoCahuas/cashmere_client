@@ -28,7 +28,9 @@ export default function RootLayout({
       <head>
         <link rel="icon" href='/cashmere-logo.svg'  type="image/svg+xml"/>
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {children}
+        </body>
     </html>
   )
 }

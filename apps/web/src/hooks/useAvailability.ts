@@ -1,23 +1,75 @@
-'use client'
+"use client"
 
 import { useState } from "react"
-import type { ApiError, User } from "@/types/auth"
-import type { CreateBooking } from "@/types/types"
-import { bookingApi } from "@/api/booking"
-import { useUserStore } from "@/store/user-store"
-import { AvailabilityCreateRequest } from "@/types/availability"
+import type { ApiError } from "@/types/auth"
+import type { CreateAvailabilityDto } from "@/types/types"
 import { availabilityApi } from "@/api/availability"
 
-export const useBooking = () => {
+export function useAvailability() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
-  const { user } = useUserStore()
 
-  const createAvailability = async (availability: AvailabilityCreateRequest, user: User) => {
+  const getEngineerAvailability = async (engineerId: string, date: Date) => {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await availabilityApi.create(availability, user)
+      const response = await availabilityApi.getEngineerAvailability(engineerId, date)
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return []
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const getWeeklyAvailability = async (engineerId: string) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await availabilityApi.getWeeklyAvailability(engineerId)
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return []
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const createAvailability = async (data: CreateAvailabilityDto) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await availabilityApi.createAvailability(data)
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateAvailability = async (id: string, data: Partial<CreateAvailabilityDto>) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await availabilityApi.updateAvailability(id, data)
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const deleteAvailability = async (id: string) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await availabilityApi.deleteAvailability(id)
       return response
     } catch (err) {
       setError(err as ApiError)
@@ -28,8 +80,13 @@ export const useBooking = () => {
   }
 
   return {
+    getEngineerAvailability,
+    getWeeklyAvailability,
     createAvailability,
+    updateAvailability,
+    deleteAvailability,
     isLoading,
     error,
   }
 }
+

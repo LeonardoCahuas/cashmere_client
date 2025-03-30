@@ -31,6 +31,27 @@ export const useAuth = () => {
     }
   }
 
+  const register = async (credentials: LoginRequest): Promise<LoginResponse | null> => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await authApi.register(credentials)
+
+      if (response?.user.role) {
+        if (!response.user.id) {
+          router.push("/auth/callback/1")
+        }
+      }
+
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const googleLogin = async (data: GooGleLoginDTO): Promise<LoginResponse | null> => {
     try {
       setIsLoading(true)
@@ -48,6 +69,7 @@ export const useAuth = () => {
   return {
     login,
     googleLogin,
+    register,
     isLoading,
     error,
   }

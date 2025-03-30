@@ -75,7 +75,7 @@ export default function HolidaysApprovalPage() {
 
     // Aggiorna lo stato della richiesta
     const updatedRequests = requests.map((req) =>
-      req.id === selectedRequest.id ? { ...req, status: "REJECTED" as const } : req,
+      req.id === selectedRequest.id ? { ...req, status: "ANNULLATO" as const } : req,
     )
 
     setRequests(updatedRequests)

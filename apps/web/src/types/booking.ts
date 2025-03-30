@@ -10,6 +10,8 @@ export interface BookingCreateRequest {
     end: Date
     services: string[]
     notes?: string
+    phone: string
+    instagram: string
 }
 
 export interface BookingCreateResponse {

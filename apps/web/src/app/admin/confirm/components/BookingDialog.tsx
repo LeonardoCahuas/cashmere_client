@@ -63,7 +63,7 @@ export function ViewBookingDialog({ isOpen, onClose, booking, onAccept, onReject
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="flex flex-row items-center justify-between">
           
-          <DialogTitle className="text-center flex-1">{booking?.userId}</DialogTitle>
+          <DialogTitle className="text-center flex-1">{booking?.user.username}</DialogTitle>
         </DialogHeader>
 
         {booking && (

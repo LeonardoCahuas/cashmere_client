@@ -1,17 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { Button  } from "@/components/Button"
-import type { BookingStatus } from "../data/bookings"
+import { Button } from "@/components/Button"
+import { BookingState } from "@/types/types"
 
 interface BookingFiltersProps {
-  onFilterChange: (status: BookingStatus) => void
+  onFilterChange: (status: BookingState | "future" | "past" | "pending") => void
 }
 
 export function BookingFilters({ onFilterChange }: BookingFiltersProps) {
-  const [activeFilter, setActiveFilter] = useState<BookingStatus>("future")
+  const [activeFilter, setActiveFilter] = useState<BookingState | "future" | "past" | "pending">("future")
 
-  const handleFilterClick = (status: BookingStatus) => {
+  const handleFilterClick = (status: BookingState | "future" | "past" | "pending") => {
     setActiveFilter(status)
     onFilterChange(status)
   }
@@ -25,12 +25,11 @@ export function BookingFilters({ onFilterChange }: BookingFiltersProps) {
         In attesa di conferma
       </Button>
       <Button
-        variant={activeFilter === "completed" ? "default" : "outline"}
-        onClick={() => handleFilterClick("completed")}
+        variant={activeFilter === "past" ? "default" : "outline"}
+        onClick={() => handleFilterClick("past")}
       >
         Completate
       </Button>
     </div>
   )
 }
-

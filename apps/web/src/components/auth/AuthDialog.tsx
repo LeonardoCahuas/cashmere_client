@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
+import type React from "react"
+import { useState } from "react"
 import { Dialog, DialogContent, DialogTrigger } from "../Dialog"
 import { Button } from "../Button"
 import { UserIcon } from "../icons/User"
@@ -10,6 +11,7 @@ import { useRouter } from "next/navigation"
 import { GoogleSignInButton } from "../GoogleSignInButton"
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth"
 import { useUserStore } from "@/store/user-store"
+import { Eye, EyeOff } from "lucide-react"
 
 export function AuthDialog() {
   const [view, setView] = useState<"login" | "register">("login")
@@ -17,30 +19,47 @@ export function AuthDialog() {
     username: "",
     password: "",
   })
-  const { login } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const { login, register } = useAuth()
   const router = useRouter()
   const { signInWithGoogle, loading: googleLoading } = useSupabaseAuth()
   const { setUser } = useUserStore()
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("ciao")
-    const response = await login(formData)
-    if (response?.user.role) {
-      setUser({ ...response.user })
-      router.push("/dashboard")
+
+    if (view === "login") {
+      // Handle login
+      const response = await login(formData)
+      if (response?.user.role) {
+        setUser({ ...response.user })
+        router.push("/dashboard")
+      }
+    } else {
+      // Handle registration
+      const response = await register(formData)
+      if (response?.user.role) {
+        setUser({ ...response.user })
+        router.push("/dashboard")
+      }
     }
   }
+
   const handleGoogleSignIn = async () => {
     console.log("provo")
     await signInWithGoogle()
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   return (
@@ -58,9 +77,7 @@ export function AuthDialog() {
               {view === "login" ? "Accedi al tuo account" : "Crea un account"}
             </h1>
             <p className="text-sm text-gray-500">
-              {view === "login"
-                ? "Inserisci le tue credenziali per accedere"
-                : "Inserisci i tuoi dati per registrarti"}
+              {view === "login" ? "Inserisci le tue credenziali per accedere" : "Inserisci i tuoi dati per registrarti"}
             </p>
           </div>
 
@@ -93,15 +110,25 @@ export function AuthDialog() {
               <label className="text-sm font-medium" htmlFor="password">
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="w-full px-3 py-2 border rounded-md"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full px-3 py-2 border rounded-md pr-10"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Inserisci la tua password"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <Button type="submit" variant="gradient" color="black" className="w-full">
@@ -114,9 +141,7 @@ export function AuthDialog() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">
-                O continua con
-              </span>
+              <span className="bg-white px-2 text-gray-500">O continua con</span>
             </div>
           </div>
 
@@ -126,20 +151,14 @@ export function AuthDialog() {
             {view === "login" ? (
               <>
                 Non hai un account?{" "}
-                <button
-                  className="text-blue-600 hover:underline"
-                  onClick={() => setView("register")}
-                >
+                <button className="text-blue-600 hover:underline" onClick={() => setView("register")}>
                   Registrati
                 </button>
               </>
             ) : (
               <>
                 Hai già un account?{" "}
-                <button
-                  className="text-blue-600 hover:underline"
-                  onClick={() => setView("login")}
-                >
+                <button className="text-blue-600 hover:underline" onClick={() => setView("login")}>
                   Accedi
                 </button>
               </>
@@ -150,3 +169,4 @@ export function AuthDialog() {
     </Dialog>
   )
 }
+

@@ -35,6 +35,26 @@ export class AuthApi {
     }
   }
 
+  async register(data: LoginRequest): Promise<LoginResponse> {
+    try {
+      const response = await api.post<LoginResponse>(`${this.BASE_PATH}/register`, data, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || "Login failed",
+          statusCode: error.response?.status || 500,
+        }
+      }
+      throw error
+    }
+  }
+
   async googleLogin(data: GooGleLoginDTO): Promise<LoginResponse> {
     try {
       const response = await api.post<LoginResponse>(`${this.BASE_PATH}/google`, data, {

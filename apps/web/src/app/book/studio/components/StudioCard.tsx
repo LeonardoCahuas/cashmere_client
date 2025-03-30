@@ -67,13 +67,10 @@ export function StudioCard({
           {/* Content */}
           <div className="flex-grow">
             <h3 className="text-2xl font-bold">{name}</h3>
-            <p className="text-gray-700 mt-1">{description}</p>
-            <Button 
-              variant="link" 
-              className="h-auto p-0 mt-4 underline"
-            >
-              Scheda tecnica
-            </Button>
+            <p className="text-gray-700 mt-1">
+  {description.length > 100 ? description.slice(0, 100) + "..." : description}
+</p>
+
           </div>
 
           {/* Image */}

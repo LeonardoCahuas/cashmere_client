@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { ApiError } from "@/types/auth"
 import { userApi } from "@/api/user"
+import { RoleType } from "@/store/user-store"
 
 export const useUser = () => {
   const [isLoading, setIsLoading] = useState(false)
@@ -40,10 +41,41 @@ export const useUser = () => {
     }
   }
 
+  const getAllUsers = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await userApi.getAllUsers()  // Call to the API to get engineers
+      setUsers(response)  // Store the fetched engineers data
+      return response
+    } catch (err) {
+      setError(err as ApiError)  // Handle any errors
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const updateRole = async (id: string, role: RoleType) => {
+    try {
+        setIsLoading(true)
+        setError(null)
+        const response = await userApi.updateRole(id, role)
+        return response
+    } catch (err) {
+        setError(err as ApiError)
+        return null
+    } finally {
+        setIsLoading(false)
+    }
+}
+
   return {
     engineers,  // Expose engineers data to the components that use this hook
     getEngineers,
     getUsers,
+    getAllUsers,
+    updateRole,
     isLoading,
     error,
   }

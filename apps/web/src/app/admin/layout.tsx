@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from "@/components/Button"
-import { Calendar, Phone, Music, Menu, Home, CheckCircle, Settings, Sun, Music2 } from 'lucide-react'
+import { Calendar, Phone, Music, Menu, Home, CheckCircle, Settings, Sun, Music2, User } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from "@/lib/utils"
 import Image from 'next/image'
@@ -44,6 +44,11 @@ const sidebarItems: SidebarItem[] = [
     icon: <Music2 className="min-w-4 h-4" />,
     label: "Entità",
     href: "/admin/entities"
+  },
+  {
+    icon: <User className="min-w-4 h-4" />,
+    label: "Utenti",
+    href: "/admin/users"
   }
 ]
 

@@ -6,22 +6,27 @@ import { BackButton } from "../components/BackButton"
 import { BookingSummary } from "../components/BookingSummary"
 import { EngineerCard } from "./components/EngineerCard"
 import { Engineer, useBookingStore } from "../../../store/booking-store"
+import { format } from "date-fns"
+import { it } from "date-fns/locale"
+import { useEffect, useState } from "react"
+import { useBooking } from "@/hooks/useBooking"
+import { useUser } from "@/hooks/useUser"
 
-interface EngineerCardProps{
-    name: Engineer | "Primo fonico disponibile"
-    isAvailable: boolean
-    unavailabilityInfo?:UnavailabilityInfo
+interface EngineerCardProps {
+  name: Engineer | "Primo fonico disponibile"
+  isAvailable: boolean
+  unavailabilityInfo?: UnavailabilityInfo
 }
-interface DateAlternative{
-    timeRange:string
-    date:string
+interface DateAlternative {
+  timeRange: string
+  date: string
 }
-interface UnavailabilityInfo{
-    alternativeDates: DateAlternative[]
-    message: string
+interface UnavailabilityInfo {
+  alternativeDates: DateAlternative[]
+  message: string
 }
 
-const engineers:EngineerCardProps[] = [
+const engineers: EngineerCardProps[] = [
   {
     name: "Primo fonico disponibile",
     isAvailable: true,
@@ -56,7 +61,104 @@ const engineers:EngineerCardProps[] = [
 ]
 
 export default function EngineerPage() {
-  const { needsEngineer, selectedEngineer, setNeedsEngineer, setSelectedEngineer } = useBookingStore()
+  const [engineers, setEngineers] = useState([])
+  const [availableEngineers, setAvailableEngineers] = useState([])
+  const [unavailableEngineers, setUnavailableEngineers] = useState([])
+  const { needsEngineer, selectedEngineer, setNeedsEngineer, setSelectedEngineer, selectedDate, timeFrom, timeTo } = useBookingStore()
+  const { getAvailableEngineers } = useBooking()
+  const { getEngineers } = useUser()
+
+  useEffect(() => {
+    const loadStudios = async () => {
+      try {
+        if (!selectedDate || !timeFrom || !timeTo) return
+
+        //setIsLoading(true)
+
+        const [fromHours, fromMinutes] = timeFrom.split(":").map(Number)
+        const [toHours, toMinutes] = timeTo.split(":").map(Number)
+
+        const start = new Date(selectedDate)
+        start.setHours(fromHours)
+        start.setMinutes(fromMinutes)
+        start.setSeconds(0)
+        start.setMilliseconds(0)
+
+        const end = new Date(selectedDate)
+        end.setHours(toHours)
+        end.setMinutes(toMinutes)
+        end.setSeconds(0)
+        end.setMilliseconds(0)
+
+        // Recuperiamo gli studi disponibili per il periodo
+        const studioAvailability = await getAvailableEngineers(start, end)
+        const data = await getEngineers()
+        setEngineers(data)
+
+        // Formatta l'orario richiesto per mostrarlo nei messaggi di indisponibilità
+        const requestedTimeRange = `${timeFrom} - ${timeTo}`
+
+        // Studi disponibili
+        const available = []
+        // Studi non disponibili
+        const unavailable = []
+
+        // Elabora i dati di disponibilità e combina con i dettagli degli studi
+        for (const studioAvail of studioAvailability) {
+          // Trova i dettagli completi dello studio
+          const studioDetail = data.find((s: { id: any }) => s.id === studioAvail.id)
+
+          if (!studioDetail) continue // Salta se non troviamo i dettagli
+
+          const studioData = {
+            id: studioAvail.id,
+            name: studioDetail.username,
+          }
+
+          if (studioAvail.isAvailable) {
+            // Studio disponibile
+            available.push(studioData)
+          } else {
+            // Studio non disponibile - prepara le alternative
+            const alternativeDates: DateAlternative[] = []
+
+            if (studioAvail.alternativeSlots && studioAvail.alternativeSlots.length > 0) {
+              // Converti gli slot alternativi nel formato richiesto
+              studioAvail.alternativeSlots.forEach((slot: { start: string | number | Date; end: string | number | Date }) => {
+                const startDate = new Date(slot.start)
+                const endDate = new Date(slot.end)
+
+                const formattedDate = format(startDate, "EEEE d MMMM", { locale: it })
+                const formattedTimeRange = `${format(startDate, "HH:mm")} - ${format(endDate, "HH:mm")}`
+
+                alternativeDates.push({
+                  date: formattedDate,
+                  timeRange: formattedTimeRange,
+                })
+              })
+            }
+
+            unavailable.push({
+              ...studioData,
+              unavailabilityInfo: {
+                alternativeDates,
+                occupiedTime: requestedTimeRange,
+              },
+            })
+          }
+        }
+        console.log("avaiable", available)
+        console.log("unavaiable", unavailable)
+        setAvailableEngineers(available)
+        setUnavailableEngineers(unavailable)
+
+      } catch (error) {
+        console.error("Error loading studios:", error)
+      }
+    }
+
+    loadStudios()
+  }, [selectedDate, timeFrom, timeTo])
 
   return (
     <div className="container max-w-3xl py-8 pb-32">
@@ -98,8 +200,7 @@ export default function EngineerPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Fonici disponibili nella tua fascia oraria</h2>
               <div className="space-y-4">
-                {engineers
-                  .filter((eng) => eng.isAvailable)
+                {availableEngineers
                   .map((eng) => (
                     <EngineerCard
                       key={eng.name}
@@ -114,8 +215,7 @@ export default function EngineerPage() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Fonici non disponibili nella tua fascia oraria</h2>
               <div className="space-y-4">
-                {engineers
-                  .filter((eng) => !eng.isAvailable)
+                {unavailableEngineers
                   .map((eng) => (
                     <EngineerCard
                       key={eng.name}

@@ -31,11 +31,11 @@ export default function Confirm() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [bookings, setBookings] = useState<Booking[]>([])
-  const { getAll, updateBookingState } = useBooking()
+  const { getToConfirm, updateBookingState } = useBooking()
 
   useEffect(() => {
     const fetchBookings = async () => {
-      const data = await getAll()
+      const data = await getToConfirm()
       console.log(data)
       setBookings(data)
       setBookingsState(data)
@@ -45,7 +45,7 @@ export default function Confirm() {
     if (bookings.length === 0) {
       fetchBookings()
     }
-  }, [bookings.length, getAll])
+  }, [bookings.length])
 
   // Stato per paginazione
   const [currentPage, setCurrentPage] = useState(1)
@@ -363,7 +363,7 @@ export default function Confirm() {
           <div className="py-6 text-center">
             <p className="text-lg mb-2">Sei sicuro di voler confermare questa prenotazione?</p>
             <p className="text-sm text-gray-500">
-              {selectedBooking?.userId} - {selectedBooking && formatDate(selectedBooking.start)}
+              {selectedBooking?.user.username} - {selectedBooking && formatDate(selectedBooking.start)}
             </p>
           </div>
           <DialogFooter className="flex sm:justify-between gap-2">

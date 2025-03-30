@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Calendar, Briefcase, Eye, ArrowUpDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { format } from "date-fns"
@@ -18,6 +18,7 @@ import { studios, services } from "@/lib/types"
 import type { Booking } from "@/types/booking"
 import type { BookingState, HolidayTypeType } from "@/types/types"
 import { useHoliday } from "@/hooks/useHoliday"
+import { useBooking } from "@/hooks/useBooking"
 
 type RequestType = "FERIE" | "PERMESSO" | null
 
@@ -30,54 +31,10 @@ interface Holiday {
   reason: string
 }
 
-// Dati di esempio
-const bookings: Booking[] = [
-  {
-    id: "1",
-    userId: "@skugnizz",
-    fonicoId: "Estel",
-    studioId: "fj2m48xyn0vrkzqwtlcsd96bp", // Studio 2
-    start: new Date("2024-02-07T16:00:00"),
-    end: new Date("2024-02-07T21:00:00"),
-    services: ["wtscbdf9xv7qkz0m2y4nlgr3p", "p4xv7qk2m90zylwtscbdg3nfr"], // Affitto sala, Registrazione
-    notes: "366 400 7807",
-    state: "FUORI_ORARIO" as BookingState,
-  },
-  {
-    id: "2",
-    userId: "@bl3dem",
-    fonicoId: "Estel",
-    studioId: "m3v9xtkq2wsn74yl0cbdg5prz", // Studio 3
-    start: new Date("2024-02-08T14:00:00"),
-    end: new Date("2024-02-08T21:00:00"),
-    services: ["wtscbdf9xv7qkz0m2y4nlgr3p"], // Affitto sala
-    state: "ACCETTATA" as BookingState,
-  },
-  {
-    id: "3",
-    userId: "@oggkange",
-    fonicoId: "Estel",
-    studioId: "fj2m48xyn0vrkzqwtlcsd96bp", // Studio 2
-    start: new Date("2024-02-07T16:00:00"),
-    end: new Date("2024-02-07T21:00:00"),
-    services: ["wtscbdf9xv7qkz0m2y4nlgr3p", "p4xv7qk2m90zylwtscbdg3nfr"], // Affitto sala, Registrazione
-    state: "ACCETTATA" as BookingState,
-  },
-  {
-    id: "4",
-    userId: "Niky Savage",
-    fonicoId: "Estel",
-    studioId: "m3v9xtkq2wsn74yl0cbdg5prz", // Studio 3
-    start: new Date("2024-02-08T14:00:00"),
-    end: new Date("2024-02-08T21:00:00"),
-    services: ["wtscbdf9xv7qkz0m2y4nlgr3p"], // Affitto sala
-    state: "ACCETTATA" as BookingState,
-  },
-]
-
 export default function DashboardPage() {
   const router = useRouter()
   const [requestDialogOpen, setRequestDialogOpen] = useState(false)
+  const [bookings, setBookings] = useState([])
   const [requestType, setRequestType] = useState<RequestType>(null)
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
@@ -93,11 +50,27 @@ export default function DashboardPage() {
 
   // Aggiungiamo stati per il modale di visualizzazione
   const [viewSessionDialogOpen, setViewSessionDialogOpen] = useState(false)
+
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const { createHoliday } = useHoliday()
+  const {getEngineerBookings} = useBooking()
   const handleCalendarClick = () => {
     router.push("/admin/calendar")
   }
+
+  useEffect(() => {
+
+    const loadBookings = async () => {
+      try {
+        const data = await getEngineerBookings('cm6ds8hq80000w6d2y9ttjh7x')
+        setBookings(data)
+        console.log(data)
+      } catch (error) {
+        console.error("Error loading current bookings:", error)
+      }
+    }
+    loadBookings()
+  }, [])
 
   const handleRequestClick = () => {
     setRequestDialogOpen(true)
@@ -264,7 +237,6 @@ export default function DashboardPage() {
                 </TableHead>
                 <TableHead className="font-medium">Instagram</TableHead>
                 <TableHead className="font-medium">Servizi</TableHead>
-                <TableHead className="font-medium">Fonico</TableHead>
                 <TableHead className="font-medium">
                   <div className="flex items-center gap-1">
                     Data e fascia oraria
@@ -292,7 +264,6 @@ export default function DashboardPage() {
                         <div key={index}>{getServiceName(serviceId)}</div>
                       ))}
                     </TableCell>
-                    <TableCell className="text-pink-500">{booking.fonicoId}</TableCell>
                     <TableCell className="align-top">
                       <div>{formatDate(booking.start)}</div>
                       <div className="flex gap-4 text-gray-500">
@@ -301,8 +272,8 @@ export default function DashboardPage() {
                       </div>
                     </TableCell>
                     <TableCell>{getStudioName(booking.studioId)}</TableCell>
-                    <TableCell className={booking.state === "CONFERMATO" ? "text-green-500" : "text-orange-500"}>
-                      {booking.state === "CONFERMATO" ? "Accettata" : "Fuori orario"}
+                    <TableCell className={!booking.isWithinAvailability ? "text-red-500" : "text-green-500"}>
+                      {!booking.isWithinAvailability ? "Fuori orario" : "Accettata"}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -498,9 +469,6 @@ export default function DashboardPage() {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader className="flex flex-row items-center justify-between">
             <DialogTitle className="text-center flex-1">{selectedBooking?.userId}</DialogTitle>
-            <Button variant="outline" className="px-4">
-              Modifica
-            </Button>
           </DialogHeader>
 
           {selectedBooking && (
@@ -524,20 +492,7 @@ export default function DashboardPage() {
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Nome artista</h3>
-                  <Input value={selectedBooking.userId} className="w-full" readOnly />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Entità</h3>
-                  <div className="border rounded-md p-3 flex items-center gap-3">
-                    <div className="font-bold text-lg">ada</div>
-                    <span>{"Non specificata"}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Numero di telefono</h3>
-                  <Input value={selectedBooking.notes || "Non specificato"} className="w-full" readOnly />
+                  <Input value={selectedBooking.user.username} className="w-full" readOnly />
                 </div>
 
                 <div>

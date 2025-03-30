@@ -13,6 +13,12 @@ export interface CreateBooking {
   end: Date
   services: string[]
   notes?: string
+  phone: string
+  instagram:string
+}
+
+export interface CreateEntity{
+  name: string
 }
 
 export interface CreateHoliday{
@@ -46,3 +52,27 @@ export enum HolidayType {
 
 export type HolidayTypeType = "FERIE" | "PERMESSO"
 
+export interface Availability {
+  id: string
+  day: string
+  start: string
+  end: string
+  userId: string
+}
+
+export interface CreateAvailabilityDto {
+  day: string
+  start: string
+  end: string
+  engineerId?: string
+}
+
+export interface Report{
+  id:string
+  reason:string
+}
+
+export interface CreateReportDto{
+  userId:string
+  reason:string
+}
