@@ -6,22 +6,22 @@ export interface PortfolioItem {
 }
 
 export interface CreateBooking {
-  userId: string
+  userId: string | null
   fonicoId: string
   studioId: string
   start: Date
   end: Date
   services: string[]
   notes?: string
-  phone: string
-  instagram:string
+  phone?: string
+  instagram?: string
 }
 
-export interface CreateEntity{
+export interface CreateEntity {
   name: string
 }
 
-export interface CreateHoliday{
+export interface CreateHoliday {
   userId: string
   start: Date
   end: Date
@@ -31,7 +31,7 @@ export enum BookingState {
   CONTATTARE = "CONTATTARE",
   CONFERMATO = "CONFERMATO",
   CONTATTATO = "CONTATTATO",
-  ANNULLATO = "ANNULLATO"
+  ANNULLATO = "ANNULLATO",
 }
 
 export type StateType = "CONTATTARE" | "CONTATTATO" | "ANNULLATO" | "CONFERMATO"
@@ -39,11 +39,10 @@ export type StateType = "CONTATTARE" | "CONTATTATO" | "ANNULLATO" | "CONFERMATO"
 export enum HolidayState {
   CONFERMARE = "CONFERMARE",
   CONFERMATO = "CONFERMATO",
-  ANNULLATO = "ANNULLATO"
+  ANNULLATO = "ANNULLATO",
 }
 
-export type HolidayStateType = "CONFERMARE" |  "ANNULLATO" | "CONFERMATO"
-
+export type HolidayStateType = "CONFERMARE" | "ANNULLATO" | "CONFERMATO"
 
 export enum HolidayType {
   FERIE = "FERIE",
@@ -67,12 +66,13 @@ export interface CreateAvailabilityDto {
   engineerId?: string
 }
 
-export interface Report{
-  id:string
-  reason:string
+export interface Report {
+  id: string
+  reason: string
 }
 
-export interface CreateReportDto{
-  userId:string
-  reason:string
+export interface CreateReportDto {
+  userId: string
+  reason: string
 }
+

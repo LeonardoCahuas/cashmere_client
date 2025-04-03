@@ -71,7 +71,7 @@ export interface Studio {
       },
       {
         id: "3",
-        dbId:"m3v9xtkq2wsn74yl0cbdg5prz",
+        dbId:"z7wqktx3y0m24vn9slcbdg5rp",
         name: "Studio 3",
         videoUrl: "/Studio3.mp4",
         imagesUrl: [
@@ -101,7 +101,7 @@ export interface Studio {
       },
       {
         id: "4",
-        dbId:"z7wqktx3y0m24vn9slcbdg5rp",
+        dbId:"m3v9xtkq2wsn74yl0cbdg5prz",
         name: "Studio 4",
         videoUrl: "/Studio3.mp4",
         imagesUrl: [

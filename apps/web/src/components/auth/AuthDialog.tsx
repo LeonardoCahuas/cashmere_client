@@ -7,13 +7,13 @@ import { Button } from "../Button"
 import { UserIcon } from "../icons/User"
 import { DialogTitle } from "@radix-ui/react-dialog"
 import { useAuth } from "@/hooks/useAuth"
-import { useRouter } from "next/navigation"
 import { GoogleSignInButton } from "../GoogleSignInButton"
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth"
 import { useUserStore } from "@/store/user-store"
 import { Eye, EyeOff } from "lucide-react"
 
 export function AuthDialog() {
+  const [loginError, setLoginError] = useState(false)
   const [view, setView] = useState<"login" | "register">("login")
   const [formData, setFormData] = useState({
     username: "",
@@ -21,7 +21,6 @@ export function AuthDialog() {
   })
   const [showPassword, setShowPassword] = useState(false)
   const { login, register } = useAuth()
-  const router = useRouter()
   const { signInWithGoogle, loading: googleLoading } = useSupabaseAuth()
   const { setUser } = useUserStore()
 
@@ -41,20 +40,42 @@ export function AuthDialog() {
       const response = await login(formData)
       if (response?.user.role) {
         setUser({ ...response.user })
-        router.push("/dashboard")
+        let path
+        switch (response.user.role) {
+          case "ADMIN":
+            path = "/admin/confirm"
+            break
+          case "ENGINEER":
+            path = "/admin/availability"
+            break
+          case "SECRETARY":
+            path = "/admin/users"
+            break
+          case "USER":
+            path = "/dashboard"
+            break
+          default:
+            path = "/"
+            break
+        }
+        setLoginError(false)
+        window.location.href = path
+      } else {
+        setLoginError(true)
+        console.log("aiaiai errore")
       }
     } else {
       // Handle registration
       const response = await register(formData)
       if (response?.user.role) {
         setUser({ ...response.user })
-        router.push("/dashboard")
+        // Reindirizza usando window.location per un refresh completo
+        window.location.href = "/dashboard"
       }
     }
   }
 
   const handleGoogleSignIn = async () => {
-    console.log("provo")
     await signInWithGoogle()
   }
 
@@ -82,17 +103,9 @@ export function AuthDialog() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {view === "register" && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium" htmlFor="name">
-                  Nome
-                </label>
-              </div>
-            )}
-
             <div className="space-y-2">
               <label className="text-sm font-medium" htmlFor="email">
-                Email
+                Username
               </label>
               <input
                 id="email"
@@ -102,7 +115,7 @@ export function AuthDialog() {
                 className="w-full px-3 py-2 border rounded-md"
                 value={formData.username}
                 onChange={handleInputChange}
-                placeholder="nome@esempio.com"
+                placeholder="Inserisci username"
               />
             </div>
 
@@ -130,7 +143,7 @@ export function AuthDialog() {
                 </button>
               </div>
             </div>
-
+            {loginError && <p className="text-red-500 text-xs">Credenziali errate, riprova.</p>}
             <Button type="submit" variant="gradient" color="black" className="w-full">
               {view === "login" ? "Accedi" : "Registrati"}
             </Button>
@@ -169,4 +182,3 @@ export function AuthDialog() {
     </Dialog>
   )
 }
-

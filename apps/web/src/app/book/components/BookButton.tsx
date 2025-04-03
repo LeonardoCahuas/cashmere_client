@@ -1,19 +1,18 @@
 "use client"
 
 import type React from "react"
+
 import { useState } from "react"
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/Dialog"
+import { Dialog, DialogContent } from "@/components/Dialog"
 import { Button } from "@/components/Button"
-import { DialogTitle } from "@radix-ui/react-dialog"
-import { useAuth } from "@/hooks/useAuth"
 import { useRouter } from "next/navigation"
 import { GoogleSignInButton } from "@/components/GoogleSignInButton"
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth"
 import { useUserStore } from "@/store/user-store"
 import { useBookingStore } from "@/store/booking-store"
-import type { CreateBooking } from "@/types/types"
-import { combineDateAndTime } from "@/lib/date-time"
-import { useBooking } from "@/hooks/useBooking"
+import { useAuth } from "@/hooks/useAuth"
+import { Eye, EyeOff } from "lucide-react"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 interface ButtonProps {
   disabled: boolean
@@ -25,20 +24,14 @@ export function BookButton({ disabled }: ButtonProps) {
     username: "",
     password: "",
   })
-  const { login } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const { login, register } = useAuth()
   const router = useRouter()
-  const { signInWithGoogle, loading: googleLoading, user: supabaseUser } = useSupabaseAuth()
+  const { signInWithGoogle, loading: googleLoading } = useSupabaseAuth()
   const { setUser, user } = useUserStore()
-  const {
-    selectedDate,
-    selectedEngineer,
-    selectedStudio,
-    selectedServices,
-    timeFrom,
-    timeTo,
-    saveBookingToLocalStorage,
-  } = useBookingStore()
-  const { createBooking } = useBooking()
+  const { saveBookingToLocalStorage } = useBookingStore()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -48,67 +41,76 @@ export function BookButton({ disabled }: ButtonProps) {
     }))
   }
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const handleButtonClick = () => {
+    if (user.id) {
+      // Se l'utente è già loggato, vai direttamente alla pagina di conferma
+      router.push("/book/confirm")
+    } else {
+      // Altrimenti, apri il dialog di login
+      setDialogOpen(true)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const response = await login(formData)
-    if (response?.user.role) {
-      setUser({ ...response.user })
-      await handleSubmitBooking()
-      router.push("/dashboard")
+
+    try {
+      // Salva i dati della prenotazione in localStorage
+      saveBookingToLocalStorage()
+
+      let response
+      if (view === "login") {
+        response = await login(formData)
+      } else {
+        response = await register(formData)
+      }
+
+      if (response?.user.role) {
+        setUser({ ...response.user })
+        setDialogOpen(false)
+
+        // Vai alla pagina di conferma
+        router.push("/book/confirm")
+      }
+    } catch (error) {
+      console.error("Authentication error:", error)
     }
   }
 
   const handleGoogleSignIn = async () => {
-    // Save booking data to localStorage before redirecting
+    // Salva i dati della prenotazione in localStorage
     saveBookingToLocalStorage()
 
-    // Pass true to indicate we should create a booking after successful login
-    await signInWithGoogle(true)
-    // Note: The code execution will stop here as the user is redirected to Google
+    // Imposta un flag per indicare che siamo nel flusso di prenotazione
+    localStorage.setItem("bookingInProgress", "true")
+
+    // Esegui il login con Google
+    await signInWithGoogle()
+    // L'utente verrà reindirizzato a Google per l'autenticazione
   }
 
-  const handleButtonClick = async () => {
-    if (user.id) {
-      await handleSubmitBooking()
-      router.push("/dashboard")
-    }
-  }
+  const handleContinueWithoutLogin = () => {
+    // Salva i dati della prenotazione in localStorage
+    saveBookingToLocalStorage()
 
-  const handleSubmitBooking = async () => {
-    const userId = user.id || supabaseUser?.id || ""
-    if (!userId) {
-      console.error("No user ID available for booking")
-      return null
-    }
-
-    const booking: CreateBooking = {
-      userId,
-      fonicoId: selectedEngineer || "",
-      studioId: selectedStudio,
-      start: combineDateAndTime(selectedDate, timeFrom),
-      end: combineDateAndTime(selectedDate, timeTo),
-      services: selectedServices,
-    }
-
-    console.log("Creating booking:", booking)
-    return await createBooking(booking)
-  }
-
-  const handleSubmitAnonymousBooking = async () => {
-    await handleSubmitBooking()
-    router.push("/")
+    // Vai alla pagina di conferma senza login
+    router.push("/book/confirm")
+    setDialogOpen(false)
   }
 
   return (
     <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="gradient" onClick={handleButtonClick} disabled={disabled}>
-            Richiedi prenotazione
-          </Button>
-        </DialogTrigger>
-        <DialogTitle></DialogTitle>
+      <Button variant="gradient" onClick={handleButtonClick} disabled={disabled}>
+        Continua
+      </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
+          <DialogTitle></DialogTitle>
           <div className="grid gap-6">
             <div className="flex flex-col space-y-2 text-center">
               <h1 className="text-2xl font-semibold tracking-tight">
@@ -122,14 +124,6 @@ export function BookButton({ disabled }: ButtonProps) {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {view === "register" && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" htmlFor="name">
-                    Nome
-                  </label>
-                </div>
-              )}
-
               <div className="space-y-2">
                 <label className="text-sm font-medium" htmlFor="email">
                   Email
@@ -150,15 +144,25 @@ export function BookButton({ disabled }: ButtonProps) {
                 <label className="text-sm font-medium" htmlFor="password">
                   Password
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="w-full px-3 py-2 border rounded-md"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                />
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="w-full px-3 py-2 border rounded-md pr-10"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Inserisci la tua password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
 
               <Button type="submit" variant="gradient" color="black" className="w-full">
@@ -194,10 +198,16 @@ export function BookButton({ disabled }: ButtonProps) {
                 </>
               )}
             </div>
+
+            <div className="text-center">
+              <button
+                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                onClick={handleContinueWithoutLogin}
+              >
+                Continua senza accedere
+              </button>
+            </div>
           </div>
-          <DialogClose className="w-full flex flex-col items-center" onClick={handleSubmitAnonymousBooking}>
-            <p className="underline">Continua senza accedere</p>
-          </DialogClose>
         </DialogContent>
       </Dialog>
     </div>

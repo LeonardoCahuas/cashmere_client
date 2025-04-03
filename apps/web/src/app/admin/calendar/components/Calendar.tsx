@@ -18,10 +18,10 @@ interface BookingCalendarProps {
   view: "timeGridDay" | "timeGridWeek" | "dayGridMonth"
   selectedStudio: string
   selectedFonico: string
+  canEdit: boolean
 }
 
-export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
-  ({ view, selectedStudio, selectedFonico }, ref) => {
+export const BookingCalendar = forwardRef<any, BookingCalendarProps>(({ view, selectedStudio, selectedFonico, canEdit }, ref) => {
     const calendarRef = useRef<any>(null)
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
     const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false)
@@ -46,6 +46,7 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
       const fetchBookings = async () => {
         const data = await getAll()
         setBookings(data)
+        console.log(data)
       }
 
       // Effettua il fetch solo una volta
@@ -235,6 +236,9 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
         setIsConfirmDialogOpen(false)
         setModifiedEvent(null)
         setModificationInfo(null)
+        setTimeout(()=> {
+          refresh()
+        }, 1000)
       }
     }
 
@@ -263,6 +267,9 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
     const onDelete = (id: string) => {
       setIsBookingDialogOpen(false)
       deleteBooking(id)
+      setTimeout(()=> {
+        refresh()
+      }, 1000)
     }
 
     const onSubmit = (booking: Booking) => {
@@ -273,7 +280,9 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
       } else {
         createBooking(booking)
       }
-      refresh()
+      setTimeout(()=> {
+        refresh()
+      }, 1000)
     }
 
     return (
@@ -287,8 +296,8 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
             locale={itLocale}
             firstDay={1}
             events={filteredEvents}
-            editable={true}
-            selectable={true}
+            editable={canEdit}
+            selectable={canEdit}
             selectMirror={true}
             dayMaxEvents={false}
             allDaySlot={false}
@@ -331,6 +340,7 @@ export const BookingCalendar = forwardRef<any, BookingCalendarProps>(
             setIsBookingDialogOpen(false)
             setSelectedEvent(null)
           }}
+          canEdit={canEdit}
           onDelete={onDelete}
           onSave={onSubmit}
           booking={selectedEvent ? selectedEvent : {}}

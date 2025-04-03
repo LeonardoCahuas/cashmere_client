@@ -1,8 +1,8 @@
 export const studios = [
   { id: "a9xgk7yq34mnp0z2vwsdl5btc", name: "Studio 1" },
   { id: "fj2m48xyn0vrkzqwtlcsd96bp", name: "Studio 2" },
-  { id: "m3v9xtkq2wsn74yl0cbdg5prz", name: "Studio 3" },
-  { id: "z7wqktx3y0m24vn9slcbdg5rp", name: "Studio 4" }
+  { id: "z7wqktx3y0m24vn9slcbdg5rp", name: "Studio 3" },
+  { id: "m3v9xtkq2wsn74yl0cbdg5prz", name: "Studio 4" }
 ];
 
 export const services = [

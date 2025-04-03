@@ -39,6 +39,20 @@ export const useHoliday = () => {
     }
   }
 
+  const getUserHolidays = async (id: string) => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      const response = await holidayApi.getUserHolidays(id)
+      return response
+    } catch (err) {
+      setError(err as ApiError)
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const updateHolidayState = async (id: string, state: HolidayState) => {
     console.log(id)
     try {
@@ -57,6 +71,7 @@ export const useHoliday = () => {
   return {
     createHoliday,
     getAll,
+    getUserHolidays,
     updateHolidayState,
     isLoading,
     error,

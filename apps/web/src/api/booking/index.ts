@@ -1,7 +1,8 @@
-import type { BookingState, CreateBooking, StateType } from "@/types/types"
+import type { CreateBooking, StateType } from "@/types/types"
 import api from "@/lib/axios"
 import axios from "axios"
-import { User } from "@/store/user-store"
+import type { User } from "@/store/user-store"
+import { Booking } from "@/types/booking"
 
 export class BookingApi {
   private static instance: BookingApi
@@ -16,18 +17,27 @@ export class BookingApi {
     return BookingApi.instance
   }
 
-  async create(booking: CreateBooking, user: User): Promise<any> {
-    console.log(booking)
-     try {
+  async create(booking: CreateBooking, user?: User): Promise<any> {
+    console.log("API: Creating booking with data:", booking)
+    try {
+      // Assicurati che tutti i campi richiesti siano presenti
+      if (!booking.studioId) {
+        throw new Error("Studio ID is required")
+      }
+
+      if (typeof booking.phone !== 'string' || typeof booking.instagram !== 'string') {
+        throw new Error("Contact information (phone and Instagram) is required")
+      }
+
       const response = await api.post<any>(`${this.BASE_PATH}`, booking, {
         headers: {
           "Cache-Control": "no-cache",
         },
       })
-      console.log(response)
+      console.log("API: Booking creation response:", response)
       return response.data
     } catch (error) {
-      console.log(error)
+      console.error("API: Booking creation error:", error)
       if (axios.isAxiosError(error)) {
         throw {
           message: error.response?.data?.message || "Booking creation failed",
@@ -35,11 +45,12 @@ export class BookingApi {
         }
       }
       throw error
-    } 
+    }
   }
 
+  // Altri metodi rimangono invariati...
   async getAll(): Promise<any> {
-     try {
+    try {
       const response = await api.get<any>(`${this.BASE_PATH}`, {
         headers: {
           "Cache-Control": "no-cache",
@@ -56,7 +67,7 @@ export class BookingApi {
         }
       }
       throw error
-    } 
+    }
   }
 
   async getAvailableEngineers(start: Date, end: Date): Promise<any> {
@@ -83,45 +94,46 @@ export class BookingApi {
 
   async getFonicoBookings(id: string): Promise<any> {
     try {
-     const response = await api.get<any>(`${this.BASE_PATH}/fonico/${id}`, {
-       headers: {
-         "Cache-Control": "no-cache",
-       },
-     })
-     console.log(response.data)
-     return response.data
-   } catch (error) {
-     console.log(error)
-     if (axios.isAxiosError(error)) {
-       throw {
-         message: error.response?.data?.message || " get Booking failed",
-         statusCode: error.response?.status || 500,
-       }
-     }
-     throw error
-   } 
- }
+      const response = await api.get<any>(`${this.BASE_PATH}/fonico/${id}`, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || " get Booking failed",
+          statusCode: error.response?.status || 500,
+        }
+      }
+      throw error
+    }
+  }
 
- async getUserBookings(id: string): Promise<any> {
-  try {
-   const response = await api.get<any>(`${this.BASE_PATH}/user/${id}`, {
-     headers: {
-       "Cache-Control": "no-cache",
-     },
-   })
-   console.log(response.data)
-   return response.data
- } catch (error) {
-   console.log(error)
-   if (axios.isAxiosError(error)) {
-     throw {
-       message: error.response?.data?.message || " get Booking failed",
-       statusCode: error.response?.status || 500,
-     }
-   }
-   throw error
- } 
-}
+  async getUserBookings(id: string): Promise<any> {
+    try {
+      const response = await api.get<any>(`${this.BASE_PATH}/user/${id}`, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || " get Booking failed",
+          statusCode: error.response?.status || 500,
+        }
+      }
+      throw error
+    }
+  }
+
   async getAvailableTimeSlots(studioId: string, fonicoId: string): Promise<any> {
     try {
       const response = await api.get<any>(`${this.BASE_PATH}/available-slots`, {
@@ -215,63 +227,90 @@ export class BookingApi {
         headers: {
           "Cache-Control": "no-cache",
         },
-      });
-      console.log(response.data);
-      return response.data;
+      })
+      console.log(response.data)
+      return response.data
     } catch (error) {
-      console.log(error);
+      console.log(error)
       if (axios.isAxiosError(error)) {
         throw {
           message: error.response?.data?.message || "Booking deletion failed",
           statusCode: error.response?.status || 500,
-        };
+        }
       }
-      throw error;
+      throw error
     }
   }
 
- async getToConfirm(): Promise<any> {
-  try {
-   const response = await api.get<any>(`${this.BASE_PATH}/confirm`, {
-     headers: {
-       "Cache-Control": "no-cache",
-     },
-   })
-   console.log(response.data)
-   return response.data
- } catch (error) {
-   console.log(error)
-   if (axios.isAxiosError(error)) {
-     throw {
-       message: error.response?.data?.message || " get Booking failed",
-       statusCode: error.response?.status || 500,
-     }
-   }
-   throw error
- } 
-}
-
-async updateState(id: string, state: StateType): Promise<any> {
-  console.log(id)
-  try {
-    const response = await api.put<any>(`${this.BASE_PATH}/${id}/${state}`, {
-      headers: {
-        "Cache-Control": "no-cache",
-      },
-    })
-    console.log(response.data)
-    return response.data
-  } catch (error) {
-    console.log(error)
-    if (axios.isAxiosError(error)) {
-      throw {
-        message: error.response?.data?.message || "Booking update failed",
-        statusCode: error.response?.status || 500,
+  async getToConfirm(): Promise<any> {
+    try {
+      const response = await api.get<any>(`${this.BASE_PATH}/confirm`, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || " get Booking failed",
+          statusCode: error.response?.status || 500,
+        }
       }
+      throw error
     }
-    throw error
   }
-}
+
+  // Aggiorna il metodo updateState per supportare dati aggiuntivi
+  async updateState(id: string, state: StateType, additionalData?: any): Promise<any> {
+    console.log(id)
+    try {
+      // Crea un oggetto con i dati da inviare
+      const data = additionalData ? { state, ...additionalData } : { state }
+
+      const response = await api.put<any>(`${this.BASE_PATH}/${id}/${state}`, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || "Booking update failed",
+          statusCode: error.response?.status || 500,
+        }
+      }
+      throw error
+    }
+  }
+
+  async updateBooking(id: string, booking:Booking): Promise<any> {
+    console.log(id)
+    try {
+      const response = await api.put<any>(`${this.BASE_PATH}/${id}`, booking, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      })
+      console.log(response.data)
+      return response.data
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error)) {
+        throw {
+          message: error.response?.data?.message || "Booking update failed",
+          statusCode: error.response?.status || 500,
+        }
+      }
+      throw error
+    }
+  }
 }
 
 export const bookingApi = BookingApi.getInstance()
+

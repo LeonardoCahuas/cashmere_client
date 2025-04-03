@@ -21,11 +21,13 @@ import { format } from 'date-fns'
 import { it } from 'date-fns/locale'
 import { studios } from '@/lib/types'
 import { useUser } from '@/hooks/useUser'
+import { useUserStore } from '@/store/user-store'
 
 export default function CalendarPage() {
+  const {user} = useUserStore()
   const [view, setView] = useState<"timeGridDay" | "timeGridWeek" | "dayGridMonth">("timeGridWeek")
   const [selectedStudio, setSelectedStudio] = useState<string>("all")
-  const [selectedFonico, setSelectedFonico] = useState<string>("all")
+  const [selectedFonico, setSelectedFonico] = useState<string>(user.role == "ENGINEER" ? user.id : "all")
   const [date, setDate] = useState<Date>(new Date())
   const [engineers, setEngineers] = useState<any[]>([])
   const calendarRef = useRef(null)
@@ -145,7 +147,7 @@ export default function CalendarPage() {
                 </SelectContent>
               </Select>
 
-              <Select value={selectedFonico} onValueChange={setSelectedFonico}>
+              {user.role != "ENGINEER" && <Select value={selectedFonico} onValueChange={setSelectedFonico}>
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="Fonico" />
                 </SelectTrigger>
@@ -159,7 +161,7 @@ export default function CalendarPage() {
                     })
                   }
                 </SelectContent>
-              </Select>
+              </Select>}
 
               <Popover>
                 <PopoverTrigger asChild>
@@ -181,6 +183,7 @@ export default function CalendarPage() {
             view={view}
             selectedStudio={selectedStudio}
             selectedFonico={selectedFonico}
+            canEdit={user.role !== "ENGINEER"}
           />
         </div>
       </div>

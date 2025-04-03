@@ -1,17 +1,17 @@
-import { BookingState } from "@/app/admin/calendar/types/booking"
-import { RoleType } from "@/store/user-store"
+import type { BookingState } from "@/app/admin/calendar/types/booking"
+import type { RoleType } from "@/store/user-store"
 import type { Session as SupabaseSession } from "@supabase/supabase-js"
 
 export interface BookingCreateRequest {
-    userId: string | null
-    fonicoId: string
-    studioId: string
-    start: Date
-    end: Date
-    services: string[]
-    notes?: string
-    phone: string
-    instagram: string
+  userId: string | null
+  fonicoId: string
+  studioId: string
+  start: Date
+  end: Date
+  services: string[]
+  notes?: string
+  phone: string
+  instagram: string
 }
 
 export interface BookingCreateResponse {
@@ -59,7 +59,7 @@ export interface AuthError {
   status?: number
 }
 
-export interface GooGleLoginDTO{
+export interface GooGleLoginDTO {
   supabaseToken: string
 }
 
@@ -73,4 +73,7 @@ export interface Booking {
   services: string[]
   notes?: string
   state: BookingState
+  phone?: string
+  instagram?: string
 }
+

@@ -1,14 +1,14 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import { authApi } from "@/api/auth"
 import type { LoginRequest, LoginResponse, ApiError, GooGleLoginDTO } from "@/types/auth"
-import { useRouter } from "next/navigation"
+import { useUserStore } from "@/store/user-store"
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<ApiError | null>(null)
-  const router = useRouter()
+  const { setUser } = useUserStore()
 
   const login = async (credentials: LoginRequest): Promise<LoginResponse | null> => {
     try {
@@ -17,13 +17,13 @@ export const useAuth = () => {
       const response = await authApi.login(credentials)
 
       if (response?.user.role) {
-        if (!response.user.id) {
-          router.push("/auth/callback/1")
-        }
+        // Salva l'utente nello store
+        setUser(response.user)
       }
 
       return response
     } catch (err) {
+      console.log("Login error:", err)
       setError(err as ApiError)
       return null
     } finally {
@@ -38,13 +38,13 @@ export const useAuth = () => {
       const response = await authApi.register(credentials)
 
       if (response?.user.role) {
-        if (!response.user.id) {
-          router.push("/auth/callback/1")
-        }
+        // Salva l'utente nello store
+        setUser(response.user)
       }
 
       return response
     } catch (err) {
+      console.error("Registration error:", err)
       setError(err as ApiError)
       return null
     } finally {
@@ -57,8 +57,15 @@ export const useAuth = () => {
       setIsLoading(true)
       setError(null)
       const response = await authApi.googleLogin(data)
+
+      if (response?.user) {
+        // Salva l'utente nello store
+        setUser(response.user)
+      }
+
       return response
     } catch (err) {
+      console.error("Google login error:", err)
       setError(err as ApiError)
       return null
     } finally {
@@ -74,3 +81,4 @@ export const useAuth = () => {
     error,
   }
 }
+

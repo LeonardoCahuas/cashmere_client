@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { format } from "date-fns"
+import { format, addDays } from "date-fns"
 import { Button } from "@/components/Button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/Dialog"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/Form"
@@ -18,7 +18,28 @@ import { services, studios } from "@/lib/types"
 import { useUser } from "@/hooks/useUser"
 import { useBooking } from "@/hooks/useBooking"
 
-const hours = [
+const startHours = [
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+  "19:00",
+  "20:00",
+  "21:00",
+  "22:00",
+  "23:00",
+  "00:00",
+  "01:00",
+  "02:00",
+  "03:00",
+]
+
+const endHours = [
   "10:00",
   "11:00",
   "12:00",
@@ -46,9 +67,10 @@ interface BookingDialogProps {
   onSave: (booking: Booking) => void
   booking: Partial<Booking> | null
   onDelete: (id: string) => void
+  canEdit: boolean
 }
 
-export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: BookingDialogProps) {
+export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete, canEdit }: BookingDialogProps) {
   const [startDate, setStartDate] = useState<Date | undefined>(booking?.start)
   const [endDate, setEndDate] = useState<Date | undefined>(booking?.end)
   const [startTime, setStartTime] = useState<string>("")
@@ -118,24 +140,83 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
     }
   }, [booking, form])
 
+  // Funzione per gestire il cambio dell'ora di inizio
+  const handleStartTimeChange = (time: string) => {
+    setStartTime(time)
+
+    // Ottieni l'indice dell'ora di inizio selezionata
+    const startIndex = startHours.indexOf(time)
+
+    if (endTime) {
+      // Converti le ore in numeri per confronto
+      const [startHour, startMinute] = time.split(":").map(Number)
+      const [endHour, endMinute] = endTime.split(":").map(Number)
+
+      // Gestisci il caso speciale dopo la mezzanotte
+      let startTimeValue = startHour
+      let endTimeValue = endHour
+
+      // Aggiusta i valori per il confronto corretto
+      if (startHour >= 0 && startHour < 5) startTimeValue += 24
+      if (endHour >= 0 && endHour < 5) endTimeValue += 24
+
+      // Se l'ora di fine è minore o uguale all'ora di inizio
+      if (endTimeValue < startTimeValue || (endTimeValue === startTimeValue && endMinute <= startMinute)) {
+        // Imposta l'ora di fine a un'ora dopo l'inizio
+        const nextIndex = (startIndex + 1) % endHours.length
+        setEndTime(endHours[nextIndex])
+      }
+    } else {
+      // Se non c'è un'ora di fine, imposta l'ora di fine a un'ora dopo l'inizio
+      const nextIndex = (startIndex + 1) % endHours.length
+      setEndTime(endHours[nextIndex])
+    }
+  }
+
   const handleSubmit = (data: Booking) => {
     // Combine date and time
     if (startDate && startTime) {
       const [hours, minutes] = startTime.split(":").map(Number)
+
       // Create a new date object from the startDate
       const start = new Date(startDate)
+
+      // Check if the time is after midnight (00:00 - 04:00)
+      // If so, we need to add one day to the date
+      const isAfterMidnight = hours >= 0 && hours < 5
+
       // Set the hours and minutes directly
-      start.setHours(hours, minutes, 0, 0)
-      data.start = start
+      if (isAfterMidnight) {
+        // Create a copy of the date and add one day
+        const nextDay = addDays(start, 1)
+        nextDay.setHours(hours, minutes, 0, 0)
+        data.start = nextDay
+      } else {
+        start.setHours(hours, minutes, 0, 0)
+        data.start = start
+      }
     }
 
     if (endDate && endTime) {
       const [hours, minutes] = endTime.split(":").map(Number)
+
       // Create a new date object from the endDate
       const end = new Date(endDate)
+
+      // Check if the time is after midnight (00:00 - 04:00)
+      // If so, we need to add one day to the date
+      const isAfterMidnight = hours >= 0 && hours < 5
+
       // Set the hours and minutes directly
-      end.setHours(hours, minutes, 0, 0)
-      data.end = end
+      if (isAfterMidnight) {
+        // Create a copy of the date and add one day
+        const nextDay = addDays(end, 1)
+        nextDay.setHours(hours, minutes, 0, 0)
+        data.end = nextDay
+      } else {
+        end.setHours(hours, minutes, 0, 0)
+        data.end = end
+      }
     }
 
     // If we're editing, include the ID
@@ -147,12 +228,124 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
     if (booking?.isNew) {
       data.isNew = true
     }
-    console.log(data)
-    console.log({...data, services: data.services.map((s) => s.id), state: BookingState.CONFERMATO})
-    onSave({...data, services: data.services.map((s) => s.id), state: BookingState.CONFERMATO})
+    console.log({
+      ...data,
+      services: data.services.map((s) => s.id),
+      state: BookingState.CONFERMATO,
+      instagram: "",
+      phone: "",
+    })
+    
+    onSave({
+      ...data,
+      services: data.services.map((s) => s.id),
+      state: BookingState.CONFERMATO,
+      instagram: "",
+      phone: "",
+    })
   }
 
+  // Funzione per ottenere il nome dell'utente
+  const getUserName = (userId: string) => {
+    console.log(users)
+    console.log(userId)
+    const user = users.find((u) => u.id === userId)
+    return user ? user.username : "Cliente non trovato"
+  }
 
+  // Funzione per ottenere il nome del fonico
+  const getEngineerName = (fonicoId: string) => {
+    const engineer = engineers.find((e) => e.id === fonicoId)
+    return engineer ? engineer.username : "Fonico non trovato"
+  }
+
+  // Funzione per ottenere il nome dello studio
+  const getStudioName = (studioId: string) => {
+    const studio = studios.find((s) => s.id === studioId)
+    return studio ? studio.name : "Studio non trovato"
+  }
+
+  // Funzione per ottenere i nomi dei servizi
+  const getServiceNames = (serviceIds: any[]) => {
+    return serviceIds.map((serviceId) => {
+      const service =
+        typeof serviceId === "string"
+          ? services.find((s) => s.id === serviceId)
+          : services.find((s) => s.id === serviceId.id)
+      return service ? service.name : "Servizio non trovato"
+    })
+  }
+
+  // Renderizza la versione di sola lettura
+  if (!canEdit) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Dettagli Prenotazione</DialogTitle>
+            <DialogDescription>Informazioni sulla prenotazione</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium">Cliente</h3>
+                <p className="mt-1 text-sm">{booking?.userId ? getUserName(booking.userId) : "Non specificato"}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">Fonico</h3>
+                <p className="mt-1 text-sm">
+                  {booking?.fonicoId ? getEngineerName(booking.fonicoId) : "Non specificato"}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium">Studio</h3>
+              <p className="mt-1 text-sm">{booking?.studioId ? getStudioName(booking.studioId) : "Non specificato"}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-sm font-medium">Ora inizio</h3>
+                <p className="mt-1 text-sm">{startTime || "Non specificato"}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium">Ora fine</h3>
+                <p className="mt-1 text-sm">{endTime || "Non specificato"}</p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium">Servizi</h3>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {booking?.services && booking.services.length > 0 ? (
+                  getServiceNames(booking.services).map((name, index) => (
+                    <div key={index} className="rounded-full bg-primary/10 px-3 py-1 text-xs">
+                      {name}
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm">Nessun servizio selezionato</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium">Note</h3>
+              <p className="mt-1 text-sm whitespace-pre-wrap">{booking?.notes || "Nessuna nota"}</p>
+            </div>
+
+            <DialogFooter>
+              <Button onClick={onClose}>OK</Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // Renderizza la versione modificabile (originale)
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]">
@@ -169,6 +362,7 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
               <FormField
                 control={form.control}
                 name="userId"
+                rules={{ required: "Seleziona un cliente" }}
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Cliente</FormLabel>
@@ -225,6 +419,7 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
               <FormField
                 control={form.control}
                 name="fonicoId"
+                rules={{ required: "Seleziona un fonico" }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Fonico</FormLabel>
@@ -278,14 +473,14 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
             <div className="grid grid-cols-2 gap-4">
               <FormItem>
                 <FormLabel>Ora inizio</FormLabel>
-                <Select onValueChange={setStartTime} defaultValue={startTime}>
+                <Select onValueChange={handleStartTimeChange} defaultValue={startTime}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleziona ora" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {hours.map((hour) => (
+                    {startHours.map((hour) => (
                       <SelectItem key={hour} value={hour}>
                         {hour}
                       </SelectItem>
@@ -303,7 +498,7 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {hours.map((hour) => (
+                    {endHours.map((hour) => (
                       <SelectItem key={hour} value={hour}>
                         {hour}
                       </SelectItem>
@@ -399,12 +594,7 @@ export function BookingDialog({ isOpen, onClose, onSave, booking, onDelete }: Bo
 
             <DialogFooter>
               {booking?.id && (
-                <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => onDelete(booking.id)}
-                  className="mr-auto"
-                >
+                <Button type="button" variant="destructive" onClick={() => onDelete(booking.id)} className="mr-auto">
                   Elimina
                 </Button>
               )}

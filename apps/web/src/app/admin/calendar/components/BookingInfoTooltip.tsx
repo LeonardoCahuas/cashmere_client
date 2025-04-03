@@ -68,7 +68,7 @@ export function BookingInfoTooltip({ event, position, onClose }: BookingInfoTool
           <User className="h-4 w-4 mt-0.5 text-primary" />
           <div>
             <p className="font-medium">Fonico</p>
-            <p>{event.fonicoId}</p>
+            <p>{event.fonico.username}</p>
           </div>
         </div>
 
@@ -76,7 +76,7 @@ export function BookingInfoTooltip({ event, position, onClose }: BookingInfoTool
           <MapPin className="h-4 w-4 mt-0.5 text-primary" />
           <div>
             <p className="font-medium">Studio</p>
-            <p>{event.studioId}</p>
+            <p>Studio {event.studio.value}</p>
           </div>
         </div>
 

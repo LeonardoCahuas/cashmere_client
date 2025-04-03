@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { Check, Eye, ArrowUpDown } from "lucide-react"
+import { Check, Eye, ArrowUpDown, OctagonAlert } from "lucide-react"
 import type { Booking } from "@/types/booking"
-import { BookingState, StateType } from "@/types/types"
+import { BookingState, type StateType } from "@/types/types"
 import { Button } from "@/components/Button"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/Dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/Table"
@@ -21,9 +21,10 @@ import { ViewBookingDialog } from "./components/BookingDialog"
 
 // Importa gli studios e i services
 import { studios, services } from "@/lib/types"
+import { useReport } from "@/hooks/useReport"
 
 type SortDirection = "asc" | "desc" | null
-type SortField = "start" | null
+type SortField = "start" | "created_at" | null
 
 export default function Confirm() {
   const [bookingsState, setBookingsState] = useState<Booking[]>([])
@@ -31,8 +32,9 @@ export default function Confirm() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [bookings, setBookings] = useState<Booking[]>([])
+  const [reports, setReports] = useState([])
   const { getToConfirm, updateBookingState } = useBooking()
-
+  const { getAll } = useReport()
   useEffect(() => {
     const fetchBookings = async () => {
       const data = await getToConfirm()
@@ -40,12 +42,25 @@ export default function Confirm() {
       setBookings(data)
       setBookingsState(data)
     }
+    const fetchReports = async () => {
+      const data = await getAll()
+      console.log(data)
+      setReports(data)
+    }
 
     // Effettua il fetch solo una volta
     if (bookings.length === 0) {
       fetchBookings()
     }
+    fetchReports()
   }, [bookings.length])
+
+  const refresh = async () => {
+    const data = await getToConfirm()
+      console.log(data)
+      setBookings(data)
+      setBookingsState(data)
+  }
 
   // Stato per paginazione
   const [currentPage, setCurrentPage] = useState(1)
@@ -86,6 +101,9 @@ export default function Confirm() {
         if (sortField === "start") {
           valueA = new Date(a.start).getTime()
           valueB = new Date(b.start).getTime()
+        } else if (sortField === "created_at") {
+          valueA = new Date(a.created_at).getTime()
+          valueB = new Date(b.created_at).getTime()
         } else {
           return 0
         }
@@ -205,12 +223,25 @@ export default function Confirm() {
     return pageNumbers
   }
 
-  const handleAcceptRefuse = (id: string,state: StateType) => {
+  // Aggiorna la funzione handleAcceptRefuse per includere il fonico e lo studio selezionati
+  const handleAcceptRefuse = (id: string, state: StateType, fonicoId?: string, studioId?: string) => {
     if (!selectedBooking) return
+
+    // Crea un oggetto con i dati da aggiornare
+    const updateData: any = { state }
+
+    // Aggiungi fonico e studio se forniti
+    if (fonicoId) updateData.fonicoId = fonicoId
+    if (studioId) updateData.studioId = studioId
 
     setConfirmDialogOpen(false)
     setViewDialogOpen(false)
-    updateBookingState(id, state)
+
+    // Aggiorna lo stato e potenzialmente il fonico e lo studio
+    updateBookingState(id, state, updateData)
+    setTimeout(()=>{
+      refresh()
+    },1000)
   }
 
   return (
@@ -221,7 +252,7 @@ export default function Confirm() {
           <TableHeader>
             <TableRow className="bg-white">
               <TableHead className="font-medium">
-                <button className="flex items-center gap-1 hover:text-gray-700" onClick={() => handleSort("start")}>
+                <button className="flex items-center gap-1 hover:text-gray-700" onClick={() => handleSort("created_at")}>
                   Giorno richiesta
                   <ArrowUpDown className={`h-4 w-4 ${sortField === "start" ? "text-primary" : "text-gray-400"}`} />
                 </button>
@@ -244,10 +275,10 @@ export default function Confirm() {
             {sortedAndPaginatedBookings.map((booking) => (
               <TableRow key={booking.id} className="border-t">
                 <TableCell className="align-center">
-                  <div>{formatDate(booking.start)}</div>
-                  <div className="text-gray-500">{formatTime(booking.start)}</div>
+                  <div>{formatDate(booking.created_at)}</div>
+                  <div className="text-gray-500">{formatTime(booking.created_at)}</div>
                 </TableCell>
-                <TableCell>{booking.user.username}</TableCell>
+                <TableCell className="whitespace-nowrap flex flex-row items-center gap-2">{booking.user.username}{reports.some((r) => r.userId == booking.userId) && <OctagonAlert className="w-4 h-4 text-red-500" />}</TableCell>
                 <TableCell className="align-center">
                   {booking.services.map((service, index) => (
                     <div key={index}>{service.name}</div>
@@ -370,7 +401,10 @@ export default function Confirm() {
             <Button variant="outline" className="flex-1" onClick={() => setConfirmDialogOpen(false)}>
               Annulla
             </Button>
-            <Button className="flex-1" onClick={() => selectedBooking && handleAcceptRefuse(selectedBooking.id, BookingState.CONFERMATO)}>
+            <Button
+              className="flex-1"
+              onClick={() => selectedBooking && handleAcceptRefuse(selectedBooking.id, BookingState.CONFERMATO)}
+            >
               Conferma
             </Button>
           </DialogFooter>

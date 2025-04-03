@@ -77,47 +77,44 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       phoneNumber: "",
       notes: "",
     }),
-  saveBookingToLocalStorage: () => {
-    const state = get()
-    const bookingData = {
-      selectedServices: state.selectedServices,
-      selectedPackage: state.selectedPackage,
-      selectedDate: state.selectedDate,
-      timeFrom: state.timeFrom,
-      timeTo: state.timeTo,
-      selectedStudio: state.selectedStudio,
-      needsEngineer: state.needsEngineer,
-      selectedEngineer: state.selectedEngineer,
-      instagramUsername: state.instagramUsername,
-      phoneNumber: state.phoneNumber,
-      notes: state.notes
-    }
-    localStorage.setItem("bookingData", JSON.stringify(bookingData))
-  },
-  
-  loadBookingFromLocalStorage: () => {
-    const bookingDataStr = localStorage.getItem("bookingData")
-    if (bookingDataStr) {
-      try {
-        const bookingData = JSON.parse(bookingDataStr)
-        set({
-          selectedServices: bookingData.selectedServices || [],
-          selectedPackage: bookingData.selectedPackage || null,
-          selectedDate: bookingData.selectedDate ? new Date(bookingData.selectedDate) : null,
-          timeFrom: bookingData.timeFrom || null,
-          timeTo: bookingData.timeTo || null,
-          selectedStudio: bookingData.selectedStudio || null,
-          needsEngineer: bookingData.needsEngineer || false,
-          selectedEngineer: bookingData.selectedEngineer || null,
-          instagramUsername: bookingData.instagramUsername || "",
-          phoneNumber: bookingData.phoneNumber || "",
-          notes: bookingData.notes || ""
-        })
-        // Clean up after loading
-        localStorage.removeItem("bookingData")
-      } catch (error) {
-        console.error("Error loading booking data from localStorage:", error)
+    saveBookingToLocalStorage: () => {
+      const state = useBookingStore.getState()
+      const bookingData = {
+        selectedStudio: state.selectedStudio,
+        selectedEngineer: state.selectedEngineer,
+        selectedServices: state.selectedServices,
+        selectedDate: state.selectedDate.toISOString(),
+        timeFrom: state.timeFrom,
+        timeTo: state.timeTo,
+        selectedPackage: state.selectedPackage,
+        instagramUsername: state.instagramUsername,
+        phoneNumber: state.phoneNumber,
+        notes: state.notes,
       }
-    }
-  }
+      localStorage.setItem("bookingData", JSON.stringify(bookingData))
+    },
+
+    // Carica i dati della prenotazione da localStorage
+    loadBookingFromLocalStorage: () => {
+      const bookingDataStr = localStorage.getItem("bookingData")
+      if (bookingDataStr) {
+        try {
+          const bookingData = JSON.parse(bookingDataStr)
+          set({
+            selectedStudio: bookingData.selectedStudio || "",
+            selectedEngineer: bookingData.selectedEngineer || null,
+            selectedServices: bookingData.selectedServices || [],
+            selectedDate: bookingData.selectedDate ? new Date(bookingData.selectedDate) : new Date(),
+            timeFrom: bookingData.timeFrom || "",
+            timeTo: bookingData.timeTo || "",
+            selectedPackage: bookingData.selectedPackage || null,
+            instagramUsername: bookingData.instagramUsername || "",
+            phoneNumber: bookingData.phoneNumber || "",
+            notes: bookingData.notes || "",
+          })
+        } catch (error) {
+          console.error("Errore nel caricamento dei dati della prenotazione:", error)
+        }
+      }
+    },
 }))

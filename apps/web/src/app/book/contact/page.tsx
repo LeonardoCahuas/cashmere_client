@@ -5,83 +5,13 @@ import { Input } from "@/components/Input"
 import { BackButton } from "../components/BackButton"
 import { SummaryContent } from "../components/BookingSummary"
 import { useBookingStore } from "../../../store/booking-store"
-import type React from "react"
 import { BookButton } from "../components/BookButton"
-import type { BookingCreateRequest } from "@/types/booking"
-import { useUserStore } from "@/store/user-store"
-import { useBooking } from "@/hooks/useBooking"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-
-function combineDateAndTime(date: Date, time: string): Date {
-  const [hours, minutes] = time.split(":").map(Number)
-  const result = new Date(date)
-  result.setHours(hours, minutes, 0, 0)
-  return result
-}
 
 export default function ContactPage() {
-  const router = useRouter()
-  const {
-    instagramUsername,
-    phoneNumber,
-    notes,
-    setContactInfo,
-    selectedEngineer,
-    selectedStudio,
-    selectedServices,
-    selectedDate,
-    timeTo,
-    timeFrom,
-    selectedPackage,
-  } = useBookingStore()
-  const { user } = useUserStore()
-  const { createBooking } = useBooking()
+  const { instagramUsername, phoneNumber, notes, setContactInfo } = useBookingStore()
 
   // Check if required fields are filled
   const isFormValid = instagramUsername.trim() !== "" && phoneNumber.trim() !== ""
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    // If user is not logged in, the BookButton will handle the login flow
-    // and then trigger this form submission again
-    if (!user.id) {
-      return
-    }
-
-    const booking: BookingCreateRequest = {
-      userId: user.id,
-      fonicoId: selectedEngineer || "cm6ds8hq80000w6d2y9ttjh7x",
-      studioId: selectedStudio,
-      start: combineDateAndTime(selectedDate, timeFrom),
-      end: combineDateAndTime(selectedDate, timeTo),
-      services: selectedPackage ? [...selectedServices, selectedPackage] : selectedServices,
-      notes: notes,
-      phone: phoneNumber,
-      instagram: instagramUsername,
-    }
-
-    console.log("Creating booking:", booking)
-    try {
-      const result = await createBooking(booking)
-      if (result) {
-        router.push("/dashboard")
-      }
-    } catch (error) {
-      console.error("Error creating booking:", error)
-    }
-  }
-
-  // Check if user just logged in and needs to submit the form
-  useEffect(() => {
-    const justLoggedIn = sessionStorage.getItem("justLoggedIn")
-    if (justLoggedIn === "true" && user.id) {
-      sessionStorage.removeItem("justLoggedIn")
-      // Submit the form automatically
-      document.getElementById("booking-form")?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }))
-    }
-  }, [user.id])
 
   return (
     <div className="container max-w-3xl py-8 pb-32">
@@ -96,7 +26,7 @@ export default function ContactPage() {
           <p className="text-gray-400 mt-1">Ci serviranno per confermare la sessione.</p>
         </div>
 
-        <form id="booking-form" onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Nome utente di Instagram</label>
@@ -146,7 +76,7 @@ export default function ContactPage() {
           <div className="flex flex-col items-end">
             <BookButton disabled={!isFormValid} />
           </div>
-        </form>
+        </div>
       </div>
     </div>
   )

@@ -1,28 +1,45 @@
-'use client'
+"use client"
 
 import { useState } from "react"
 import type { ApiError } from "@/types/auth"
 import type { CreateBooking, StateType } from "@/types/types"
 import { bookingApi } from "@/api/booking"
 import { useUserStore } from "@/store/user-store"
+import { Booking } from "@/types/booking"
 
 export const useBooking = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<ApiError | null>(null)
     const { user } = useUserStore()
-    
+    const [loading, setLoading] = useState(false)
+    const [errorUpdate, setErrorUpdate] = useState<string | null>(null)
+
     const createBooking = async (booking: CreateBooking) => {
+        console.log(booking)
+        setLoading(true)
+        setErrorUpdate(null)
+        console.log(booking)
         try {
-            setIsLoading(true)
-            setError(null)
-            console.log(user)
-            const response = await bookingApi.create(booking, user)
-            return response
-        } catch (err) {
-            setError(err as ApiError)
-            return null
+            console.log("Creating booking with data:", booking)
+
+            // Assicurati che tutti i campi richiesti siano presenti
+            if (!booking.studioId) {
+                throw new Error("Studio ID is required")
+            }
+
+            if (typeof booking.phone !== 'string' || typeof booking.instagram !== 'string') {
+                throw new Error("Contact information (phone and Instagram) is required")
+            }
+
+            const result = await bookingApi.create(booking, user)
+            console.log("Booking created successfully:", result)
+            return result
+        } catch (err: any) {
+            console.error("Error creating booking:", err)
+            setErrorUpdate(err.message || "Failed to create booking")
+            throw err
         } finally {
-            setIsLoading(false)
+            setLoading(false)
         }
     }
 
@@ -55,18 +72,18 @@ export const useBooking = () => {
     }
 
     const getUserBookings = async (id: string) => {
-      try {
-          setIsLoading(true)
-          setError(null)
-          const response = await bookingApi.getUserBookings(id)
-          return response
-      } catch (err) {
-          setError(err as ApiError)
-          return null
-      } finally {
-          setIsLoading(false)
-      }
-  }
+        try {
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getUserBookings(id)
+            return response
+        } catch (err) {
+            setError(err as ApiError)
+            return null
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     const updateBooking = async (id: string, updatedData: Partial<CreateBooking>) => {
         console.log(id)
@@ -83,12 +100,27 @@ export const useBooking = () => {
         }
     }
 
-    const updateBookingState = async (id: string, state: StateType) => {
+    const updateBookingState = async (id: string, state: StateType, additionalData?: any) => {
         console.log(id)
         try {
             setIsLoading(true)
             setError(null)
-            const response = await bookingApi.updateState(id, state)
+            const response = await bookingApi.updateState(id, state, additionalData)
+            return response
+        } catch (err) {
+            setError(err as ApiError)
+            return null
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const bookingUpdate = async (id: string, booking: Booking) => {
+        console.log(id)
+        try {
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.updateBooking(id, booking)
             return response
         } catch (err) {
             setError(err as ApiError)
@@ -100,19 +132,19 @@ export const useBooking = () => {
 
     const deleteBooking = async (id: string) => {
         try {
-          setIsLoading(true);
-          setError(null);
-          const response = await bookingApi.delete(id);
-          return response;
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.delete(id)
+            return response
         } catch (err) {
-          setError(err as ApiError);
-          return null;
+            setError(err as ApiError)
+            return null
         } finally {
-          setIsLoading(false);
+            setIsLoading(false)
         }
-      };
+    }
 
-      const getToConfirm = async () => {
+    const getToConfirm = async () => {
         try {
             setIsLoading(true)
             setError(null)
@@ -128,18 +160,18 @@ export const useBooking = () => {
 
     const getAvailableEngineers = async (start: Date, end: Date) => {
         try {
-          setIsLoading(true)
-          setError(null)
-          const response = await bookingApi.getAvailableEngineers(start, end)
-          return response
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getAvailableEngineers(start, end)
+            return response
         } catch (err) {
-          setError(err as ApiError)
-          return null
+            setError(err as ApiError)
+            return null
         } finally {
-          setIsLoading(false)
+            setIsLoading(false)
         }
-      }
-    
+    }
+
     const getCurrentBookings = async () => {
         try {
             setIsLoading(true)
@@ -156,31 +188,31 @@ export const useBooking = () => {
 
     const getAvailableTimeSlots = async (studioId: string, fonicoId: string) => {
         try {
-          setIsLoading(true)
-          setError(null)
-          const response = await bookingApi.getAvailableTimeSlots(studioId, fonicoId)
-          return response
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getAvailableTimeSlots(studioId, fonicoId)
+            return response
         } catch (err) {
-          setError(err as ApiError)
-          return null
+            setError(err as ApiError)
+            return null
         } finally {
-          setIsLoading(false)
+            setIsLoading(false)
         }
-      }
+    }
 
-      const getAvailableStudios = async (start: Date, end: Date) => {
+    const getAvailableStudios = async (start: Date, end: Date) => {
         try {
-          setIsLoading(true)
-          setError(null)
-          const response = await bookingApi.getAvailableStudio(start, end)
-          return response
+            setIsLoading(true)
+            setError(null)
+            const response = await bookingApi.getAvailableStudio(start, end)
+            return response
         } catch (err) {
-          setError(err as ApiError)
-          return null
+            setError(err as ApiError)
+            return null
         } finally {
-          setIsLoading(false)
+            setIsLoading(false)
         }
-      }
+    }
 
     return {
         getAll,
@@ -195,7 +227,10 @@ export const useBooking = () => {
         getAvailableTimeSlots,
         getCurrentBookings,
         updateBookingState,
+        bookingUpdate,
         isLoading,
         error,
+        loading,
     }
 }
+

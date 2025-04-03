@@ -19,6 +19,7 @@ import type { Booking } from "@/types/booking"
 import type { BookingState, HolidayTypeType } from "@/types/types"
 import { useHoliday } from "@/hooks/useHoliday"
 import { useBooking } from "@/hooks/useBooking"
+import { useUserStore } from "@/store/user-store"
 
 type RequestType = "FERIE" | "PERMESSO" | null
 
@@ -54,6 +55,7 @@ export default function DashboardPage() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const { createHoliday } = useHoliday()
   const {getEngineerBookings} = useBooking()
+  const {user} = useUserStore()
   const handleCalendarClick = () => {
     router.push("/admin/calendar")
   }
@@ -62,7 +64,7 @@ export default function DashboardPage() {
 
     const loadBookings = async () => {
       try {
-        const data = await getEngineerBookings('cm6ds8hq80000w6d2y9ttjh7x')
+        const data = await getEngineerBookings(user.id)
         setBookings(data)
         console.log(data)
       } catch (error) {
@@ -89,7 +91,7 @@ export default function DashboardPage() {
   const handleSubmit = () => {
     // Crea l'oggetto Holiday con le date corrette
     const holiday: Holiday = {
-      userId: "cm6ds8hq80000w6d2y9ttjh7x", // Sostituire con l'ID utente corrente
+      userId: user.id, // Sostituire con l'ID utente corrente
       start: new Date(),
       end: new Date(),
       reason: motivazione,
@@ -147,6 +149,7 @@ export default function DashboardPage() {
   }
 
   const getServiceName = (serviceId: string): string => {
+    console.log("serviceid:" + serviceId)
     const service = services.find((s) => s.id === serviceId)
     return service ? service.name : serviceId
   }
@@ -197,7 +200,7 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-4 space-y-8 py-12">
       <div>
-        <div className="text-sm text-muted-foreground">fonico@gmail.com</div>
+        <div className="text-sm text-muted-foreground">{user.username}</div>
         <h1 className="text-2xl font-bold">Bentornato</h1>
       </div>
 
@@ -235,7 +238,7 @@ export default function DashboardPage() {
                     <ArrowUpDown className="h-4 w-4 text-gray-400" />
                   </div>
                 </TableHead>
-                <TableHead className="font-medium">Instagram</TableHead>
+                <TableHead className="font-medium">Utente</TableHead>
                 <TableHead className="font-medium">Servizi</TableHead>
                 <TableHead className="font-medium">
                   <div className="flex items-center gap-1">
@@ -258,10 +261,10 @@ export default function DashboardPage() {
                       <div>{requestDate.day}</div>
                       <div className="text-gray-500">{requestDate.time}</div>
                     </TableCell>
-                    <TableCell>{booking.userId}</TableCell>
+                    <TableCell>{booking.user.username}</TableCell>
                     <TableCell className="align-top">
-                      {booking.services.map((serviceId, index) => (
-                        <div key={index}>{getServiceName(serviceId)}</div>
+                      {booking.services.map((service, index) => (
+                        <div key={index}>{getServiceName(service.id)}</div>
                       ))}
                     </TableCell>
                     <TableCell className="align-top">
@@ -498,8 +501,8 @@ export default function DashboardPage() {
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Servizi</h3>
                   <div className="flex gap-3">
-                    {selectedBooking.services.map((serviceId, index) => {
-                      const serviceName = getServiceName(serviceId)
+                    {selectedBooking.services.map((service, index) => {
+                      const serviceName = getServiceName(service.id)
                       const isAffittoSala = serviceName === "Affitto sala"
                       const isRegistrazione = serviceName === "Registrazione"
                       const isMixMaster = serviceName === "Mix&Master"

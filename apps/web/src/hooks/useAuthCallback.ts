@@ -40,7 +40,8 @@ export function useAuthCallback() {
 
             // 3. Autentica con il backend
             const user = await handleGoogleAuth(session.access_token)
-
+            console.log(user)
+            console.log(session)
             return { session, user }
         } catch (error) {
             console.error("Auth callback error:", error)

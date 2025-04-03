@@ -52,6 +52,12 @@ export default function HolidaysApprovalPage() {
     fetchRequests()
   }, [])
 
+  const refresh = async () => {
+    const reqs = await getAll()
+      console.log(reqs)
+      setRequests(reqs)
+  }
+
   const handleViewRequest = (request: Holiday) => {
     setSelectedRequest(request)
     setViewDialogOpen(true)
@@ -161,6 +167,9 @@ export default function HolidaysApprovalPage() {
     setViewDialogOpen(false)
     setRejectDialogOpen(false)
     selectedRequest && selectedRequest.id && updateHolidayState(selectedRequest.id, state)
+    setTimeout(()=>{
+      refresh()
+    },1000)
   }
 
   return (

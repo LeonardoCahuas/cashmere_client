@@ -1,20 +1,14 @@
-'use client'
+"use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { useAuthCallback } from "@/hooks/useAuthCallback"
 import { useUserStore } from "@/store/user-store"
-import { useBookingStore } from "@/store/booking-store"
-import { useBooking } from "@/hooks/useBooking"
-import { CreateBooking } from "@/types/types"
-import { combineDateAndTime } from "@/lib/date-time"
 
 export default function AuthCallbackPage() {
-    const router = useRouter()
     const { processAuthCallback } = useAuthCallback()
     const { setUser } = useUserStore()
-    const { selectedEngineer, selectedDate, selectedServices, selectedStudio, timeFrom, timeTo } = useBookingStore()
-    const { createBooking} = useBooking()
+    const [error, setError] = useState<string | null>(null)
+    const [processing, setProcessing] = useState(true)
 
     useEffect(() => {
         const handleCallback = async () => {
@@ -23,35 +17,71 @@ export default function AuthCallbackPage() {
 
                 if (user) {
                     setUser(user)
+                } else {
+                    setError("No user data returned from authentication")
+                    return
                 }
 
-                // Gestisci il redirect basato su selectedEngineer
-                if (selectedEngineer) {
-                    const booking: CreateBooking = {
-                        userId: user?.id,
-                        start: combineDateAndTime(selectedDate, timeFrom),
-                        end: combineDateAndTime(selectedDate, timeTo),
-                        studioId:selectedStudio,
-                        fonicoId: selectedEngineer,
-                        services: selectedServices
-                    }
-                    createBooking(booking)
-                    router.push(user ? "/book/dashboard" : "/")
+                // Controlla se siamo nel flusso di prenotazione
+                const isBookingFlow = localStorage.getItem("bookingInProgress") === "true"
+
+                // Reindirizza usando window.location per un refresh completo
+                if (isBookingFlow) {
+                    window.location.href = "/book/confirm"
                 } else {
-                    router.push(("/dashboard"))
+                    console.log("hello")
+                    let path
+                    switch (user.role) {
+                        case "ADMIN":
+                            path = "/admin/confirm"
+                            break
+                        case "ENGINEER":
+                            path = "/admin/availability"
+                            break
+                        case "SECRETARY":
+                            path = "/admin/users"
+                            break
+                        case "USER":
+                            path = "/dashboard"
+                            break
+                        default:
+                            path = "/"
+                            break
+                    }
+                    console.log("passes")
+                    setProcessing(false)
+                    window.location.href = path
                 }
+                console.log(user)
             } catch (error) {
                 console.error("Callback error:", error)
-                router.push("/login?error=auth-error")
+                setError("Authentication failed. Please try again.")
+                setProcessing(false)
             }
         }
 
         handleCallback()
-    }, [processAuthCallback, router, setUser, selectedEngineer])
+    }, [])
 
-    return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
-        </div>
-    )
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center flex-col">
+                <div className="text-red-500 mb-4">{error}</div>
+                <a href="/" className="px-4 py-2 bg-blue-500 text-white rounded">
+                    Torna alla home
+                </a>
+            </div>
+        )
+    }
+
+    if (processing) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        )
+    }
+
+    return null
 }
+

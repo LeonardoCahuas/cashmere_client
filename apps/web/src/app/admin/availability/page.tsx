@@ -11,15 +11,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/Card"
 import { AvailabilityCalendar } from "./components/AvailabilityCalendar"
 import { useUser } from "@/hooks/useUser"
+import { useHoliday } from "@/hooks/useHoliday"
+import { useUserStore } from "@/store/user-store"
 
 export default function AvailabilityPage() {
+  const {user} = useUserStore()
   const [view, setView] = useState<"timeGridDay" | "timeGridWeek">("timeGridWeek")
   const [date, setDate] = useState<Date>(new Date())
-  const [selectedEngineer, setSelectedEngineer] = useState<string>("")
+  const [selectedEngineer, setSelectedEngineer] = useState<string>(user.role == "ENGINEER" ? user.id : "")
   const [engineers, setEngineers] = useState<Array<{ id: string; name: string }>>([])
   const [isLoading, setIsLoading] = useState(true)
   const calendarRef = useRef(null)
   const { getEngineers } = useUser()
+  const {getUserHolidays} = useHoliday()
 
   // Load engineers on component mount
   useEffect(() => {
@@ -117,7 +121,7 @@ export default function AvailabilityPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Select value={selectedEngineer} onValueChange={setSelectedEngineer}>
+              {user.role != "ENGINEER" && <Select value={selectedEngineer} onValueChange={setSelectedEngineer}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Seleziona fonico" />
                 </SelectTrigger>
@@ -128,7 +132,7 @@ export default function AvailabilityPage() {
                     </SelectItem>
                   ))}
                 </SelectContent>
-              </Select>
+              </Select>}
 
               <Popover>
                 <PopoverTrigger asChild>
@@ -154,36 +158,6 @@ export default function AvailabilityPage() {
               date={date}
             />
           )}
-        </div>
-
-        <div className="mt-24">
-          <h2 className="mb-4 text-xl font-semibold">Panoramica {selectedEngineerName}</h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-1">
-                  <p className="text-sm text-emerald-500">Disponibilità</p>
-                  <p className="text-2xl font-semibold">{stats.availability} ore</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-1">
-                  <p className="text-sm text-primary">Totale sessioni</p>
-                  <p className="text-2xl font-semibold">{stats.sessions} ore</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="pt-6">
-                <div className="space-y-1">
-                  <p className="text-sm text-red-500">Ferie</p>
-                  <p className="text-2xl font-semibold">{stats.holidays} ore</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </div>
     </div>

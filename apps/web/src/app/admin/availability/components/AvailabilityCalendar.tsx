@@ -8,16 +8,10 @@ import itLocale from "@fullcalendar/core/locales/it"
 import { format } from "date-fns"
 import { Button } from "@/components/Button"
 import { X } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/Dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/Dialog"
 import { useAvailability } from "@/hooks/useAvailability"
 import { useBooking } from "@/hooks/useBooking"
+import { Card, CardContent } from "@/components/Card"
 
 interface AvailabilityCalendarProps {
   view: "timeGridDay" | "timeGridWeek"
@@ -46,7 +40,7 @@ export const AvailabilityCalendar = forwardRef<any, AvailabilityCalendarProps>(
     const [bookings, setBookings] = useState([])
 
     const { getEngineerAvailability, createAvailability, updateAvailability, deleteAvailability } = useAvailability()
-    const {getEngineerBookings} = useBooking()
+    const { getEngineerBookings } = useBooking()
 
     useImperativeHandle(ref, () => ({
       getApi: () => calendarRef.current?.getApi(),
@@ -96,7 +90,7 @@ export const AvailabilityCalendar = forwardRef<any, AvailabilityCalendarProps>(
     }, [view])
 
     const getEventColor = (type: string) => {
-      return { backgroundColor: type== "availability" ? "#4ade80" : "#FF5B00", borderColor: "#22c55e" }
+      return { backgroundColor: type == "availability" ? "#4ade80" : "#FF5B00", borderColor: "#22c55e" }
     }
 
     const getDayFromDate = (date: Date): string => {
@@ -188,50 +182,51 @@ export const AvailabilityCalendar = forwardRef<any, AvailabilityCalendarProps>(
     }
 
     // Convert availabilities to FullCalendar events
-    const eventsToDisplay = [...availabilities.map((availability) => {
-      // Create a date object for the current view's date but with the availability's time
-      const startDate = new Date(date)
-      const endDate = new Date(date)
+    const eventsToDisplay = [
+      ...availabilities.map((availability) => {
+        // Create a date object for the current view's date but with the availability's time
+        const startDate = new Date(date)
+        const endDate = new Date(date)
 
-      // Parse the hours and minutes
-      const startTime =
-        typeof availability.start === "string" ? availability.start : format(availability.start, "HH:mm")
+        // Parse the hours and minutes
+        const startTime =
+          typeof availability.start === "string" ? availability.start : format(availability.start, "HH:mm")
 
-      const endTime = typeof availability.end === "string" ? availability.end : format(availability.end, "HH:mm")
+        const endTime = typeof availability.end === "string" ? availability.end : format(availability.end, "HH:mm")
 
-      const startParts = startTime.split(":")
-      const endParts = endTime.split(":")
+        const startParts = startTime.split(":")
+        const endParts = endTime.split(":")
 
-      startDate.setHours(Number.parseInt(startParts[0]), Number.parseInt(startParts[1]), 0)
-      endDate.setHours(Number.parseInt(endParts[0]), Number.parseInt(endParts[1]), 0)
+        startDate.setHours(Number.parseInt(startParts[0]), Number.parseInt(startParts[1]), 0)
+        endDate.setHours(Number.parseInt(endParts[0]), Number.parseInt(endParts[1]), 0)
 
-      // Adjust the date based on the day of the week
-      const days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }
-      const dayDiff = days[availability.day as keyof typeof days] - date.getDay()
+        // Adjust the date based on the day of the week
+        const days = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 }
+        const dayDiff = days[availability.day as keyof typeof days] - date.getDay()
 
-      startDate.setDate(startDate.getDate() + dayDiff)
-      endDate.setDate(endDate.getDate() + dayDiff)
+        startDate.setDate(startDate.getDate() + dayDiff)
+        endDate.setDate(endDate.getDate() + dayDiff)
 
-      return {
-        id: availability.id,
-        title: "Disponibile",
-        start: startDate,
-        end: endDate,
-        userId: availability.userId,
-        day: availability.day,
-        type: "availability"
-      }
-    }),
-    ...bookings.map((b) => {
-      return {
-        id: b.id,
-        title: b.user.username,
-        start: b.start,
-        end: b.end,
-        type: "booking"
-      }
-    })
-  ].filter((ev)=> isEditMode ? ev.type == "availability" : true)
+        return {
+          id: availability.id,
+          title: "Disponibile",
+          start: startDate,
+          end: endDate,
+          userId: availability.userId,
+          day: availability.day,
+          type: "availability",
+        }
+      }),
+      ...bookings.map((b) => {
+        return {
+          id: b.id,
+          title: b.user.username,
+          start: b.start,
+          end: b.end,
+          type: "booking",
+        }
+      }),
+    ].filter((ev) => (isEditMode ? ev.type == "availability" : true))
 
     const handleDeleteEvent = async (eventId: string) => {
       setIsLoading(true)
@@ -251,6 +246,58 @@ export const AvailabilityCalendar = forwardRef<any, AvailabilityCalendarProps>(
       setIsEditMode(false)
       await fetchAvailabilities()
     }
+
+    // Aggiungiamo funzioni per calcolare le ore totali
+    // Aggiungi queste funzioni dopo la dichiarazione di handleSaveChanges
+
+    // 1. Aggiungi queste funzioni per calcolare le ore:
+
+    const calculateTotalHours = (events: any[]) => {
+      return events.reduce((total, event) => {
+        const start = new Date(event.start)
+        const end = new Date(event.end)
+        const durationInHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60)
+        return total + durationInHours
+      }, 0)
+    }
+
+    const getTotalAvailabilityHours = () => {
+      const availabilityEvents = eventsToDisplay.filter((event) => event.type === "availability")
+      return calculateTotalHours(availabilityEvents)
+    }
+
+    const getTotalBookingHours = () => {
+      // Ottieni l'intervallo di date attualmente visualizzato nel calendario
+      if (!calendarRef.current) return 0
+
+      const api = calendarRef.current.getApi()
+      const viewStart = api.view.activeStart
+      const viewEnd = api.view.activeEnd
+
+      // Filtra solo le prenotazioni che rientrano nell'intervallo di date visualizzato
+      const bookingEvents = eventsToDisplay.filter((event) => {
+        const eventStart = new Date(event.start)
+        return event.type === "booking" && eventStart >= viewStart && eventStart < viewEnd
+      })
+
+      return calculateTotalHours(bookingEvents)
+    }
+
+    useEffect(() => {
+      if (calendarRef.current) {
+        const api = calendarRef.current.getApi()
+        const handleDatesSet = () => {
+          // Forza un re-render per aggiornare i calcoli delle ore
+          setAvailabilities([...availabilities])
+        }
+
+        api.on("datesSet", handleDatesSet)
+
+        return () => {
+          api.off("datesSet", handleDatesSet)
+        }
+      }
+    }, [calendarRef.current, availabilities])
 
     return (
       <>
@@ -344,6 +391,28 @@ export const AvailabilityCalendar = forwardRef<any, AvailabilityCalendarProps>(
                   : undefined
               }
             />
+          </div>
+        </div>
+
+        <div className="mt-24 pb-12">
+          <h2 className="mb-4 text-xl font-semibold">Panoramica</h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-1">
+                  <p className="text-sm text-emerald-500">Disponibilità</p>
+                  <p className="text-2xl font-semibold">{getTotalAvailabilityHours().toFixed(1)} ore</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="space-y-1">
+                  <p className="text-sm text-primary">Totale sessioni</p>
+                  <p className="text-2xl font-semibold">{getTotalBookingHours().toFixed(1)} ore</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
